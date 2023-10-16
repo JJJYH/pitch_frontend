@@ -1,31 +1,25 @@
 // assets
-import { IconBrandChrome, IconHelp } from '@tabler/icons';
+//import { IconBrandChrome, IconHelp } from '@tabler/icons';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 // constant
-const icons = { IconBrandChrome, IconHelp };
+//const icons = { IconBrandChrome, IconHelp };
+const maIcon = ManageAccountsIcon;
 
 // ==============================|| SAMPLE PAGE & DOCUMENTATION MENU ITEMS ||============================== //
 
 const other = {
   id: 'sample-docs-roadmap',
+  title: 'Admin',
   type: 'group',
   children: [
     {
-      id: 'sample-page',
-      title: 'Sample Page',
+      id: 'admin-page',
+      title: '권한관리',
       type: 'item',
-      url: '/sample-page',
-      icon: icons.IconBrandChrome,
+      url: '/manage/admin',
+      icon: maIcon,
       breadcrumbs: false
-    },
-    {
-      id: 'documentation',
-      title: 'Documentation',
-      type: 'item',
-      url: 'https://codedthemes.gitbook.io/berry/',
-      icon: icons.IconHelp,
-      external: true,
-      target: true
     }
   ]
 };
