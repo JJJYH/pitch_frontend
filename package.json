@@ -16,7 +16,11 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@tabler/icons": "^1.72.0",
     "apexcharts": "^3.35.3",
+<<<<<<< HEAD
     "dayjs": "^1.11.10",
+=======
+    "axios": "^1.5.1",
+>>>>>>> 73eea9d6d2c08130e98f33de62c8f628b57591e3
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
     "material-ui-popup-state": "^4.0.1",

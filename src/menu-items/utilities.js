@@ -18,17 +18,17 @@ const utilities = {
   children: [
     {
       id: 'util-typography',
-      title: 'Typography',
+      title: '채용요청',
       type: 'item',
-      url: '/utils/util-typography',
+      url: '/manage/req',
       icon: icons.IconTypography,
       breadcrumbs: false
     },
     {
       id: 'util-color',
-      title: 'Color',
+      title: '공고관리',
       type: 'item',
-      url: '/utils/util-color',
+      url: '/manage/sorting',
       icon: icons.IconPalette,
       breadcrumbs: false
     },

@@ -37,10 +37,7 @@ const Register = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color={theme.palette.secondary.main} gutterBottom variant={matchDownSM ? 'h3' : 'h2'}>
-                            Sign up
-                          </Typography>
-                          <Typography variant="caption" fontSize="16px" textAlign={matchDownSM ? 'center' : 'inherit'}>
-                            Enter your credentials to continue
+                            회원가입
                           </Typography>
                         </Stack>
                       </Grid>
@@ -54,8 +51,8 @@ const Register = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Already have an account?
+                      <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'underline', textUnderlineOffset: '3px', fontWeight: 'bold', fontSize: '13px' }}>
+                        이미 계정이 존재하시나요?
                       </Typography>
                     </Grid>
                   </Grid>

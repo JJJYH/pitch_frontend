@@ -2,18 +2,18 @@
 $paper: #ffffff;
 
 // primary
-$primaryLight: #f5f5f5;
+$primaryLight: #f5f5f5; //바탕 컬러
 $primaryMain: #2196f3;
 $primaryDark: #1e88e5;
 $primary200: #90caf9;
 $primary800: #1565c0;
 
 // secondary
-$secondaryMain: #4682b4;
-$secondaryLight: lighten($secondaryMain, 20%);
-$secondaryDark: darken($secondaryMain, 20%);
-$secondary200: #b39ddb;
-$secondary800: #4527a0;
+$secondaryMain: #4682B4;
+$secondaryLight: lighten($secondaryMain, 30%);
+$secondaryDark: darken($secondaryMain, 10%);
+$secondary200: lighten($secondaryMain, 60%);
+$secondary800: darken($secondaryMain, 70%);
 
 // success Colors
 $successLight: #b9f6ca;
