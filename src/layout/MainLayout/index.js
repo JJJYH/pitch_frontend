@@ -3,19 +3,19 @@ import { Outlet } from 'react-router-dom';
 
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
-import { AppBar, Box, CssBaseline, Toolbar } from '@mui/material';
+import { AppBar, Box, CssBaseline, Toolbar, useMediaQuery } from '@mui/material';
 
 // project imports
 import Breadcrumbs from 'ui-component/extended/Breadcrumbs';
 import Header from './Header';
-// import Sidebar from './Sidebar';
-import Customization from '../Customization';
+import Sidebar from './Sidebar';
 import navigation from 'menu-items';
 import { drawerWidth } from 'store/constant';
 import { SET_MENU } from 'store/actions';
 
 // assets
 import { IconChevronRight } from '@tabler/icons';
+import { useState } from 'react';
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
@@ -55,13 +55,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
 
 const MainLayout = () => {
   const theme = useTheme();
-  //const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
+  const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
   // Handle left drawer
   const leftDrawerOpened = useSelector((state) => state.customization.opened);
   const dispatch = useDispatch();
   const handleLeftDrawerToggle = () => {
     dispatch({ type: SET_MENU, opened: !leftDrawerOpened });
   };
+
+  //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
+  const [isUser, setUser] = useState(false);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -74,24 +77,25 @@ const MainLayout = () => {
         elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
-          transition: leftDrawerOpened ? theme.transitions.create('width') : 'none'
+          transition: leftDrawerOpened ? theme.transitions.create('width') : 'none',
+          height: '70px'
         }}
       >
         <Toolbar>
-          <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
+          <Header handleLeftDrawerToggle={handleLeftDrawerToggle} isUser={isUser} />
         </Toolbar>
       </AppBar>
 
       {/* drawer */}
-      {/* <Sidebar drawerOpen={!matchDownMd ? leftDrawerOpened : !leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} /> */}
+      <Sidebar drawerOpen={!matchDownMd ? isUser ? !leftDrawerOpened : leftDrawerOpened : !leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
 
       {/* main content */}
-      <Main theme={theme} open={leftDrawerOpened}>
+      <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened}>
         {/* breadcrumb */}
         <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
         <Outlet />
       </Main>
-      <Customization />
+      {/* <Customization /> */}
     </Box>
   );
 };

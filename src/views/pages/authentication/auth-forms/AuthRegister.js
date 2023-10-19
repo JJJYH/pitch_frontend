@@ -90,7 +90,9 @@ const FirebaseRegister = ({ ...others }) => {
               <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
                 <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
               </Box>
-              Sign up with Google
+              <Typography style={{ fontWeight: 'bold' }}>
+                구글 아이디로 회원가입
+              </Typography>
             </Button>
           </AnimateButton>
         </Grid>
@@ -101,7 +103,7 @@ const FirebaseRegister = ({ ...others }) => {
               variant="outlined"
               sx={{
                 cursor: 'unset',
-                m: 2,
+                m: 1,
                 py: 0.5,
                 px: 7,
                 borderColor: `${theme.palette.grey[100]} !important`,
@@ -117,11 +119,11 @@ const FirebaseRegister = ({ ...others }) => {
             <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
           </Box>
         </Grid>
-        <Grid item xs={12} container alignItems="center" justifyContent="center">
+        {/* <Grid item xs={12} container alignItems="center" justifyContent="center">
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Sign up with Email address</Typography>
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
 
       <Formik
@@ -152,17 +154,28 @@ const FirebaseRegister = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
-            <Grid container spacing={matchDownSM ? 0 : 2}>
+            <TextField
+              fullWidth
+              label="이름"
+              margin="normal"
+              name="name"
+              type="text"
+              defaultValue=""
+              sx={{ ...theme.typography.customInput, marginBlock: '8px' }}
+            />
+            <TextField
+              fullWidth
+              label="ID"
+              margin="normal"
+              name="ID"
+              type="text"
+              defaultValue=""
+              sx={{ ...theme.typography.customInput, marginBlock: '8px' }}
+            />
+            {/* <Grid container spacing={matchDownSM ? 0 : 2}>
+
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  margin="normal"
-                  name="fname"
-                  type="text"
-                  defaultValue=""
-                  sx={{ ...theme.typography.customInput }}
-                />
+                
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -175,9 +188,9 @@ const FirebaseRegister = ({ ...others }) => {
                   sx={{ ...theme.typography.customInput }}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-register">Email Address / Username</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-email-register">Email</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-register"
                 type="email"
@@ -272,7 +285,9 @@ const FirebaseRegister = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Sign up
+                  <Typography sx={{ fontWeight: 'bold', margin: '5px' }}>
+                    회원가입
+                  </Typography>
                 </Button>
               </AnimateButton>
             </Box>
