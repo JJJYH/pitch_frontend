@@ -6,10 +6,10 @@ import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Button,
-  Checkbox,
+  //Checkbox,
   Divider,
   FormControl,
-  FormControlLabel,
+  //FormControlLabel,
   FormHelperText,
   Grid,
   IconButton,
@@ -18,6 +18,7 @@ import {
   OutlinedInput,
   Stack,
   Typography,
+  //Typography,
   useMediaQuery
 } from '@mui/material';
 
@@ -42,7 +43,7 @@ const FirebaseLogin = ({ ...others }) => {
   const scriptedRef = useScriptRef();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
-  const [checked, setChecked] = useState(true);
+  //const [checked, setChecked] = useState(true);
 
   const googleHandler = async () => {
     console.error('Login');
@@ -77,7 +78,9 @@ const FirebaseLogin = ({ ...others }) => {
               <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
                 <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
               </Box>
-              Sign in with Google
+              <Typography style={{ fontWeight: 'bold' }}>
+                구글 아이디로 로그인
+              </Typography>
             </Button>
           </AnimateButton>
         </Grid>
@@ -94,7 +97,7 @@ const FirebaseLogin = ({ ...others }) => {
               variant="outlined"
               sx={{
                 cursor: 'unset',
-                m: 2,
+                m: 1,
                 py: 0.5,
                 px: 7,
                 borderColor: `${theme.palette.grey[100]} !important`,
@@ -112,9 +115,9 @@ const FirebaseLogin = ({ ...others }) => {
           </Box>
         </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
-          <Box sx={{ mb: 2 }}>
+          {/* <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Sign in with Email address</Typography>
-          </Box>
+          </Box> */}
         </Grid>
       </Grid>
 
@@ -147,7 +150,7 @@ const FirebaseLogin = ({ ...others }) => {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-email-login">Email / ID</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="email"
@@ -155,7 +158,7 @@ const FirebaseLogin = ({ ...others }) => {
                 name="email"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Email Address / Username"
+                label="Email / ID"
                 inputProps={{}}
               />
               {touched.email && errors.email && (
@@ -197,15 +200,15 @@ const FirebaseLogin = ({ ...others }) => {
               )}
             </FormControl>
             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={
                   <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
                 }
                 label="Remember me"
-              />
-              <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+              /> */}
+              {/* <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
                 Forgot Password?
-              </Typography>
+              </Typography> */}
             </Stack>
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
@@ -216,7 +219,9 @@ const FirebaseLogin = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Sign in
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    로그인
+                  </Typography>
                 </Button>
               </AnimateButton>
             </Box>
