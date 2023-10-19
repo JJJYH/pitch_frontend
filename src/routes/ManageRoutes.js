@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import ManageLayout from 'layout/ManageLayout';
 import Loadable from 'ui-component/Loadable';
 
+
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
@@ -19,6 +20,8 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
 //test page routing 
 const CVPage = Loadable(lazy(() => import('views/cv')));
+const SortingPage = Loadable(lazy(() => import('views/sort')));
+const ApplicantDetailPage = Loadable(lazy(() => import('views/sort/ApplicantDetailPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -40,6 +43,14 @@ const ManageRoutes = {
         {
           path: 'cv-page',
           element: <CVPage />
+        },
+        {
+          path: 'sorting',
+          element: <SortingPage />,
+        },
+        {
+          path: 'detail',
+          element: <ApplicantDetailPage />
         }
       ]
     },
