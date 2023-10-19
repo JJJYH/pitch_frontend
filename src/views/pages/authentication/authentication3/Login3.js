@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
+import { Divider, Grid, Typography, useMediaQuery } from '@mui/material';
+//import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
@@ -34,7 +35,7 @@ const Login = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
-                      <Grid item>
+                      {/* <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color={theme.palette.secondary.main} gutterBottom variant={matchDownSM ? 'h3' : 'h2'}>
                             Hi, Welcome Back
@@ -43,7 +44,7 @@ const Login = () => {
                             Enter your credentials to continue
                           </Typography>
                         </Stack>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Grid>
                   <Grid item xs={12}>
@@ -54,8 +55,8 @@ const Login = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/pages/register/register3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Don&apos;t have an account?
+                      <Typography component={Link} to="/pages/register/register3" variant="subtitle1" sx={{ textDecoration: 'underLine 1px', textUnderlineOffset: '3px', fontSize: '13px', letterSpacing: '1px', marginBottom: '4px', fontWeight: 'bold' }}>
+                        회원가입
                       </Typography>
                     </Grid>
                   </Grid>

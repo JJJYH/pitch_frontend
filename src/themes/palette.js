@@ -18,7 +18,7 @@ export default function themePalette(theme) {
     },
     secondary: {
       light: theme.colors?.secondaryLight,
-      main: theme.colors?.secondaryMain,
+      main: '#4682B4',
       dark: theme.colors?.secondaryDark,
       200: theme.colors?.secondary200,
       800: theme.colors?.secondary800
