@@ -16,17 +16,15 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@tabler/icons": "^1.72.0",
     "apexcharts": "^3.35.3",
-<<<<<<< HEAD
-    "dayjs": "^1.11.10",
-=======
     "axios": "^1.5.1",
->>>>>>> 73eea9d6d2c08130e98f33de62c8f628b57591e3
+    "dayjs": "^1.11.10",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
     "material-ui-popup-state": "^4.0.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
+    "react-daum-postcode": "^3.1.3",
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-image-file-resizer": "^0.4.8",

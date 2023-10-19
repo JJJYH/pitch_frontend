@@ -1,13 +1,22 @@
-import { Box, Card, CardHeader, Divider, Grid, Typography } from '@mui/material';
+import { Box, Card, CardHeader, Divider, Grid, IconButton, Typography } from '@mui/material';
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 import OpenIconSpeedDial from './OpenIconSpeedDial';
 import Profile from './components/Profile';
-
+import Education from './components/Education';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useDispatch } from 'react-redux';
+import { addEducation } from 'store/educationSlice';
 const CV = () => {
+  const dispatch = useDispatch();
+
+  const handleAddField = () => {
+    const newArr = { eduType: 'document', enterDay: '', graduateDay: '', major: '', graduateType: '', totalScore: '', score: '' };
+    dispatch(addEducation(newArr));
+  };
   return (
-    <Grid container xs={12} spacing={2.5}>
+    <Grid container spacing={2.5}>
       <OpenIconSpeedDial />
       <Grid item xs={1.5}>
         Empty
@@ -25,7 +34,18 @@ const CV = () => {
                   </Typography>
                   <Profile />
                 </SubCard>
-                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item2</SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      학력
+                    </Typography>
+                    <IconButton onClick={() => handleAddField()}>
+                      <AddBoxOutlinedIcon />
+                    </IconButton>
+                  </Box>
+                  <Education />
+                  {/* <EducationTest /> */}
+                </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item3</SubCard>
               </MainCard>
             </Grid>

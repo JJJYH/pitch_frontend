@@ -4,6 +4,8 @@ import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { addEducation, removeEducation } from './redux/educationSlice';
+import { useDispatch, useSelector } from 'react-redux';
 // import ControlledComponent from './ControlledComponent';
 
 const EducationTest = () => {
@@ -11,10 +13,14 @@ const EducationTest = () => {
   const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학'];
   const score_arr = ['4.5', '4.0', '4.3', '100'];
 
+  const educationData = useSelector((state) => state.education);
+  const dispatch = useDispatch();
+
   /**Test */
   const [eduformFields, setEduFormFields] = useState([
     { eduType: '', enterDay: '', graduateDay: '', major: '', graduate_type: '', totalScore: '', score: '' }
   ]);
+
   const handleAddField = () => {
     const values = [
       ...eduformFields,
