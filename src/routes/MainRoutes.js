@@ -71,11 +71,6 @@ const MainRoutes = {
       ]
     },
     {
-<<<<<<< HEAD
-      path: 'cv2',
-      element: <CVPage />
-    }
-=======
       path: 'utils',
       children: [
         {
@@ -111,7 +106,7 @@ const MainRoutes = {
         }
       ]
     },
->>>>>>> 73eea9d6d2c08130e98f33de62c8f628b57591e3
+
   ]
 };
 
