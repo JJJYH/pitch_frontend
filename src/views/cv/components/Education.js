@@ -15,13 +15,13 @@ const Education = () => {
   const [score, setScore] = React.useState('');
 
   /**Console Print*/
-  console.log('EduType : ' + eduType);
-  console.log('Graduate Type : ' + graduate_type);
-  console.log('EnterDate : ' + enterDay);
+  // console.log('EduType : ' + eduType);
+  // console.log('Graduate Type : ' + graduate_type);
+  // console.log('EnterDate : ' + enterDay);
   console.log('GraduateDate : ' + graduateDay);
-  console.log('Major : ' + major);
-  console.log('Score : ' + score);
-  console.log('Total Score : ' + totalScore);
+  // console.log('Major : ' + major);
+  // console.log('Score : ' + score);
+  // console.log('Total Score : ' + totalScore);
 
   /**Default Setting Values */
   const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학'];
@@ -29,6 +29,7 @@ const Education = () => {
 
   /**교육 타입 값 변경 시 업데이트 */
   const handleChangeEduType = (event) => {
+    console.log('handleChangeEduType : ');
     setEduType(event.target.value);
   };
 
@@ -50,6 +51,7 @@ const Education = () => {
   const handleChangeMajor = (event) => {
     setMajor(event.target.value);
   };
+
   /**
    * 
    * ...eduState, {
@@ -73,7 +75,7 @@ const Education = () => {
               label="edu_type"
               color="primary"
               type="text"
-              placeholder="학교 명"
+              placeholder={eduType[0]}
               variant="outlined"
               onChange={handleChangeEduType}
             />
@@ -106,7 +108,7 @@ const Education = () => {
           label="major"
           color="primary"
           type="text"
-          placeholder="전공 명"
+          placeholder={major[0]}
           variant="outlined"
           onChange={handleChangeMajor}
         />

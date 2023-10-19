@@ -7,13 +7,11 @@ import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
 const AddButton = () => {
-  //Eslint Error 회피
-
   const componentHandlr = () => {};
 
   return (
     <>
-      <Card sx={{ width: '30vw', m: 3, position: 'fixed' }}>
+      <Card sx={{ width: '100%', m: 3, position: 'fixed' }}>
         <MainCard>
           <Grid item xs={12}>
             <SubCard title="학력">

@@ -1,4 +1,4 @@
-import { IconButton, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { useState, useRef } from 'react';
 import ImageSearchOutlinedIcon from '@mui/icons-material/ImageSearchOutlined';
 import Resizer from 'react-image-file-resizer';
@@ -53,15 +53,18 @@ const Preview = () => {
 
   return (
     <>
-      <div>
-        <img width={'100%'} src={imgSrc} alt="" />
+      <Grid item xs={12}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <img width={'100%'} src={imgSrc} alt="" style={{ width: '250px', maxWidth: '200px', maxHeight: '300px' }} />
+        </Box>
+      </Grid>
+      <Grid item xs={12}>
         <input accept="image/*" type="file" onChange={(e) => imgUpLoad(e)} style={{ display: 'none' }} ref={fileInputRef} />
         <IconButton aria-label="Image_Upload" onClick={handleButtonClick}>
           <Typography variant="h5">이미지 업로드</Typography>
           <ImageSearchOutlinedIcon />
         </IconButton>
-        <br />
-      </div>
+      </Grid>
     </>
   );
 };

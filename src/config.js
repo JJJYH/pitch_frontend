@@ -5,7 +5,7 @@ const config = {
   manageDefaultPath: '/manage',
   mainDefaultPath: '/main',
   fontFamily: `'Roboto', sans-serif`,
-  borderRadius: 12
+  borderRadius: 4
 };
 
 export default config;

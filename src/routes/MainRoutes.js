@@ -10,8 +10,8 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')))
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
-//test page routing 
-const CVPage = Loadable(lazy(() => import('views/cv')));
+//test page routing
+const CVPage = Loadable(lazy(() => import('views/cv/Page')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -30,7 +30,7 @@ const MainRoutes = {
     {
       path: 'cv2',
       element: <CVPage />
-    },
+    }
   ]
 };
 
