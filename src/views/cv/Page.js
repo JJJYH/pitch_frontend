@@ -8,13 +8,22 @@ import Education from './components/Education';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useDispatch } from 'react-redux';
 import { addEducation } from 'store/educationSlice';
+import Skills from './components/Skills';
+import Career from './components/Career';
+import { addCareer } from 'store/careerSlice';
 const CV = () => {
   const dispatch = useDispatch();
 
-  const handleAddField = () => {
-    const newArr = { eduType: 'document', enterDay: '', graduateDay: '', major: '', graduateType: '', totalScore: '', score: '' };
-    dispatch(addEducation(newArr));
+  const eduAddFields = () => {
+    const newEduArr = { eduType: '', enterDay: '', graduateDay: '', major: '', graduateType: '', totalScore: '', score: '' };
+    dispatch(addEducation(newEduArr));
   };
+
+  const careerAddFields = () => {
+    const newCareerArr = { companyName: '', deptName: '', exPosition: '', salary: '', job: '', note: '' };
+    dispatch(addCareer(newCareerArr));
+  };
+
   return (
     <Grid container spacing={2.5}>
       <OpenIconSpeedDial />
@@ -39,14 +48,59 @@ const CV = () => {
                     <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
                       학력
                     </Typography>
-                    <IconButton onClick={() => handleAddField()}>
+                    <IconButton onClick={() => eduAddFields()}>
                       <AddBoxOutlinedIcon />
                     </IconButton>
                   </Box>
                   <Education />
-                  {/* <EducationTest /> */}
                 </SubCard>
-                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item3</SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      보유 스킬
+                    </Typography>
+                  </Box>
+                  <Skills />
+                </SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      경력 사항
+                    </Typography>
+                    <IconButton onClick={() => careerAddFields()}>
+                      <AddBoxOutlinedIcon />
+                    </IconButton>
+                  </Box>
+                  <Career />
+                </SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      자격증
+                    </Typography>
+                  </Box>
+                </SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      어학 성적
+                    </Typography>
+                  </Box>
+                </SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      대외 활동
+                    </Typography>
+                  </Box>
+                </SubCard>
+                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                  <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                      우대 사항
+                    </Typography>
+                  </Box>
+                </SubCard>
               </MainCard>
             </Grid>
           </Box>

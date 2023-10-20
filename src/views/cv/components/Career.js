@@ -1,103 +1,114 @@
-import { Grid, TextField } from '@mui/material';
+import { Box, Divider, Grid, IconButton, TextField } from '@mui/material';
 import React from 'react';
-import ControlledComponent from '../ControlledComponent';
-import { useState } from 'react';
-{
-  /* // ==============================|| 경력사항 ||============================== // */
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { removeCareer, updateCareer } from 'store/careerSlice';
+import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 const Career = () => {
-  const [joinStartDay, setJoinStartDay] = useState(['2023-05-05']);
-  return (
-    <>
-      {/* 이전 회사 */}
-      <Grid item xs={3}>
-        <TextField
-          fullWidth
-          label="company_name"
-          color="primary"
-          type="text"
-          defaultValue=" AhnLab"
-          variant="outlined"
-          inputProps={{ readOnly: false }}
-        />
-      </Grid>
-      {/* 이전 부서 */}
-      <Grid item xs={3}>
-        <TextField
-          fullWidth
-          label="dept_name"
-          color="primary"
-          type="text"
-          defaultValue="CERT"
-          variant="outlined"
-          inputProps={{ readOnly: false }}
-        />
-      </Grid>
-      <Grid item xs={3}>
-        <TextField
-          fullWidth
-          label="position"
-          color="primary"
-          type="text"
-          defaultValue="선임 연구원"
-          variant="outlined"
-          inputProps={{ readOnly: false }}
-        />
-      </Grid>
+  const careerData = useSelector((state) => state.career);
+  const dispatch = useDispatch();
 
-      <Grid item xs={3}>
-        <TextField
-          fullWidth
-          label="salary"
-          InputProps={{
-            onBlur: (e) => {
-              const value = parseInt(e.target.value, 10);
-              if (isNaN(value) || value < 0 || value > 100000000) {
-                e.target.value = ''; // 유효하지 않은 값일 경우 입력 지우기 또는 오류 메시지 표시
-              }
-            }
-          }}
-          type="number"
-          placeholder="OOOO만원"
-        />
-      </Grid>
+  //   console.log('careerData : ' + JSON.stringify(careerData[0].companyName));
+  //   console.log('career Detail : ' + JSON.stringify(careerData[0]));
 
+  const handleCareerChange = (e, index) => {
+    const { name, value } = e.target;
+    dispatch(updateCareer({ index, name, value }));
+  };
+
+  const careerRemoveFields = (index) => {
+    if (careerData.length === 1) {
+      alert('At least one form must remain');
+      return;
+    }
+    console.log('Remove Target : ' + index);
+    dispatch(removeCareer(index));
+  };
+
+  return careerData.map((field, index) => (
+    <React.Fragment key={index}>
+      <Divider sx={{ mb: 2.5 }} />
       <Grid item xs={12}>
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <TextField
-              fullWidth
-              label="job"
-              color="primary"
-              type="text"
-              defaultValue="보안 관제"
-              variant="outlined"
-              inputProps={{ readOnly: false }}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <ControlledComponent labelName={'start_Date'} setJoinStartDay={setJoinStartDay} />
-          </Grid>
-          <Grid item xs={4}>
-            <ControlledComponent labelName={'exit_Date'} BeforeDay={joinStartDay} />
-          </Grid>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="회사 입력"
+                color="primary"
+                type="text"
+                name="companyName"
+                value={field.companyName}
+                placeholder={careerData[index].companyName}
+                variant="outlined"
+                onChange={(e) => handleCareerChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="부서 입력"
+                color="primary"
+                type="text"
+                name="eduType"
+                value={field.eduType}
+                placeholder={careerData[index].deptName}
+                variant="outlined"
+                onChange={(e) => handleCareerChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                fullWidth
+                label="직책 입력"
+                color="primary"
+                type="text"
+                name="exPosition"
+                value={field.eduType}
+                placeholder={careerData[index].deptName}
+                variant="outlined"
+                onChange={(e) => handleCareerChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                fullWidth
+                label="연봉"
+                type="number"
+                placeholder="OOOO만원"
+                name="salary"
+                value={field.salary}
+                InputProps={{
+                  onBlur: (e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (isNaN(value) || value < 0 || value > 100000000) {
+                      e.target.value = ''; // 유효하지 않은 값일 경우 입력 지우기 또는 오류 메시지 표시
+                    }
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField
+                fullWidth
+                label="직무"
+                color="primary"
+                type="text"
+                variant="outlined"
+                name="job"
+                value={field.job}
+                onChange={(e) => handleCareerChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <IconButton onClick={() => careerRemoveFields(index)}>
+                <DisabledByDefaultOutlinedIcon />
+              </IconButton>
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
-
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="note"
-          color="primary"
-          type="text"
-          placeholder="담당하신 업무와 성과에 대해 간단명료하게 적어주세요."
-          multiline
-          maxRows={15}
-          variant="outlined"
-        />
-      </Grid>
-    </>
-  );
+    </React.Fragment>
+  ));
 };
 
 export default Career;

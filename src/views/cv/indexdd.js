@@ -19,7 +19,7 @@ import React from 'react';
 // import { useState } from 'react';
 // import Education from './components/Education';
 import Skills from './components/Skills';
-import Career from './components/Career';
+import Career from './components/CareerTest';
 import Certification from './components/Certification';
 import Language from './components/Language';
 import Activity from './components/Activity';

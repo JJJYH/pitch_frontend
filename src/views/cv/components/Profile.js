@@ -21,20 +21,27 @@ import Preview from '../Preview';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import DaumPostcode from 'react-daum-postcode';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfile } from 'store/profileSlice';
 
 const Profile = () => {
-  /**State 생성 */
-  const [profileFormFields, setProfileFormFields] = useState([
-    {
-      profileName: '김철수',
-      phoneNumber: '010-1234-5678',
-      birth: '1996.05.05',
-      email: 'example.@gmail.com',
-      position: 'ERP 개발자',
-      address: '',
-      gender: ''
+  const profileData = useSelector((state) => state.profile);
+  const dispatch = useDispatch();
+
+  const handleProfileChange = (e, index) => {
+    const { name, value } = e.target;
+
+    dispatch(updateProfile({ index, name, value }));
+  };
+
+  const profileRemoveFields = (index) => {
+    if (careerData.length === 1) {
+      alert('At least one form must remain');
+      return;
     }
-  ]);
+    console.log('Remove Target : ' + index);
+    dispatch(removeProfile(index));
+  };
 
   /**모달 핸들러 */
   const [open, setOpen] = React.useState(false);
@@ -55,40 +62,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    console.log('formFields changed:', profileFormFields);
-  }, [profileFormFields]);
+    console.log('formFields changed:', profileData);
+  }, [profileData]);
 
-  /**State 관리 */
-  const handleInputChange = (e, index) => {
-    const values = [...profileFormFields];
-    console.log('Event : ' + e.target.name);
-
-    if (e.target.name === 'profileName') {
-      values[index].profileName = e.target.value;
-    }
-    if (e.target.name === 'phoneNumber') {
-      values[index].phoneNumber = e.target.value;
-    }
-    if (e.target.name === 'birth') {
-      values[index].birth = e.target.value;
-    }
-    if (e.target.name === 'email') {
-      values[index].email = e.target.value;
-    }
-    if (e.target.name === 'position') {
-      values[index].position = e.target.value;
-    }
-    if (e.target.name === 'address') {
-      values[index].address = e.target.value;
-    }
-    if (e.target.name === 'gender') {
-      values[index].gender = e.target.value;
-    }
-
-    setProfileFormFields(values);
-  };
-
-  return profileFormFields.map((field, index) => (
+  return profileData.map((field, index) => (
     <React.Fragment key={index}>
       <Divider sx={{ mb: 2.5 }} />
       <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
@@ -104,7 +81,7 @@ const Profile = () => {
                   variant="filled"
                   name="profileName"
                   value={field.profileName}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
@@ -117,7 +94,7 @@ const Profile = () => {
                   variant="filled"
                   name="phoneNumber"
                   value={field.phoneNumber}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
@@ -130,7 +107,7 @@ const Profile = () => {
                   variant="filled"
                   name="email"
                   value={field.email}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
@@ -143,7 +120,7 @@ const Profile = () => {
                   variant="filled"
                   name="position"
                   value={field.position}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
@@ -159,7 +136,7 @@ const Profile = () => {
                   type="text"
                   name="birth"
                   value={field.birth}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   variant="filled"
                   inputProps={{ readOnly: true }}
                 />
@@ -172,7 +149,7 @@ const Profile = () => {
                   type="text"
                   name="address"
                   value={field.address}
-                  onChange={(e) => handleInputChange(e, index)}
+                  onChange={(e) => handleProfileChange(e, index)}
                   variant="outlined"
                 />
                 <Button onClick={handleOpen}>주소 찾기</Button>
@@ -180,9 +157,9 @@ const Profile = () => {
                   <Box sx={Modalstyle}>
                     <DaumPostcode
                       onComplete={(data) => {
-                        const updatedFields = [...profileFormFields];
-                        updatedFields[index].address = data.address;
-                        setProfileFormFields(updatedFields);
+                        // const updatedFields = [...profileData];
+                        // updatedFields[index].address = data.address;
+                        handleProfileChange({ target: { name: 'address', value: data.address } }, index);
                         handleClose();
                       }}
                     />
@@ -198,7 +175,7 @@ const Profile = () => {
                     aria-labelledby="demo-row-radio-buttons-group-label"
                     name="gender"
                     value={field.gender}
-                    onChange={(e) => handleInputChange(e, index)}
+                    onChange={(e) => handleProfileChange(e, index)}
                   >
                     <FormControlLabel value="남성" control={<Radio />} label="남성" />
                     <FormControlLabel value="여성" control={<Radio />} label="여성" />
