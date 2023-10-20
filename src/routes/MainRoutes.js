@@ -20,6 +20,9 @@ const ReqTable = Loadable(lazy(() => import('views/job-request/ReqTable')));
 //test page routing
 const CVPage = Loadable(lazy(() => import('views/cv/Page')));
 
+//applicant sorting page routing 
+const ApplicantSortingPage = Loadable(lazy(() => import('views/sort')));
+const ApplicantDetailPage = Loadable(lazy(() => import('views/sort/ApplicantDetailPage')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -49,6 +52,14 @@ const MainRoutes = {
         {
           path: 'cv-page',
           element: <CVPage />
+        },
+        {
+          path: 'sorting',
+          element: <ApplicantSortingPage />
+        },
+        {
+          path: 'detail',
+          element: <ApplicantDetailPage />
         }
       ]
     },
