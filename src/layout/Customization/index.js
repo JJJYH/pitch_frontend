@@ -129,7 +129,7 @@ const Customization = () => {
         }}
       >
         <PerfectScrollbar component="div">
-          <Grid container spacing={gridSpacing} sx={{ p: 3 }}>
+          <Grid container spacing={gridSpacing} sx={{}}>
             <Grid item xs={12}>
               {/* font family */}
               <SubCard title="Font Family">

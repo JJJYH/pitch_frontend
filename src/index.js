@@ -9,6 +9,8 @@ import * as serviceWorker from 'serviceWorker';
 import App from 'App';
 import { store } from 'store';
 
+import toolkitStore from './store/toolkitStore'; // 'toolkitStore' 모듈의 기본 내보내기(default export)를 가져옵니다.
+
 // style + assets
 import 'assets/scss/style.scss';
 import config from './config';
@@ -17,11 +19,14 @@ import config from './config';
 
 const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
+
 root.render(
   <Provider store={store}>
-    <BrowserRouter basename={config.basename}>
-      <App />
-    </BrowserRouter>
+    <Provider store={toolkitStore}>
+      <BrowserRouter basename={config.basename}>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </Provider>
 );
 
