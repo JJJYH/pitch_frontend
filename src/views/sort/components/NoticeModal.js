@@ -1,6 +1,8 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
+
+/* mui components */
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -9,22 +11,28 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import Button from '@mui/material/Button';
 import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup, Select } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+
+/* custom components */
+//import NoticeTextArea from '../components/NoticeTextArea';
+
 
 const NoticeModal = () => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('y');
   const [personName, setPersonName] = React.useState([]);
+  const [text, setText] = React.useState('');
+  const addEmoji = (emoji) => () => setText(`${text}${emoji}`);
 
   const theme = useTheme();
   const handleChangeSelect = (event) => {
     const {
-      target: { value },
+      target: { value }
     } = event;
     setPersonName(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+      typeof value === 'string' ? value.split(',') : value
     );
   };
   const handleOpen = () => {
@@ -40,11 +48,10 @@ const NoticeModal = () => {
 
   return (
     <div>
-      <Button variant="outlined" size="medium" onClick={handleOpen}>
+      <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
         합격등록
       </Button>
-      <BootstrapDialog onClose={handleClose} 
-        aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
+      <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
         <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
           <EventNoteIcon />
           <Typography variant="h4">합격 등록</Typography>
@@ -83,6 +90,7 @@ const NoticeModal = () => {
                   defaultValue="top"
                   value={value}
                   onChange={handleChange}
+                  sx={{ marginLeft: '12px' }}
                 >
                   <MyRadio value="y" control={<Radio />} label="합격 안내" />
                   <MyRadio value="n" control={<Radio />} label="불합격 안내" />
@@ -120,6 +128,16 @@ const NoticeModal = () => {
                 </MySelect>
               </Grid>
             </Grid>
+            <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid item xs={3}>
+                <Typography variant="h4">발표 문구</Typography>
+              </Grid>
+            </Grid>
+            <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid item xs={12}>
+                {/* <NoticeTextArea /> */}
+              </Grid>
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -151,14 +169,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const MySelect = styled(Select)(({ theme }) => ({
   border: `${theme.palette.grey[300]} 1px solid`,
-  width: '250px',
-  borderRadius: '4px',
+  width: '250px'
 }));
 
 const MyInput = styled(OutlinedInput)(({ theme }) => ({
   border: `${theme.palette.grey[300]} 1px solid`,
   width: '250px',
-  borderRadius: '4px',
   background: 'transparent'
 }));
 
@@ -166,7 +182,7 @@ const MyRadio = styled((props) => <FormControlLabel {...props} />)(({ theme }) =
   border: `${theme.palette.grey[300]} 1px solid`,
   padding: '7px',
   paddingRight: '70px',
-  borderRadius: '4px',
+  borderRadius: '4px'
 }));
 
 const ITEM_HEIGHT = 48;
@@ -175,26 +191,16 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-      borderRadius: '4px'
-    },
-  },
+      width: 250
+    }
+  }
 };
 
-const names = [
-  '서류전형',
-  '인적성전형',
-  '면접전형',
-  '최종합격',
-  '기타'
-];
+const names = ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'];
 
 function getStyles(name, personName, theme) {
   return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
+    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
   };
 }
 

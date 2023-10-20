@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -8,21 +9,23 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Paper, Typography } from '@mui/material';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+
 
 /* custom components */
-import Sorting1st from './components/Sorting1st';
-import Sorting2nd from './components/Sorting2nd';
-import SortingFinal from './components/SortingFinal';
-import Sorted from './components/Sorted';
+import ApplicantDataGrid from './components/ApplicantDataGrid';
 import PostStatuses from './components/PostStatuses';
+import FilteringModal from './components/FilteringModal';
+import NoticeModal from './components/NoticeModal';
+import InterviewDateModal from './components/InterviewDateModal';
+import InterviewEvalModal from './components/InterviewEvalModal';
 
-
-/* 
+/*
  *
- * 지원자 선별 페이지 
+ * 지원자 선별 페이지
  * url : manage/sorting
- * 
-*/
+ *
+ */
 const SortingPage = () => {
   const theme = useTheme();
   const [value, setValue] = React.useState('1');
@@ -32,37 +35,45 @@ const SortingPage = () => {
   };
 
   return (
-    <Paper sx={{
-      height: '1'
-    }}>
-      <Box sx={{
-        width: '1000',
-        height: '140px',
-        display: 'flex',
-        justifyContent: 'flex-end', 
-        position: 'relative',
-        background: theme.palette.secondary[200],
-        borderTopLeftRadius: '12px',
-        borderTopRightRadius: '12px'
-      }}>
-        <Typography variant='h2'
+    <Paper
+      sx={{
+        height: '1'
+      }}
+    >
+      <Box
+        sx={{
+          width: '1',
+          height: '140px',
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Box
           sx={{
-            position: 'absolute',
-            marginRight: '1300px',
-            marginTop: '40px'
-          }}>[인사] 인사팀 신입 ~~!@</Typography>
-        <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end', 
+            display: 'flex',
+            alignItems: 'start',
+            marginLeft: '20px',
+            marginTop: '30px'
+          }}
+        >
+          <ManageAccountsOutlinedIcon fontSize="large" />
+          <Typography variant="h2">
+            지원자 관리
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
             zIndex: '2',
-            position: 'absolute',
-            marginTop: '3%',
+            marginTop: '40px',
             marginRight: '2%'
-          }}>
-            <PostStatuses />
+          }}
+        >
+          <PostStatuses />
         </Box>
       </Box>
-      <Box sx={{ width: '100%', typography: 'body1' }}>
+      <Box sx={{ width: '1', typography: 'body1', marginTop: '15px' }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChange} aria-label="sorting results tab">
@@ -72,14 +83,43 @@ const SortingPage = () => {
               <Tab label="종료" value="4" />
             </TabList>
           </Box>
-          <TabPanel value="1"><Sorting1st /></TabPanel>
-          <TabPanel value="2"><Sorting2nd /></TabPanel>
-          <TabPanel value="3"><SortingFinal /></TabPanel>
-          <TabPanel value="4"><Sorted /></TabPanel>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginTop: '30px',
+              marginRight: '25px'
+            }}
+          >
+            { value === '1' && <FilteringModal /> }
+            { value === '2' && <InterviewDateModal /> }
+            { value === '3' && <InterviewEvalModal /> }
+            <NoticeModal />
+          </Box>
+          <Box>
+            <MyTabPanel value="1">
+              <ApplicantDataGrid />
+            </MyTabPanel>
+            <MyTabPanel value="2">
+              <ApplicantDataGrid />
+            </MyTabPanel>
+            <MyTabPanel value="3">
+              <ApplicantDataGrid />
+            </MyTabPanel>
+            <MyTabPanel value="4">
+              <ApplicantDataGrid />
+            </MyTabPanel>
+          </Box>
         </TabContext>
       </Box>
     </Paper>
   );
-}
+};
+
+/* styled components */
+
+const MyTabPanel = styled(TabPanel)(({ theme }) => ({
+  paddingTop: '10px'
+}));
 
 export default SortingPage;

@@ -1,15 +1,15 @@
 import * as React from 'react';
+import styled from 'styled-components';
 
 /* mui components */
 import Avatar from '@mui/material/Avatar';
 import { DataGrid } from '@mui/x-data-grid';
 import Chip from '@mui/material/Chip';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 /* custom components */
 import MenuBtn from './MenuBtn';
-import FilteringModal from './FilteringModal';
-import NoticeModal from './NoticeModal';
+
 
 function RenderAvatar() {
   return (
@@ -21,6 +21,36 @@ function RenderAvatar() {
   );
 }
 
+const StatusChip3 = styled(Chip)(() => ({
+  border: '3px solid',
+  borderColor: '#A5D6A7',
+  borderRadius: '8px',
+  background: '#A5D6A7',
+  color: 'white',
+  fontWeight: 900,
+  '&.Mui-selected': {
+      backgroundColor: '#A5D6A7',
+      color: '#fff',
+  },
+  minWidth:'82px',
+  width: '82px'
+}));
+
+const StatusChip4 = styled(Chip)(() => ({
+  border: '3px solid',
+  borderColor: '#F48FB1',
+  background: '#F48FB1',
+  borderRadius: '8px',
+  color: 'white',
+  fontWeight: 900,
+  '&.Mui-selected': {
+      backgroundColor: '#F48FB1',
+      color: '#fff',
+  },
+  minWidth:'82px',
+  width: '82px'
+}));
+
 function RenderEval(score) {
   let isQualified = score >= 60 ? true : false;
 
@@ -29,10 +59,7 @@ function RenderEval(score) {
       <Typography variant='h2' 
         style={{ marginRight: '15px' }}
       >{score}</Typography>
-      <Chip 
-        label={ isQualified ? "적합인재" : "부적합" } 
-        color={ isQualified ? "success" : "error" }
-      />
+      {isQualified ? <StatusChip3 label={'적합인재'} /> : <StatusChip4 label={'부적합'} />}
     </div>
   );
 }
@@ -114,25 +141,18 @@ const rows = [
   { id: 3, lastName: '박', firstName: '소영', birth: '1992/11/23',  experience: '신입', score: 90, status : '서류합격', readStatus: '열람' },
 ];
 
-export default function Sorting1st() {
+const ApplicantDataGrid = () => {
   return (
-    <div style={{ height: "550px", width: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
-        <FilteringModal />
-        <NoticeModal />
-      </div>
+    <Box sx={{ height: "540px", width: '1' }}>
       <DataGrid
+        rowHeight={70}
         rows={rows}
         columns={columns}
-        initialState={{
-          // pagination: {
-          //   paginationModel: { page: 0, pageSize: 5 },
-          // },
-        }}
         hideFooter
-        //pageSizeOptions={[5, 10]}
         checkboxSelection
       />
-    </div>
+    </Box>
   );
 }
+
+export default ApplicantDataGrid;

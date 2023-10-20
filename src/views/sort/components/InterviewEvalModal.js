@@ -75,7 +75,7 @@ const FilteringModal = () => {
   return (
     <div>
       <Button variant="contained" size="medium" style={{ marginRight: '5px', borderColor: '#b2cce1', background: '#b2cce1' }} onClick={handleOpen}>
-        필터링
+        평가등록
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
         <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
