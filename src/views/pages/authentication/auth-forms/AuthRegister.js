@@ -36,6 +36,12 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+// datepicker
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { placeholder } from '@babel/types';
+
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const FirebaseRegister = ({ ...others }) => {
@@ -68,7 +74,7 @@ const FirebaseRegister = ({ ...others }) => {
   };
 
   useEffect(() => {
-    changePassword('123456');
+    //changePassword('123456');
   }, []);
 
   return (
@@ -128,13 +134,19 @@ const FirebaseRegister = ({ ...others }) => {
 
       <Formik
         initialValues={{
+          birthday: null,
+          name: '',
           email: '',
           password: '',
+          passwordRepeat: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          birthday: Yup.date().required('생일 입력은 필수입니다.'),
+          name: Yup.string().max(255).required('이름 입력은 필수입니다.'),
+          email: Yup.string().email('이메일 형식이 올바르지 않습니다.').max(255).required('이메일 아이디 입력은 필수입니다.'),
+          password: Yup.string().max(255).required('비밀번호 입력은 필수입니다.'),
+          passwordRepeat: Yup.string().max(255).required('비밀번호 확인은 필수입니다.')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
@@ -154,43 +166,26 @@ const FirebaseRegister = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
-            <TextField
-              fullWidth
-              label="이름"
-              margin="normal"
-              name="name"
-              type="text"
-              defaultValue=""
-              sx={{ ...theme.typography.customInput, marginBlock: '8px' }}
-            />
-            <TextField
-              fullWidth
-              label="ID"
-              margin="normal"
-              name="ID"
-              type="text"
-              defaultValue=""
-              sx={{ ...theme.typography.customInput, marginBlock: '8px' }}
-            />
-            {/* <Grid container spacing={matchDownSM ? 0 : 2}>
 
-              <Grid item xs={12} sm={6}>
-                
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  margin="normal"
-                  name="lname"
-                  type="text"
-                  defaultValue=""
-                  sx={{ ...theme.typography.customInput }}
-                />
-              </Grid>
-            </Grid> */}
+            <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-name-register">이름</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-name-register"
+                type="text"
+                value={values.name}
+                name="name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                inputProps={{}}
+              />
+              {touched.name && errors.name && (
+                <FormHelperText error id="standard-weight-helper-text-name-register">
+                  {errors.name}
+                </FormHelperText>
+              )}
+            </FormControl>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-register">Email</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-email-register">이메일</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-register"
                 type="email"
@@ -201,14 +196,14 @@ const FirebaseRegister = ({ ...others }) => {
                 inputProps={{}}
               />
               {touched.email && errors.email && (
-                <FormHelperText error id="standard-weight-helper-text--register">
+                <FormHelperText error id="standard-weight-helper-text-email-register">
                   {errors.email}
                 </FormHelperText>
               )}
             </FormControl>
 
             <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-password-register">Password</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password-register">비밀번호</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-password-register"
                 type={showPassword ? 'text' : 'password'}
@@ -241,10 +236,9 @@ const FirebaseRegister = ({ ...others }) => {
                 </FormHelperText>
               )}
             </FormControl>
-
-            {strength !== 0 && (
+            {strength !== 0 ? (
               <FormControl fullWidth>
-                <Box sx={{ mb: 2 }}>
+                <Box>
                   <Grid container spacing={2} alignItems="center">
                     <Grid item>
                       <Box style={{ backgroundColor: level?.color }} sx={{ width: 85, height: 8, borderRadius: '7px' }} />
@@ -257,7 +251,85 @@ const FirebaseRegister = ({ ...others }) => {
                   </Grid>
                 </Box>
               </FormControl>
-            )}
+            ) : <></>}
+
+            <FormControl fullWidth error={Boolean(touched.passwordRepeat && errors.passwordRepeat)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-password-repeat-register">비밀번호 확인</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password-repeat-register"
+                type={showPassword ? 'text' : 'password'}
+                value={values.passwordRepeat}
+                name="passwordRepeat"
+                label="Password"
+                onBlur={handleBlur}
+                onChange={(e) => {
+                  handleChange(e);
+                  changePassword(e.target.value);
+                }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                      size="large"
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                inputProps={{}}
+              />
+              {touched.passwordRepeat && errors.passwordRepeat && (
+                <FormHelperText error id="standard-weight-helper-text-password-repeat-register">
+                  {errors.passwordRepeat}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <FormControl fullWidth error={Boolean(touched.birthday && errors.birthday)} sx={{ ...theme.typography.customInput }}>
+                <DatePicker
+                  id="outlined-adornment-birthday"
+                  type="date"
+                  label="생년월일"
+                  value={values.birthday}
+                  sx={{
+                    // marginTop: 1,
+                    // marginBottom: 1,
+                    '& > label': {
+                      top: 23,
+                      left: 0,
+                      color: theme.grey500,
+                      '&[data-shrink="false"]': {
+                        top: 5
+                      }
+                    },
+                    '& > div > input': {
+                      padding: '30.5px 14px 11.5px !important'
+                    },
+                    '& legend': {
+                      display: 'none'
+                    },
+                    '& fieldset': {
+                      top: 0
+                    }
+                  }}
+                  name="birthday"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  inputProps={{}}
+
+                />
+                {touched.birthday && errors.birthday && (
+                  <FormHelperText error id="standard-weight-helper-text-birthday-register">
+                    {errors.birthday}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </LocalizationProvider>
+
+
 
             <Grid container alignItems="center" justifyContent="space-between">
               <Grid item>

@@ -7,7 +7,6 @@ import { Provider } from 'react-redux';
 // project imports
 import * as serviceWorker from 'serviceWorker';
 import App from 'App';
-import { store } from 'store';
 
 import toolkitStore from './store/toolkitStore'; // 'toolkitStore' 모듈의 기본 내보내기(default export)를 가져옵니다.
 
@@ -21,12 +20,11 @@ const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 
 root.render(
-  <Provider store={store}>
-    <Provider store={toolkitStore}>
-      <BrowserRouter basename={config.basename}>
-        <App />
-      </BrowserRouter>
-    </Provider>
+
+  <Provider store={toolkitStore}>
+    <BrowserRouter basename={config.basename}>
+      <App />
+    </BrowserRouter>
   </Provider>
 );
 
