@@ -20,7 +20,15 @@ export default function OpenIconSpeedDial() {
     <SpeedDial
       ariaLabel="SpeedDial openIcon example"
       sx={{ position: 'fixed', bottom: 32, right: 32 }}
-      icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+      icon={<SpeedDialIcon openIcon={<EditIcon />} color="secondary" />}
+      FabProps={{
+        sx: {
+          bgcolor: 'secondary.main',
+          '&:hover': {
+            bgcolor: 'secondary.dark'
+          }
+        }
+      }}
     >
       {actions.map((action) => (
         <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />

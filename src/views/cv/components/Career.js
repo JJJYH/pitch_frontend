@@ -26,7 +26,7 @@ const Career = () => {
 
   return careerData.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider sx={{ mb: 2.5 }} />
+      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>

@@ -4,6 +4,7 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import { useDispatch } from 'react-redux';
 import { removeSkill } from 'store/skillSlice';
+import colors from '../../assets/scss/_themes-vars.module.scss';
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5)
 }));
@@ -36,7 +37,7 @@ export default function ChipsArray({ chipData, setChipData }) {
         let icon;
         return (
           <ListItem key={index}>
-            <Chip icon={icon} label={data.skillName} onDelete={() => skillRemoveFields(index)} />
+            <Chip icon={icon} label={data.skillName} color="secondary" onDelete={() => skillRemoveFields(index)} />
           </ListItem>
         );
       })}

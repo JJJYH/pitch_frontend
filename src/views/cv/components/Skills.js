@@ -20,7 +20,7 @@ const Skills = () => {
 
   return (
     <>
-      <Divider />
+      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <ControllableStates addChipData={skillAddFields} />
       </Grid>
