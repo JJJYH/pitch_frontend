@@ -15,7 +15,7 @@ const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialI
 const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
 // sample page routing
-const SamplePage = Loadable(lazy(() => import('views/sample-page')));
+const ReqTable = Loadable(lazy(() => import('views/job-request/ReqTable')));
 
 //test page routing 
 const CVPage = Loadable(lazy(() => import('views/cv')));
@@ -44,7 +44,7 @@ const MainRoutes = {
       children: [
         {
           path: 'req',
-          element: <SamplePage />
+          element: <ReqTable />
         },
         {
           path: 'cv-page',
