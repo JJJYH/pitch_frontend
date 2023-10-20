@@ -39,9 +39,6 @@ export default function ControllableStates({ addChipData }) {
           setInputValue(newInputValue);
           console.log('InputValue :' + inputValue);
         }}
-        filterOptions={createFilterOptions({
-          limit: 5
-        })}
         id="controllable-states-demo"
         options={options}
         renderInput={(params) => (
