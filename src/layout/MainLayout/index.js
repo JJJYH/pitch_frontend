@@ -64,7 +64,7 @@ const MainLayout = () => {
   };
 
   //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
-  const [isUser, setUser] = useState(true);
+  const [isUser, setUser] = useState(false);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -87,7 +87,10 @@ const MainLayout = () => {
       </AppBar>
 
       {/* drawer */}
-      <Sidebar drawerOpen={!matchDownMd ? isUser ? !leftDrawerOpened : leftDrawerOpened : !leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
+      <Sidebar
+        drawerOpen={!matchDownMd ? (isUser ? !leftDrawerOpened : leftDrawerOpened) : !leftDrawerOpened}
+        drawerToggle={handleLeftDrawerToggle}
+      />
 
       {/* main content */}
       <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened}>
