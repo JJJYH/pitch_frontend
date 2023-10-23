@@ -15,12 +15,12 @@ const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialI
 const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
 // sample page routing
-const ReqTable = Loadable(lazy(() => import('views/job-request/ReqTable')));
+const JobReqPage = Loadable(lazy(() => import('views/job-request/JobReqPage')));
 
 //test page routing
 const CVPage = Loadable(lazy(() => import('views/cv/Page')));
 
-//applicant sorting page routing 
+//applicant sorting page routing
 const ApplicantSortingPage = Loadable(lazy(() => import('views/sort')));
 const ApplicantDetailPage = Loadable(lazy(() => import('views/sort/ApplicantDetailPage')));
 // ==============================|| MAIN ROUTING ||============================== //
@@ -47,7 +47,7 @@ const MainRoutes = {
       children: [
         {
           path: 'req',
-          element: <ReqTable />
+          element: <JobReqPage />
         },
         {
           path: 'cv-page',
@@ -116,7 +116,7 @@ const MainRoutes = {
           element: <UtilsMaterialIcons />
         }
       ]
-    },
+    }
   ]
 };
 
