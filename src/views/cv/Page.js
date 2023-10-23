@@ -11,6 +11,9 @@ import { addEducation } from 'store/educationSlice';
 import Skills from './components/Skills';
 import Career from './components/Career';
 import { addCareer } from 'store/careerSlice';
+import Certification from './components/Certification';
+import Language from './components/Language';
+import Advantage from './components/Advantage';
 const CV = () => {
   const dispatch = useDispatch();
 
@@ -79,6 +82,7 @@ const CV = () => {
                       자격증
                     </Typography>
                   </Box>
+                  <Certification />
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
@@ -86,6 +90,7 @@ const CV = () => {
                       어학 성적
                     </Typography>
                   </Box>
+                  <Language />
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
@@ -100,6 +105,7 @@ const CV = () => {
                       우대 사항
                     </Typography>
                   </Box>
+                  <Advantage />
                 </SubCard>
               </MainCard>
             </Grid>
@@ -107,7 +113,7 @@ const CV = () => {
         </MainCard>
       </Grid>
       <Grid item xs={2}>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', position: 'sticky', top: 90, width: '100%' }}>
           <MainCard sx={{ width: '100%' }}>
             <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item1</SubCard>
             <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item2</SubCard>
@@ -115,6 +121,7 @@ const CV = () => {
           </MainCard>
         </Box>
       </Grid>
+
       <Grid item xs={1.5}>
         Empty
       </Grid>

@@ -1,60 +1,33 @@
-{
-  /* // ==============================|| 자격증 ||============================== // */
-}
-import { Grid, TextField } from '@mui/material';
+import { Box, Divider, Grid } from '@mui/material';
 import React from 'react';
-import ControlledComponent from '../ControlledComponent';
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Certification = () => {
-  const [certName, setCertName] = useState([]);
-  const [publisher, setPublisher] = useState([]);
-  const [acquDate, setAcqDate] = useState([]);
+  const certData = useSelector((state) => state.cert);
+  const dispatch = useDispatch();
 
-  /**자격증 명 값 변경 시 업데이트 */
-  const handleChangeCertName = (event) => {
-    setCertName(event.target.value);
+  const handleCertChange = () => {};
+  const certRemoveFields = (index) => {
+    console.log('Remove Target :' + index);
   };
 
-  /**자격증 발행처 변경 시 업데이트 */
-  const handleChangePublisher = () => {
-    setPublisher(event.target.value);
-  };
+  useEffect(() => {
+    console.log('formFields changed:', certData);
+  }, [certData]);
 
-  /**Console Print */
-  console.log('Certification : ' + certName);
-  console.log('Publisher : ' + publisher);
-  console.log('AcqDate : ' + acquDate);
-
-  return (
-    <>
-      <Grid item xs={4}>
-        <TextField
-          fullWidth
-          label="cert_name"
-          color="primary"
-          type="text"
-          placeholder="자격증 명"
-          variant="outlined"
-          onChange={handleChangeCertName}
-        />
+  return certData.map((field, index) => (
+    <React.Fragment key={index}>
+      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
+      <Grid item xs={12}>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+            Certification
+          </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={4}>
-        <TextField
-          fullWidth
-          label="publisher"
-          color="primary"
-          type="text"
-          placeholder="발행처"
-          variant="outlined"
-          onChange={handleChangePublisher}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <ControlledComponent labelName={'acquisition_date'} StartDate={setAcqDate} />
-      </Grid>
-    </>
-  );
+    </React.Fragment>
+  ));
 };
 
 export default Certification;

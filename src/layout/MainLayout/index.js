@@ -87,7 +87,10 @@ const MainLayout = () => {
       </AppBar>
 
       {/* drawer */}
-      <Sidebar drawerOpen={!matchDownMd ? isUser ? !leftDrawerOpened : leftDrawerOpened : !leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
+      <Sidebar
+        drawerOpen={!matchDownMd ? (isUser ? !leftDrawerOpened : leftDrawerOpened) : !leftDrawerOpened}
+        drawerToggle={handleLeftDrawerToggle}
+      />
 
       {/* main content */}
       <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened}>

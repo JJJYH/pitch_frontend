@@ -1,23 +1,38 @@
-import { Grid, TextField } from '@mui/material';
+import { Box, Divider, Grid } from '@mui/material';
 import React from 'react';
-{
-  /* // ==============================|| 어학 성적 ||============================== // */
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { updateLang } from 'store/langSlice';
+
 const Language = () => {
-  return (
-    <>
-      <Grid item xs={4}>
-        <TextField fullWidth label="exam_type" color="primary" type="text" defaultValue="시험구분" variant="outlined" />
+  const langData = useSelector((state) => state.lang);
+  const dispatch = useDispatch();
+
+  const handleLangChange = (e, index) => {
+    const { name, value } = e.target;
+    dispatch(updateLang({ index, name, value }));
+  };
+
+  const langRemoveFields = (index) => {
+    if (langData.length === 1) {
+      alert('At least one form must remain');
+      return;
+    }
+    console.log('Remove Target : ' + index);
+    dispatch(removeLang(index));
+  };
+
+  return langData.map((field, index) => (
+    <React.Fragment key={index}>
+      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
+      <Grid item xs={12}>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+            Language
+          </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={4}>
-        <TextField fullWidth label="language_name" color="primary" type="text" defaultValue="어학 명" variant="outlined" />
-      </Grid>
-      <Grid item xs={4}>
-        {/* 어학점수는 combobox */}
-        <TextField fullWidth label="language_score" color="primary" type="text" defaultValue="어학 점수" variant="outlined" />
-      </Grid>
-    </>
-  );
+    </React.Fragment>
+  ));
 };
 
 export default Language;

@@ -105,7 +105,7 @@ const MainRoutes = {
           element: <UtilsMaterialIcons />
         }
       ]
-    },
+    }
   ]
 };
 

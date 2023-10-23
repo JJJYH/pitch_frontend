@@ -20,7 +20,7 @@ import React from 'react';
 // import Education from './components/Education';
 import Skills from './components/Skills';
 import Career from './components/CareerTest';
-import Certification from './components/Certification';
+import Certification from './components/CertificationTest';
 import Language from './components/Language';
 import Activity from './components/Activity';
 import Advantage from './components/Advantage';
