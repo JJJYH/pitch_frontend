@@ -26,19 +26,21 @@ export default function TitlebarImageList() {
   const imgUpLoad = async (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
+
     setFileInfo([{ name: file.name, size: file.size, type: file.type }]);
     reader.readAsDataURL(file);
 
     /**------------------Axios------------------------ */
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('image', file);
 
-      const response = await axios.post('http://localhost:8888/main/cv/imageUpload', formData, {
+      const response = await axios.post('/main/cv/imageUpload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      setImgSrc('/images/' + response.data);
       console.log(response.data);
     } catch (error) {
       console.error('파일 업로드 실패: ' + error);

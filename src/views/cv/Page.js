@@ -14,6 +14,10 @@ import { addCareer } from 'store/careerSlice';
 import Certification from './components/Certification';
 import Language from './components/Language';
 import Advantage from './components/Advantage';
+import CVSide from './components/CVSide';
+import { useRef } from 'react';
+import { useState } from 'react';
+
 const CV = () => {
   const dispatch = useDispatch();
 
@@ -27,12 +31,21 @@ const CV = () => {
     dispatch(addCareer(newCareerArr));
   };
 
+  const [currentTab, setCurrentTab] = useState(null);
+
+  const tabRef = useRef({});
+
+  const scrollToTab = (index) => {
+    if (tabRef.current[index]) {
+      tabRef.current[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setCurrentTab(index);
+    }
+  };
+
   return (
     <Grid container spacing={2.5}>
       <OpenIconSpeedDial />
-      <Grid item xs={1.5}>
-        Empty
-      </Grid>
+      <Grid item xs={1.5} />
       <Grid item xs={7}>
         <MainCard>
           <CardHeader title={<Typography variant="h3">이력서 작성</Typography>} />
@@ -40,7 +53,10 @@ const CV = () => {
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Grid item xs={12}>
               <MainCard>
-                <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
+                <SubCard
+                  ref={(el) => (tabRef.current['profile'] = el)}
+                  sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}
+                >
                   <Typography variant="h3" sx={{ mb: 2.5 }}>
                     인적사항
                   </Typography>
@@ -48,7 +64,13 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['education'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       학력
                     </Typography>
                     <IconButton onClick={() => eduAddFields()}>
@@ -59,7 +81,13 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['skills'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       보유 스킬
                     </Typography>
                   </Box>
@@ -67,7 +95,13 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['career'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       경력 사항
                     </Typography>
                     <IconButton onClick={() => careerAddFields()}>
@@ -78,7 +112,13 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['cert'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       자격증
                     </Typography>
                   </Box>
@@ -86,7 +126,13 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['lang'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       어학 성적
                     </Typography>
                   </Box>
@@ -94,14 +140,26 @@ const CV = () => {
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['activity'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       대외 활동
                     </Typography>
                   </Box>
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                    <Typography variant="h3" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+                    <Typography
+                      ref={(el) => (tabRef.current['advantage'] = el)}
+                      variant="h3"
+                      sx={{ mb: 2.5 }}
+                      textAlign={'center'}
+                      alignContent={'center'}
+                    >
                       우대 사항
                     </Typography>
                   </Box>
@@ -113,18 +171,10 @@ const CV = () => {
         </MainCard>
       </Grid>
       <Grid item xs={2}>
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', position: 'sticky', top: 90, width: '100%' }}>
-          <MainCard sx={{ width: '100%' }}>
-            <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item1</SubCard>
-            <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item2</SubCard>
-            <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>Item3</SubCard>
-          </MainCard>
-        </Box>
+        <CVSide currentTab={currentTab} scrollToTab={scrollToTab} tabRef={tabRef} />
       </Grid>
 
-      <Grid item xs={1.5}>
-        Empty
-      </Grid>
+      <Grid item xs={1.5} />
     </Grid>
   );
 };
