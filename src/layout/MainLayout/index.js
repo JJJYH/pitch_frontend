@@ -11,11 +11,11 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import navigation from 'menu-items';
 import { drawerWidth } from 'store/constant';
-import { SET_MENU } from 'store/actions';
 
 // assets
 import { IconChevronRight } from '@tabler/icons';
 import { useState } from 'react';
+import { setMenu } from 'store/customizationSlice';
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
@@ -60,7 +60,7 @@ const MainLayout = () => {
   const leftDrawerOpened = useSelector((state) => state.customization.opened);
   const dispatch = useDispatch();
   const handleLeftDrawerToggle = () => {
-    dispatch({ type: SET_MENU, opened: !leftDrawerOpened });
+    dispatch(setMenu(!leftDrawerOpened));
   };
 
   //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
