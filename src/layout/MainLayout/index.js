@@ -26,13 +26,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
     'margin',
     open
       ? {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      }
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen
+        }
       : {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      }
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen
+        }
   ),
   [theme.breakpoints.up('md')]: {
     marginLeft: open ? 0 : -(drawerWidth - 20),
@@ -64,7 +64,7 @@ const MainLayout = () => {
   };
 
   //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
-  const [isUser, setUser] = useState(false);
+  const [isUser, setUser] = useState(true);
 
   return (
     <Box sx={{ display: 'flex' }}>
