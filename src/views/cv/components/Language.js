@@ -1,8 +1,8 @@
-import { Box, Divider, Grid } from '@mui/material';
+import { Box, Divider, Grid, TextField, IconButton } from '@mui/material';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLang } from 'store/langSlice';
-
+import { removeLang, updateLang } from 'store/langSlice';
+import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 const Language = () => {
   const langData = useSelector((state) => state.lang);
   const dispatch = useDispatch();
@@ -13,10 +13,6 @@ const Language = () => {
   };
 
   const langRemoveFields = (index) => {
-    if (langData.length === 1) {
-      alert('At least one form must remain');
-      return;
-    }
     console.log('Remove Target : ' + index);
     dispatch(removeLang(index));
   };
@@ -27,7 +23,55 @@ const Language = () => {
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            Language
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="시험 구분"
+                color="primary"
+                type="text"
+                name="examType"
+                value={field.examType}
+                placeholder={langData[index].examType}
+                variant="outlined"
+                onChange={(e) => handleLangChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="외국어명"
+                color="primary"
+                type="text"
+                name="langName"
+                value={field.langName}
+                placeholder={langData[index].langName}
+                variant="outlined"
+                onChange={(e) => handleLangChange(e, index)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                label="어학 점수"
+                type="number"
+                name="langScore"
+                value={field.langScore}
+                onChange={(e) => handleLangChange(e, index)}
+                InputProps={{
+                  onBlur: (e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (isNaN(value) || value < 0 || value > 1000) {
+                      e.target.value = ''; // 유효하지 않은 값일 경우 입력 지우기 또는 오류 메시지 표시
+                    }
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={1} justifyContent={'end'}>
+              <IconButton onClick={() => langRemoveFields(index)}>
+                <DisabledByDefaultOutlinedIcon />
+              </IconButton>
+            </Grid>
           </Box>
         </Grid>
       </Grid>

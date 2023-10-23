@@ -76,7 +76,7 @@ const Profile = () => {
               <Grid item xs={3}>
                 <TextField
                   fullWidth
-                  label="Name"
+                  label="성명"
                   color="primary"
                   type="text"
                   variant="filled"
@@ -89,7 +89,7 @@ const Profile = () => {
               <Grid item xs={4}>
                 <TextField
                   fullWidth
-                  label="Phone Number"
+                  label="전화번호"
                   color="primary"
                   type="text"
                   variant="filled"
@@ -102,7 +102,7 @@ const Profile = () => {
               <Grid item xs={5}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label="E-mail"
                   color="primary"
                   type="text"
                   variant="filled"
@@ -119,7 +119,7 @@ const Profile = () => {
               <Grid item xs={4}>
                 <TextField
                   fullWidth
-                  label="Position"
+                  label="지원 직무"
                   color="primary"
                   type="text"
                   variant="filled"
@@ -132,7 +132,7 @@ const Profile = () => {
               <Grid item xs={4}>
                 <TextField
                   fullWidth
-                  label="Birth"
+                  label="생년월일"
                   color="primary"
                   type="text"
                   name="birth"
@@ -167,7 +167,7 @@ const Profile = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Address"
+                  label="주소"
                   color="primary"
                   type="text"
                   name="address"

@@ -6,17 +6,21 @@ import OpenIconSpeedDial from './OpenIconSpeedDial';
 import Profile from './components/Profile';
 import Education from './components/Education';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import { useDispatch } from 'react-redux';
-import { addEducation } from 'store/educationSlice';
 import Skills from './components/Skills';
 import Career from './components/Career';
-import { addCareer } from 'store/careerSlice';
 import Certification from './components/Certification';
 import Language from './components/Language';
 import Advantage from './components/Advantage';
 import CVSide from './components/CVSide';
 import { useRef } from 'react';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import Activity from './components/Activity';
+import { addEducation } from 'store/educationSlice';
+import { addCareer } from 'store/careerSlice';
+import { addActivity } from 'store/activitySlice';
+import { addLang } from 'store/langSlice';
+import { addCert } from 'store/certSlice';
 
 const CV = () => {
   const dispatch = useDispatch();
@@ -27,8 +31,22 @@ const CV = () => {
   };
 
   const careerAddFields = () => {
-    const newCareerArr = { companyName: '', deptName: '', exPosition: '', salary: '', job: '', note: '' };
+    const newCareerArr = { companyName: '', deptName: '', exPosition: '', joinDate: '', salary: '', job: '', note: '' };
     dispatch(addCareer(newCareerArr));
+  };
+
+  const langAddFields = () => {
+    const newLangyArr = { examType: '', langName: '', langScore: '' };
+    dispatch(addLang(newLangyArr));
+  };
+
+  const activityAddFields = () => {
+    const newActivityArr = { activityType: '', organization: '', startDate: '', endDate: '', activityDetail: '' };
+    dispatch(addActivity(newActivityArr));
+  };
+  const certAddFields = () => {
+    const newCertArr = { certName: '', publisher: '', acqDate: '' };
+    dispatch(addCert(newCertArr));
   };
 
   const [currentTab, setCurrentTab] = useState(null);
@@ -121,6 +139,9 @@ const CV = () => {
                     >
                       자격증
                     </Typography>
+                    <IconButton onClick={() => certAddFields()}>
+                      <AddBoxOutlinedIcon />
+                    </IconButton>
                   </Box>
                   <Certification />
                 </SubCard>
@@ -135,6 +156,9 @@ const CV = () => {
                     >
                       어학 성적
                     </Typography>
+                    <IconButton onClick={() => langAddFields()}>
+                      <AddBoxOutlinedIcon />
+                    </IconButton>
                   </Box>
                   <Language />
                 </SubCard>
@@ -149,7 +173,11 @@ const CV = () => {
                     >
                       대외 활동
                     </Typography>
+                    <IconButton onClick={() => activityAddFields()}>
+                      <AddBoxOutlinedIcon />
+                    </IconButton>
                   </Box>
+                  <Activity />
                 </SubCard>
                 <SubCard sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>

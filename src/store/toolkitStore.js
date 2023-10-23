@@ -9,6 +9,7 @@ import skillReducer from './skillSlice';
 import certReducer from './certSlice';
 import langReducer from './langSlice';
 import advantageReducer from './advantageSlice';
+import activityReducer from './activitySlice';
 
 const toolkitStore = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ const toolkitStore = configureStore({
     skill: skillReducer,
     cert: certReducer,
     lang: langReducer,
+    activity: activityReducer,
     advantage: advantageReducer
   }
 });

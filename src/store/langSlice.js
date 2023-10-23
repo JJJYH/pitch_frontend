@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const langSlice = createSlice({
   name: 'lang',
-  initialState: [{ examType: '', langName: '', langScore: '' }],
+  initialState: [],
   reducers: {
     addLang: (state, action) => {
       return [...state, action.payload];

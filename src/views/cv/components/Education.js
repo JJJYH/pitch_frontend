@@ -16,9 +16,6 @@ const Education = () => {
   const educationData = useSelector((state) => state.education);
   const dispatch = useDispatch();
 
-  console.log('EducationData : ' + JSON.stringify(educationData[0].eduType));
-  console.log('Education Detail : ' + JSON.stringify(educationData[0]));
-
   const handleEduChange = (e, index) => {
     const { name, value } = e.target;
     dispatch(updateEducation({ index, name, value }));
@@ -69,43 +66,6 @@ const Education = () => {
                 onChange={(e) => handleEduChange(e, index)}
               />
             </Grid>
-            <Grid item xs={4}>
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel>졸업 상태</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="졸업 상태"
-                    name="graduateType"
-                    value={field.graduateType}
-                    onChange={(e) => handleEduChange(e, index)}
-                  >
-                    {graduateTypeArr.map((type, index) => (
-                      <MenuItem key={index} value={type}>
-                        {type}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            <Grid item xs={3}>
-              <ControlledComponent labelName={'입학일'} StartDate={(e) => handleEduChange(e, index)} name="enterDay" />
-            </Grid>
-            <Grid item xs={3}>
-              <ControlledComponent
-                labelName={'졸업일'}
-                BeforeDay={field.enterDay}
-                EndDate={(e) => handleEduChange(e, index)}
-                name="graduateDay"
-              />
-            </Grid>
-
             <Grid item xs={2}>
               <TextField
                 fullWidth
@@ -139,7 +99,44 @@ const Education = () => {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={3} justifyContent={'end'}>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+            <Grid item xs={4}>
+              <ControlledComponent labelName={'입학일'} StartDate={(e) => handleEduChange(e, index)} name="enterDate" />
+            </Grid>
+            <Grid item xs={4}>
+              <ControlledComponent
+                labelName={'졸업일'}
+                BeforeDay={field.enterDate}
+                EndDate={(e) => handleEduChange(e, index)}
+                name="graduateDate"
+              />
+            </Grid>
+
+            <Grid item xs={3}>
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel>졸업 상태</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="졸업 상태"
+                    name="graduateType"
+                    value={field.graduateType}
+                    onChange={(e) => handleEduChange(e, index)}
+                  >
+                    {graduateTypeArr.map((type, index) => (
+                      <MenuItem key={index} value={type}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Grid>
+            <Grid item xs={1} justifyContent={'end'}>
               <IconButton onClick={() => eduRemoveFields(index)}>
                 <DisabledByDefaultOutlinedIcon />
               </IconButton>

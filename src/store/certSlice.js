@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const certSlice = createSlice({
   name: 'cert',
-  initialState: [{ certName: '', publisher: '', acqDate: '' }],
+  initialState: [],
   reducers: {
     addCert: (state, action) => {
       return [...state, action.payload];

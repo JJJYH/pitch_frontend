@@ -51,6 +51,15 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
           <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
         </SubCard>
         <SubCard
+          onClick={() => scrollToTab('lang')} //대외 활동 탭으로 스크롤
+          sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}
+        >
+          <Typography variant="h4" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'}>
+            어학 성적
+          </Typography>
+          <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
+        </SubCard>
+        <SubCard
           onClick={() => scrollToTab('activity')} //대외 활동 탭으로 스크롤
           sx={{ mb: 1, boxShadow: 'rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px' }}
         >

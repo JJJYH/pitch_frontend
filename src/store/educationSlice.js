@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const educationSlice = createSlice({
   name: 'education',
-  initialState: [{ eduType: 'document', enterDay: '', graduateDay: '', major: '', graduateType: '', totalScore: '', score: '' }],
+  initialState: [{ eduType: '', enterDay: '', graduateDay: '', major: '', graduateType: '', totalScore: '', score: '' }],
   reducers: {
     addEducation: (state, action) => {
       return [...state, action.payload];
@@ -16,10 +16,10 @@ const educationSlice = createSlice({
       const { index, name, value } = action.payload;
       if (name === 'eduType') {
         state[index].eduType = value;
-      } else if (name === 'enterDay') {
-        state[index].enterDay = value;
-      } else if (name === 'graduateDay') {
-        state[index].graduateDay = value;
+      } else if (name === 'enterDate') {
+        state[index].enterDate = value;
+      } else if (name === 'graduateDate') {
+        state[index].graduateDate = value;
       } else if (name === 'major') {
         state[index].major = value;
       } else if (name === 'graduateType') {
