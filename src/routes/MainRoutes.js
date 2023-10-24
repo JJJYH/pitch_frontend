@@ -58,7 +58,7 @@ const MainRoutes = {
           element: <ApplicantSortingPage />
         },
         {
-          path: 'detail',
+          path: 'sorting/:job_posting_no/detail',
           element: <ApplicantDetailPage />
         }
       ]

@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 
 /* mui components */
+import { Chip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,28 +14,23 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup, Select } from '@mui/material';
+import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup, Select, TextField, TextareaAutosize } from '@mui/material';
 
 /* custom components */
-//import NoticeTextArea from '../components/NoticeTextArea';
+
 
 
 const NoticeModal = () => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('y');
-  const [personName, setPersonName] = React.useState([]);
-  const [text, setText] = React.useState('');
-  const addEmoji = (emoji) => () => setText(`${text}${emoji}`);
+  const [radioValue, setRadioValue] = React.useState('pass');
+  const [processType, setProcessType] = React.useState("");
+  const [noticeArea, setNoticeArea] = React.useState();
+  const [cursorPos, setCursorPos] = React.useState(0);
+  const noticeAreaRef = useRef(null);
 
-  const theme = useTheme();
-  const handleChangeSelect = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
+  const handleChangeSelect = (event) => { 
+    setProcessType(event.target.value);
+    setNoticeArea(noticeText[radioValue][event.target.value]);
   };
   const handleOpen = () => {
     setOpen(true);
@@ -42,10 +39,38 @@ const NoticeModal = () => {
     setOpen(false);
   };
 
-  const handleChange = (event) => {
-    setValue(event.target.value);
+  const handleTextFieldFocus = (event) => {
+    setCursorPos(event.target.selectionStart);
   };
 
+  const handleChangeTextArea = (event) => {
+    setNoticeArea(event.target.value);
+  }
+
+  const handleChangeRadio = (event) => {
+    setRadioValue(event.target.value);
+    setProcessType("");
+    setNoticeArea("");
+  };
+
+  const addToText = (txt) => {
+    const textarea = noticeAreaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const prefix = noticeArea.substring(0, start);
+    const suffix = noticeArea.substring(end);
+    setNoticeArea(prefix + txt + suffix);
+    // 커서 위치 조정
+    textarea.setSelectionRange(start + txt.length, start + txt.length);
+    textarea.focus();
+  };
+
+  useEffect(() => {
+    if (noticeArea && cursorPos === 0) {
+      setCursorPos(noticeArea.length);
+    }
+  }, [noticeArea, cursorPos]);
+  
   return (
     <div>
       <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
@@ -88,12 +113,12 @@ const NoticeModal = () => {
                   aria-labelledby="demo-form-control-label-placement"
                   name="position"
                   defaultValue="top"
-                  value={value}
-                  onChange={handleChange}
+                  value={radioValue}
+                  onChange={handleChangeRadio}
                   sx={{ marginLeft: '12px' }}
                 >
-                  <MyRadio value="y" control={<Radio />} label="합격 안내" />
-                  <MyRadio value="n" control={<Radio />} label="불합격 안내" />
+                  <MyRadio value="pass" control={<Radio />} label="합격 안내" />
+                  <MyRadio value="fail" control={<Radio />} label="불합격 안내" />
                 </RadioGroup>
               </Grid>
             </Grid>
@@ -104,15 +129,14 @@ const NoticeModal = () => {
               <Grid item xs={9}>
                 <MySelect
                   displayEmpty
-                  value={personName}
+                  value={processType}
                   onChange={handleChangeSelect}
                   input={<MyInput />}
                   renderValue={(selected) => {
-                    if (selected.length === 0) {
-                      return <em>전형 선택</em>;
+                    if (selected !== "") {
+                      return selected;
                     }
-
-                    return selected.join(', ');
+                    return <em>전형 선택</em>;
                   }}
                   MenuProps={MenuProps}
                   inputProps={{ 'aria-label': 'Without label' }}
@@ -120,8 +144,8 @@ const NoticeModal = () => {
                   <MenuItem disabled value="">
                     <em>전형 선택</em>
                   </MenuItem>
-                  {names.map((name) => (
-                    <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                  {names[radioValue].map((name) => (
+                    <MenuItem key={name} value={name} >
                       {name}
                     </MenuItem>
                   ))}
@@ -135,7 +159,38 @@ const NoticeModal = () => {
             </Grid>
             <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
               <Grid item xs={12}>
-                {/* <NoticeTextArea /> */}
+                <TextField
+                  InputProps={{
+                    startAdornment: (
+                    <Box sx={{display: 'flex', marginTop: '5px'}}>
+                      <StatusChip1 label={"지원자명"} onClick={(event) => {
+                        event.stopPropagation();
+                        addToText("%지원자명%")}} />
+                      <StatusChip2 label={"회사명"} onClick={(event) => {
+                        event.stopPropagation();
+                        addToText("%회사명%")}} />
+                      <StatusChip5 label={"공고명"} onClick={(event) => {
+                        event.stopPropagation();
+                        addToText("%공고명%")}} />
+                    </Box>
+                  )}}
+                  id="notice_textarea"
+                  multiline
+                  rows={12}
+                  value={noticeArea}
+                  onChange={handleChangeTextArea}
+                  onFocus={handleTextFieldFocus}
+                  inputRef={noticeAreaRef}
+                  sx={{
+                    width: '98%',
+                    '& .MuiInputBase-root': {
+                      flexDirection: 'column'
+                    },
+                    '& .MuiInputBase-input': {
+                      pl: '25px', pr: '25px'
+                    }
+                  }}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -157,6 +212,62 @@ const NoticeModal = () => {
     </div>
   );
 };
+
+/* styled components */
+
+const StatusChip1 = styled(Chip)(() => ({
+  border: '3px solid',
+  borderColor: '#FFD699',
+  borderRadius: '8px',
+  color: '#fff',
+  fontWeight: 900,
+  backgroundColor: '#FFD699',
+  minWidth:'82px',
+  width: '82px',
+  marginRight: '15px',
+  ':hover': {
+    borderColor: '#FFD699',
+    background: '#fff',
+    color: '#FFD699'
+  },
+  cursor: 'pointer'
+}));
+
+const StatusChip2 = styled(Chip)(() => ({
+  border: '3px solid',
+  borderColor: '#E1BEE7',
+  borderRadius: '8px',
+  color: '#fff',
+  fontWeight: 900,
+  backgroundColor: '#E1BEE7',
+  minWidth:'82px',
+  width: '82px',
+  marginRight: '15px',
+  ':hover': {
+    borderColor: '#E1BEE7',
+    background: '#fff',
+    color: '#E1BEE7'
+  },
+  cursor: 'pointer'
+}));
+
+const StatusChip5 = styled(Chip)(() => ({
+  border: '3px solid',
+  borderColor: '#90CAF9',
+  borderRadius: '8px',
+  color: '#fff',
+  fontWeight: 900,
+  backgroundColor: '#90CAF9',
+  minWidth:'82px',
+  width: '82px',
+  marginRight: '15px',
+  ':hover': {
+    borderColor: '#90CAF9',
+    background: '#fff',
+    color: '#90CAF9'
+  },
+  cursor: 'pointer'
+}));
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -196,12 +307,96 @@ const MenuProps = {
   }
 };
 
-const names = ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'];
+const names = {
+  'pass': ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'],
+  'fail': ['서류전형', '최종합격', '기타']
+};
 
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
-  };
-}
+
+
+const noticeText = {
+  fail: {
+    '서류전형': `
+      안녕하세요, %이름% 님
+      %회사명% 채용담당자입니다.
+        
+      %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
+      아쉽게도 이번에는 합격 소식을 전해드리지 못하게 되었습니다.
+      비록 이번 기회에는 %이름%님과 함께 하지 못하지만, 향후 또 다른 기회로 만나 뵙기를 희망합니다.    
+      감사합니다.\n
+      %회사명% 드림`,
+    '최종합격': `
+      안녕하세요, %이름% 님
+      %회사명% 채용담당자입니다.
+        
+      %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
+      아쉽게도 이번에는 합격 소식을 전해드리지 못하게 되었습니다.
+      많은 시간과 노력을 들여주셨음에도 아쉬운 결과를 전달드리게 되어 죄송하다는 말씀 드립니다.
+      비록 이번 기회에는 %이름% 님과 함께 하지 못하지만, 향후 또 다른 기회로 만나 뵙기를 희망합니다.    
+      앞으로 %이름% 님의 앞날에 빛나는 일만 가득하시기를 진심으로 기원합니다.
+      감사합니다.\n
+      %회사명% 드림`,
+    '기타': `
+      안녕하세요, %이름% 님
+      %회사명% 채용담당자입니다.
+        
+      
+      %회사명% 드림`,
+  },
+  pass: {
+    '인적성전형': `
+    안녕하세요. %이름% 님, %회사명%입니다.
+    인적성 검사를 안내드립니다.
+    ###`,
+    '면접전형': `
+    안녕하세요, %이름% 님
+    %회사명% 채용담당자 입니다.
+    
+    %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
+    %이름% 께서 정성스럽게 작성해주신 이력서를 보니, 꼭 만나뵙고 싶다는 생각이 들었습니다.
+    
+    면접 안내 사항 정리하여 전달 드립니다.
+    - 면접 일시 :
+    - 면접 장소 :
+    - 소요 시간 :
+    
+    1차 면접은 실무진이 참여할 예정입니다.
+    
+    궁금한 사항은 본 메일을 통해 문의 바랍니다.
+    %이름% 님과 만날 날을 기다리고 있겠습니다.
+    
+    감사합니다.
+    %회사명% 드림`,
+    '서류전형': `
+    안녕하세요, %이름% 님
+    %회사명% 채용담당자입니다.
+      
+    %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
+    기쁘게도 %이름% 님께 좋은 소식을 전해 드릴 수 있게 되었습니다.
+    이후의 일정은 추후 별도로 안내드릴 예정입니다.
+    감사합니다.\n
+    %회사명% 드림`,
+    '최종합격': `
+    축하합니다! %이름% 님
+      
+    %공고명% 채용에 최종 합격하셨음을 안내드립니다.
+    진심으로 축하드립니다!
+    최선을 다해 채용과정에 임해주신 것에 감사드리며,
+    %이름% 님을 동료로 맞이할 수 있게 되어 영광입니다!
+
+    이후의 일정은 추후 별도로 안내드릴 예정입니다.
+    감사합니다.\n
+    %회사명% 드림`,
+    '기타': `
+    안녕하세요, %이름% 님
+    %회사명% 채용담당자입니다.
+
+    기쁘게도 %이름% 님께 좋은 소식을 전해 드릴 수 있게 되었습니다.
+
+    감사합니다.\n
+    %회사명% 드림`,
+  }
+};
+
 
 export default NoticeModal;
