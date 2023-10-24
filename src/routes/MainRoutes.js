@@ -54,11 +54,11 @@ const MainRoutes = {
           element: <CVPage />
         },
         {
-          path: 'sorting',
+          path: ':job_posting_no/sort',
           element: <ApplicantSortingPage />
         },
         {
-          path: 'sorting/:job_posting_no/detail',
+          path: ':job_posting_no/sort/:apply_no/detail',
           element: <ApplicantDetailPage />
         }
       ]

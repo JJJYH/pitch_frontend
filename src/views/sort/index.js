@@ -3,6 +3,8 @@ import { styled as muiStyled } from '@mui/material/styles';
 import { useEffect } from 'react';
 import { sort } from 'api.js';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { getAge, getFormattedDate } from './sorts.js';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -24,15 +26,17 @@ import InterviewDateModal from './components/InterviewDateModal';
 import InterviewEvalModal from './components/InterviewEvalModal';
 import MenuBtn from './components/MenuBtn';
 
+
 /*
  *
  * 지원자 선별 페이지
- * url : manage/sort 추후 변경 예정
+ * url : manage/:job_posting_no/sort
  *
  */
 const SortingPage = () => {
   const [value, setValue] = React.useState('F');
   const [rows, setRows] = React.useState([]);
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -116,13 +120,13 @@ const SortingPage = () => {
               <ApplicantDataGrid columns={fColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="S">
-              <ApplicantDataGrid columns={sColumns} rows={rows}/>
+              <ApplicantDataGrid columns={sColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="FL">
-              <ApplicantDataGrid columns={flColumns} rows={rows}/>
+              <ApplicantDataGrid columns={flColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="FH">
-              <ApplicantDataGrid columns={fhColumns} rows={rows}/>
+              <ApplicantDataGrid columns={fhColumns} rows={rows} />
             </MyTabPanel>
           </Box>
         </TabContext>
@@ -141,7 +145,7 @@ const MyTabPanel = muiStyled(TabPanel)(({ theme }) => ({
   paddingTop: '10px'
 }));
 
-function RenderAvatar() {
+const RenderAvatar = () => {
   return (
     <Avatar
         alt='profile'
@@ -181,7 +185,7 @@ const StatusChip4 = styled(Chip)(() => ({
   width: '82px'
 }));
 
-function RenderEval(score) {
+const RenderEval = (score) => {
   let isQualified = score >= 60 ? true : false;
 
   return (
@@ -207,6 +211,16 @@ const RenderStar = (evals) => {
 
   return <Rating name="read-only" defaultValue={avg} precision={0.5} readOnly />;
 }
+
+const RenderName = (data) => {
+  return (<Link
+    to={`${data.row.apply_no}/detail`}
+    sx={{
+      color: 'black'
+    }}
+    >{`${data.row.user_nm} (${data.row.gender})`}</Link>)
+}
+
 
 /* data grid column setting */
 
@@ -234,8 +248,7 @@ const fColumns = [
     width: 140,
     align:'center',
     headerAlign: 'center',
-    valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+    renderCell: RenderName
   },
   {
     field: 'user_birth',
@@ -323,8 +336,7 @@ const sColumns = [
     width: 140,
     align:'center',
     headerAlign: 'center',
-    valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+    renderCell: RenderName
   },
   {
     field: 'user_birth',
@@ -412,8 +424,7 @@ const flColumns = [
     width: 140,
     align:'center',
     headerAlign: 'center',
-    valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+    renderCell: RenderName
   },
   {
     field: 'user_birth',
@@ -499,8 +510,7 @@ const fhColumns = [
     width: 140,
     align:'center',
     headerAlign: 'center',
-    valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+    renderCell: RenderName
   },
   {
     field: 'user_birth',
@@ -562,30 +572,5 @@ const fhColumns = [
   },
 ];
 
-
-/* 날짜 1992/11/22 형식으로 변환하는 함수 */
-const getFormattedDate = (data) => {
-  const date = new Date(data);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0'); 
-  
-  return `${year}/${month}/${day}`;
-}
-
-/* 만나이 계산하는 함수 */
-const getAge = (data) => {
-  const birthday = new Date(data);
-  const today = new Date();
-
-  let age = today.getFullYear() - birthday.getFullYear();
-  const monthDiff = today.getMonth() - birthday.getMonth();
-
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
-    age--;
-  }
-  
-  return age;
-}
 
 export default SortingPage;

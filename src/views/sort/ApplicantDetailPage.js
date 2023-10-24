@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 import styled from 'styled-components';
+import { useParams } from 'react-router';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -19,11 +20,12 @@ import ScrollingApplicantList from './components/ScrollingApplicantList';
 /*
  *
  * 지원자 상세 페이지
- * url : manage/detail
+ * url : manage/:job_posting_no/sort/:apply_no/detail
  *
  */
 const ApplicantDetailPage = () => {
   const [tabValue, setTabValue] = useState(0);
+  const { apply_no, job_posting_no } = useParams();
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
 
@@ -45,7 +47,7 @@ const ApplicantDetailPage = () => {
                   <Button>
                     <ChevronLeftIcon />
                   </Button>
-                  <Button>합격처리</Button>
+                  <Button>합격등록</Button>
                   <Button>
                     <ChevronRightIcon />
                   </Button>
@@ -54,7 +56,13 @@ const ApplicantDetailPage = () => {
             </Grid>
             <Divider variant="middle" />
             <Grid item xs={'9'}>
-              <ScrollingApplicantList height={770} width={390} itemSize={80} />
+              <ScrollingApplicantList 
+                height={770} 
+                width={390} 
+                itemSize={90} 
+                applyNo={apply_no}
+                postingNo={job_posting_no}
+              />
             </Grid>
           </Paper>
         </Grid>
