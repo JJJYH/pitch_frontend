@@ -11,6 +11,7 @@ import { Box } from '@mui/material';
 
 
 const ApplicantDataGrid = ({ columns, rows }) => {
+
   return (
     <Box sx={{ height: "540px", width: '1'}}>
       <DataGrid
