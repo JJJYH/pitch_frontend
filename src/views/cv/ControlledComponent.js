@@ -7,7 +7,6 @@ import { TextField } from '@mui/material';
 
 export default function ControlledComponent({ labelName, BeforeDay, StartDate, EndDate, name }) {
   const [value, setValue] = React.useState(null);
-  console.log('props name : ' + name);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker

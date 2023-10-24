@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const careerSlice = createSlice({
   name: 'career',
-  initialState: [{ companyName: '', deptName: '', exPosition: '', salary: '', job: '', note: '' }],
+  initialState: [],
   reducers: {
     addCareer: (state, action) => {
       return [...state, action.payload];
@@ -23,6 +23,10 @@ const careerSlice = createSlice({
         state[index].salary = value;
       } else if (name === 'job') {
         state[index].job = value;
+      } else if (name === 'joinDate') {
+        state[index].joinDate = value;
+      } else if (name === 'quitDate') {
+        state[index].quitDate = value;
       }
     }
   }

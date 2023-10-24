@@ -3,6 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeCareer, updateCareer } from 'store/careerSlice';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
+import ControlledComponent from '../ControlledComponent';
 const Career = () => {
   const careerData = useSelector((state) => state.career);
   const dispatch = useDispatch();
@@ -16,10 +17,6 @@ const Career = () => {
   };
 
   const careerRemoveFields = (index) => {
-    if (careerData.length === 1) {
-      alert('At least one form must remain');
-      return;
-    }
     console.log('Remove Target : ' + index);
     dispatch(removeCareer(index));
   };
@@ -30,7 +27,7 @@ const Career = () => {
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="회사 입력"
@@ -43,33 +40,37 @@ const Career = () => {
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="부서 입력"
                 color="primary"
                 type="text"
-                name="eduType"
-                value={field.eduType}
+                name="deptName"
+                value={field.deptName}
                 placeholder={careerData[index].deptName}
                 variant="outlined"
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="직책 입력"
                 color="primary"
                 type="text"
                 name="exPosition"
-                value={field.eduType}
-                placeholder={careerData[index].deptName}
+                value={field.exPosition}
+                placeholder={careerData[index].exPosition}
                 variant="outlined"
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
-            <Grid item xs={2}>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+            <Grid item xs={3}>
               <TextField
                 fullWidth
                 label="연봉"
@@ -77,6 +78,7 @@ const Career = () => {
                 placeholder="OOOO만원"
                 name="salary"
                 value={field.salary}
+                onChange={(e) => handleCareerChange(e, index)}
                 InputProps={{
                   onBlur: (e) => {
                     const value = parseInt(e.target.value, 10);
@@ -87,7 +89,7 @@ const Career = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="직무"
@@ -99,7 +101,18 @@ const Career = () => {
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
+              <ControlledComponent labelName={'입사일'} StartDate={(e) => handleCareerChange(e, index)} name="joinDate" />
+            </Grid>
+            <Grid item xs={4}>
+              <ControlledComponent
+                labelName={'퇴사일'}
+                BeforeDay={field.joinDate}
+                EndDate={(e) => handleCareerChange(e, index)}
+                name="quitDate"
+              />
+            </Grid>
+            <Grid item xs={1}>
               <IconButton onClick={() => careerRemoveFields(index)}>
                 <DisabledByDefaultOutlinedIcon />
               </IconButton>
