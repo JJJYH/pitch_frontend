@@ -11,6 +11,7 @@ import langReducer from './langSlice';
 import advantageReducer from './advantageSlice';
 import activityReducer from './activitySlice';
 
+import userInfoReducer from './userInfoSlice';
 const toolkitStore = configureStore({
   reducer: {
     customization: customizationReducer,
@@ -21,7 +22,8 @@ const toolkitStore = configureStore({
     cert: certReducer,
     lang: langReducer,
     activity: activityReducer,
-    advantage: advantageReducer
+    advantage: advantageReducer,
+    userInfo: userInfoReducer
   }
 });
 

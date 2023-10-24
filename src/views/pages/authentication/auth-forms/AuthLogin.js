@@ -35,6 +35,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+import { principal } from 'api.js';
+import { useDispatch } from 'react-redux/es';
+import { setUser } from 'store/userInfoSlice';
+import axios from 'axios';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -43,9 +47,11 @@ const FirebaseLogin = ({ ...others }) => {
   const scriptedRef = useScriptRef();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
+  const userInfo = useSelector((state) => state.userInfo);
   //const [checked, setChecked] = useState(true);
 
   const googleHandler = async () => {
+    axios.get('http://localhost:8888/admin/loginUserTest').then((data) => { console.log });
     console.error('Login');
   };
 
@@ -57,6 +63,11 @@ const FirebaseLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const dispatch = useDispatch();
+
+
+
 
   return (
     <>
@@ -123,19 +134,29 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
+          user_email: '',
+          user_pw: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('이메일 형식이 올바르지 않습니다.').max(255).required('이메일 입력은 필수입니다.'),
-          password: Yup.string().max(255).required('비밀번호 입력은 필수입니다.')
+          user_email: Yup.string().max(255).required('이메일 입력은 필수입니다.'),
+          user_pw: Yup.string().max(255).required('비밀번호 입력은 필수입니다.')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
+            console.log('123');
             if (scriptedRef.current) {
               setStatus({ success: true });
               setSubmitting(false);
+              let userData = {
+                user_email: values.user_email,
+                user_pw: values.user_pw
+              }
+              principal.login(userData).then((res) => {
+                sessionStorage.setItem('AccessToken', res.headers.accesstoken);
+                principal.setToken(res.headers.accesstoken);
+                principal.getUser().then((res) => { dispatch(setUser(res.data)) })
+              })
             }
           } catch (err) {
             console.error(err);
@@ -149,32 +170,32 @@ const FirebaseLogin = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
-            <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
+            <FormControl fullWidth error={Boolean(touched.user_email && errors.user_email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email / ID</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="email"
-                value={values.email}
-                name="email"
+                value={values.user_email}
+                name="user_email"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 label="Email / ID"
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
+              {touched.user_email && errors.user_email && (
                 <FormHelperText error id="standard-weight-helper-text-email-login">
-                  {errors.email}
+                  {errors.user_email}
                 </FormHelperText>
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
+            <FormControl fullWidth error={Boolean(touched.user_pw && errors.user_pw)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-password-login"
                 type={showPassword ? 'text' : 'password'}
-                value={values.password}
-                name="password"
+                value={values.user_pw}
+                name="user_pw"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 endAdornment={
@@ -193,9 +214,9 @@ const FirebaseLogin = ({ ...others }) => {
                 label="Password"
                 inputProps={{}}
               />
-              {touched.password && errors.password && (
+              {touched.user_pw && errors.user_pw && (
                 <FormHelperText error id="standard-weight-helper-text-password-login">
-                  {errors.password}
+                  {errors.user_pw}
                 </FormHelperText>
               )}
             </FormControl>
