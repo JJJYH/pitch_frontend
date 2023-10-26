@@ -7,13 +7,13 @@ import { useEffect } from 'react';
 import ControlledComponent from '../ControlledComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import { addEducation, removeEducation, updateEducation } from 'store/educationSlice';
-
+import ClearIcon from '@mui/icons-material/Clear';
 const Education = () => {
   /**Default Setting Values */
-  const graduateTypeArr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학'];
-  const scoreArr = ['4.5', '4.0', '4.3', '100'];
+  const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학'];
+  const score_arr = ['4.0', '4.3', '4.5', '100'];
 
-  const educationData = useSelector((state) => state.education);
+  const education_data = useSelector((state) => state.education);
   const dispatch = useDispatch();
 
   const handleEduChange = (e, index) => {
@@ -22,7 +22,7 @@ const Education = () => {
   };
 
   const eduRemoveFields = (index) => {
-    if (educationData.length === 1) {
+    if (education_data.length === 1) {
       alert('At least one form must remain');
       return;
     }
@@ -31,54 +31,56 @@ const Education = () => {
   };
 
   useEffect(() => {
-    console.log('formFields changed:', educationData);
-  }, [educationData]);
+    console.log('formFields changed:', education_data);
+  }, [education_data]);
 
-  return educationData.map((field, index) => (
+  return education_data.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            <Grid item xs={4}>
+            <Grid item xs={2}>
               <TextField
                 fullWidth
                 label="학교 입력"
                 color="primary"
                 type="text"
-                name="eduType"
-                value={field.eduType}
-                placeholder={educationData[index].eduType}
-                variant="outlined"
+                name="edu_type"
+                value={field.edu_type}
+                placeholder={education_data[index].edu_type}
+                variant="standard"
                 onChange={(e) => handleEduChange(e, index)}
+                size="small"
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={2}>
               <TextField
                 fullWidth
                 label="전공"
                 color="primary"
                 type="text"
-                placeholder={educationData[index].major}
-                variant="outlined"
+                placeholder={education_data[index].major}
+                variant="standard"
                 name="major"
                 value={field.major}
                 onChange={(e) => handleEduChange(e, index)}
+                size="small"
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
               <TextField
                 fullWidth
                 label="점수"
                 color="primary"
                 type="text"
-                variant="outlined"
+                variant="standard"
                 name="score"
                 value={field.score}
                 onChange={(e) => handleEduChange(e, index)}
+                size="small"
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
               <Box>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">총점</InputLabel>
@@ -86,11 +88,12 @@ const Education = () => {
                     labelId="demo-simple-select-label"
                     label="총점"
                     id="demo-simple-select"
-                    name="totalScore"
-                    value={field.totalScore}
+                    variant="standard"
+                    name="total_score"
+                    value={field.total_score}
                     onChange={(e) => handleEduChange(e, index)}
                   >
-                    {scoreArr.map((type, index) => (
+                    {score_arr.map((type, index) => (
                       <MenuItem key={index} value={type}>
                         {type}
                       </MenuItem>
@@ -99,23 +102,18 @@ const Education = () => {
                 </FormControl>
               </Box>
             </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            <Grid item xs={4}>
-              <ControlledComponent labelName={'입학일'} StartDate={(e) => handleEduChange(e, index)} name="enterDate" />
+            <Grid item xs={2}>
+              <ControlledComponent labelName={'입학일'} StartDate={(e) => handleEduChange(e, index)} name="enter_date" />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={2}>
               <ControlledComponent
                 labelName={'졸업일'}
-                BeforeDay={field.enterDate}
+                BeforeDay={field.enter_date}
                 EndDate={(e) => handleEduChange(e, index)}
-                name="graduateDate"
+                name="graduate_date"
               />
             </Grid>
-
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
                   <InputLabel>졸업 상태</InputLabel>
@@ -123,11 +121,12 @@ const Education = () => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="졸업 상태"
-                    name="graduateType"
-                    value={field.graduateType}
+                    name="graduate_type"
+                    variant="standard"
+                    value={field.graduate_type}
                     onChange={(e) => handleEduChange(e, index)}
                   >
-                    {graduateTypeArr.map((type, index) => (
+                    {graduate_type_arr.map((type, index) => (
                       <MenuItem key={index} value={type}>
                         {type}
                       </MenuItem>
@@ -138,7 +137,7 @@ const Education = () => {
             </Grid>
             <Grid item xs={1} justifyContent={'end'}>
               <IconButton onClick={() => eduRemoveFields(index)}>
-                <DisabledByDefaultOutlinedIcon />
+                <ClearIcon />
               </IconButton>
             </Grid>
           </Box>

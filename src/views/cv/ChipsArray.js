@@ -37,7 +37,7 @@ export default function ChipsArray({ chipData, setChipData }) {
         let icon;
         return (
           <ListItem key={index}>
-            <Chip icon={icon} label={data.skillName} color="secondary" onDelete={() => skillRemoveFields(index)} />
+            <Chip icon={icon} label={data.skill_name} color="secondary" onDelete={() => skillRemoveFields(index)} />
           </ListItem>
         );
       })}
