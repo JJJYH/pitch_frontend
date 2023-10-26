@@ -3,6 +3,20 @@ import { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
+import { styled } from '@mui/material/styles';
+
+const StyledDataGrid = styled(DataGrid)(() => ({
+  '& .css-qvtrhg-MuiDataGrid-virtualScroller': {
+    overflow: 'auto',
+    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    },
+    '&-ms-overflow-style:': {
+      display: 'none'
+    }
+  }
+}));
 
 const ReqDataGrid = ({ rows, handleRowClick }) => {
   const columns = [
@@ -49,7 +63,7 @@ const ReqDataGrid = ({ rows, handleRowClick }) => {
 
   return (
     <div style={{ height: 590, width: '98%', margin: 'auto' }}>
-      <DataGrid
+      <StyledDataGrid
         rows={rows}
         columns={columns}
         hideFooter
