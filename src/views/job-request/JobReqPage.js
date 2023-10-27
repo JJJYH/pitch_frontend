@@ -70,6 +70,7 @@ const JobReqPage = () => {
 
     setSelectedChips(newSelectedChips);
     //console.log(newSelectedChips);
+    setSelectedRow('');
 
     const statusData = {
       selectedStatus: newSelectedChips
@@ -149,7 +150,13 @@ const JobReqPage = () => {
         </Grid>
         <Grid item xs={6}>
           <StyledBox>
-            <ReadReq selectedRow={selectedRow} editing={selectedRow} />
+            <ReadReq
+              selectedRow={selectedRow}
+              reqlisthandler={reqlisthandler}
+              handleRowClick={handleRowClick}
+              selectedChips={selectedChips}
+              setRows={setRows}
+            />
           </StyledBox>
         </Grid>
       </Grid>

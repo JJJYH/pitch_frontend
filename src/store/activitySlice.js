@@ -13,16 +13,16 @@ const activitySlice = createSlice({
     },
     updateActivity: (state, action) => {
       const { index, name, value } = action.payload;
-      if (name === 'activityType') {
-        state[index].activityType = value;
+      if (name === 'activity_type') {
+        state[index].activity_type = value;
       } else if (name === 'organization') {
         state[index].organization = value;
-      } else if (name === 'startDate') {
-        state[index].startDate = value;
-      } else if (name === 'endDate') {
-        state[index].endDate = value;
-      } else if (name === 'activityDetail') {
-        state[index].activityDetail = value;
+      } else if (name === 'start_date') {
+        state[index].start_date = value;
+      } else if (name === 'end_date') {
+        state[index].end_date = value;
+      } else if (name === 'activity_detail') {
+        state[index].activity_detail = value;
       }
     }
   }
