@@ -13,7 +13,6 @@ const Language = () => {
   };
 
   const langRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeLang(index));
   };
 

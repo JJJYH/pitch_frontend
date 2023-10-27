@@ -96,7 +96,7 @@ const CV = () => {
                 </Typography>
                 <Profile />
                 <Box display={'flex'} flexDirection={'row'} justifyContent={'start'} alignItems={'center'} sx={{ mt: 2.5 }}>
-                  <Typography ref={(el) => (tab_ref.current['education'] = el)} variant="h3" color="primary">
+                  <Typography ref={(el) => (tab_ref.current['education'] = el)} variant="h3">
                     학력
                   </Typography>
                   <IconButton onClick={() => eduAddFields()}>

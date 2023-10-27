@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { cv } from '../../api';
 
 export default function TitlebarImageList() {
   const [img_src, set_img_src] = useState(null);
@@ -31,20 +32,24 @@ export default function TitlebarImageList() {
     reader.readAsDataURL(file);
 
     /**------------------Axios------------------------ */
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
 
-      const response = await axios.post('/main/cv/imageUpload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+    const formData = new FormData();
+    formData.append('image', file);
+
+    cv.postThumbnail(formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((response) => {
+        // 파일 업로드 성공 시
+        set_img_src('/images/' + response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // 파일 업로드 실패 시
+        console.error('파일 업로드 실패: ' + error);
       });
-      set_img_src('/images/' + response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.error('파일 업로드 실패: ' + error);
-    }
 
     return new Promise((resolve) => {
       reader.onload = () => {

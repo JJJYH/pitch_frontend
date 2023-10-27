@@ -17,7 +17,6 @@ const Career = () => {
   };
 
   const careerRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeCareer(index));
   };
 

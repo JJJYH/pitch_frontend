@@ -58,12 +58,10 @@ const Advantage = () => {
       const index = checked_items.indexOf(event.target.value);
       set_checked_items(checked_items.filter((item) => item !== event.target.value));
       dispatch(removeAdvantage(index));
-      console.log('Advantage Data : ' + JSON.stringify(advantage_data));
     } else {
       // 체크되면 액션 호출하여 객체 추가
       set_checked_items((prev) => [...prev, event.target.value]);
       dispatch(addAdvantage(event.target.value));
-      console.log('Advantage Data : ' + JSON.stringify(advantage_data));
     }
   };
 
@@ -90,11 +88,12 @@ const Advantage = () => {
                 <Grid item xs={4}>
                   <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">세부 사항</InputLabel>
+                      <InputLabel id="demo-simple-select-label">병역 상태</InputLabel>
                       <Select
                         value={checked_items.includes('병역') ? (military_advantage ? military_advantage.advantage_detail : '') : ''}
                         name="military_detail"
                         onChange={handleMilitaryChange}
+                        variant="standard"
                       >
                         {advantage_detail['병역'].map((type) => (
                           <MenuItem key={type} value={type}>
@@ -126,11 +125,12 @@ const Advantage = () => {
                 <Grid item xs={4}>
                   <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">세부 사항</InputLabel>
+                      <InputLabel id="demo-simple-select-label">장애 등급</InputLabel>
                       <Select
                         value={checked_items.includes('장애') ? (obstacle_advantage ? obstacle_advantage.advantage_detail : '') : ''}
                         name="obstacle_detail"
                         onChange={handleObstacleChange}
+                        variant="standard"
                       >
                         {advantage_detail['장애'].map((type) => (
                           <MenuItem key={type} value={type}>

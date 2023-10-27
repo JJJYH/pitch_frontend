@@ -7,33 +7,35 @@ import { useState } from 'react';
 
 const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
-
+  const locationState = [];
+  const [location_point, set_location_point] = useState('');
+  for (const key in tabRef.current) {
+    locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
+  }
   // 스크롤 이벤트 핸들러
   const handleScroll = () => {
     setScrollPosition(window.scrollY);
-    console.log('이벤트 리스너 시작 : ' + scrollPosition);
 
-    console.log('tabRef 위치:' + JSON.stringify(tabRef.current['skills'].getBoundingClientRect().top + -70));
-    if (0 > tabRef.current['education'].getBoundingClientRect().top + -70) {
-      console.log('지금은 학력 부분입니다!!!');
+    if (scrollPosition > locationState[0] && scrollPosition < locationState[1]) {
+      set_location_point('education');
     }
-    if (0 > tabRef.current['skills'].getBoundingClientRect().top + -70) {
-      console.log('지금은 보유스킬 부분입니다!!!');
+    if (scrollPosition > locationState[1] && scrollPosition < locationState[2]) {
+      set_location_point('skills');
     }
-    if (0 > tabRef.current['career'].getBoundingClientRect().top + -70) {
-      console.log('지금은 경력 사항 부분입니다!!!');
+    if (scrollPosition > locationState[2] && scrollPosition < locationState[3]) {
+      set_location_point('career');
     }
-    if (0 > tabRef.current['cert'].getBoundingClientRect().top + -70) {
-      console.log('지금은 자격증 부분입니다!!!');
+    if (scrollPosition > locationState[3] && scrollPosition < locationState[4]) {
+      set_location_point('cert');
     }
-    if (0 > tabRef.current['lang'].getBoundingClientRect().top + -70) {
-      console.log('지금은 어학 성적 부분입니다!!!');
+    if (scrollPosition > locationState[4] && scrollPosition < locationState[5]) {
+      set_location_point('lang');
     }
-    if (0 > tabRef.current['activity'].getBoundingClientRect().top + -70) {
-      console.log('지금은 대외활동 부분입니다!!!');
+    if (scrollPosition > locationState[5] && scrollPosition < locationState[6]) {
+      set_location_point('activity');
     }
-    if (0 > tabRef.current['advantage'].getBoundingClientRect().top + -70) {
-      console.log('지금은 우대사항 부분입니다!!!');
+    if (scrollPosition > locationState[6]) {
+      set_location_point('advantage');
     }
   };
 
@@ -52,8 +54,8 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
       <MainCard sx={{ width: '100%' }}>
         <Typography
           variant="h4"
-          // color={currentTab === 'education' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, color: currentTab === 'education' ? 'primary' : 'text.primary' }}
+          color={location_point === 'education' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
           textAlign={'center'}
           alignContent={'center'}
           onClick={() => scrollToTab('education')} // 학력 탭으로 스크롤
@@ -63,7 +65,8 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
 
         <Typography
           variant="h4"
-          sx={{ mb: 2.5 }}
+          color={location_point === 'skills' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
           textAlign={'center'}
           alignContent={'center'}
           onClick={() => scrollToTab('skills')} // 스킬 탭으로 스크롤
@@ -73,7 +76,8 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
 
         <Typography
           variant="h4"
-          sx={{ mb: 2.5 }}
+          color={location_point === 'career' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
           textAlign={'center'}
           alignContent={'center'}
           onClick={() => scrollToTab('career')} // 경력 탭으로 스크롤
@@ -81,19 +85,47 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
           경력 사항
         </Typography>
 
-        <Typography variant="h4" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'} onClick={() => scrollToTab('cert')}>
+        <Typography
+          variant="h4"
+          color={location_point === 'cert' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+          textAlign={'center'}
+          alignContent={'center'}
+          onClick={() => scrollToTab('cert')}
+        >
           자격증
         </Typography>
 
-        <Typography variant="h4" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'} onClick={() => scrollToTab('lang')}>
+        <Typography
+          variant="h4"
+          color={location_point === 'lang' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+          textAlign={'center'}
+          alignContent={'center'}
+          onClick={() => scrollToTab('lang')}
+        >
           어학 성적
         </Typography>
 
-        <Typography variant="h4" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'} onClick={() => scrollToTab('activity')}>
+        <Typography
+          variant="h4"
+          color={location_point === 'activity' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+          textAlign={'center'}
+          alignContent={'center'}
+          onClick={() => scrollToTab('activity')}
+        >
           대외 활동
         </Typography>
 
-        <Typography variant="h4" sx={{ mb: 2.5 }} textAlign={'center'} alignContent={'center'} onClick={() => scrollToTab('advantage')}>
+        <Typography
+          variant="h4"
+          color={location_point === 'advantage' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+          textAlign={'center'}
+          alignContent={'center'}
+          onClick={() => scrollToTab('advantage')}
+        >
           우대 사항
         </Typography>
       </MainCard>

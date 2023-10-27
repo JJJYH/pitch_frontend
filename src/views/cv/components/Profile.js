@@ -52,10 +52,6 @@ const Profile = () => {
     p: 4
   };
 
-  useEffect(() => {
-    console.log('formFields changed:', profile_data);
-  }, [profile_data]);
-
   return profile_data.map((field, index) => (
     <React.Fragment key={index}>
       <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />

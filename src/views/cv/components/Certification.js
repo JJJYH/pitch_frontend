@@ -20,10 +20,6 @@ const Certification = () => {
     dispatch(removeCert(index));
   };
 
-  useEffect(() => {
-    console.log('formFields changed:', cert_data);
-  }, [cert_data]);
-
   return cert_data.map((field, index) => (
     <React.Fragment key={index}>
       <Grid item xs={12}>

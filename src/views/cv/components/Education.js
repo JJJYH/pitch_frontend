@@ -26,13 +26,8 @@ const Education = () => {
       alert('At least one form must remain');
       return;
     }
-    console.log('Remove Target : ' + index);
     dispatch(removeEducation(index));
   };
-
-  useEffect(() => {
-    console.log('formFields changed:', education_data);
-  }, [education_data]);
 
   return education_data.map((field, index) => (
     <React.Fragment key={index}>
