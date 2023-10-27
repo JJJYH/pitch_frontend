@@ -30,24 +30,24 @@ const Header = ({ handleLeftDrawerToggle, isUser }) => {
           }
         }}
       >
-        {isUser ? <></> : <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
+        {isUser ? <></> : <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden', marginRight: '5px', marginTop: '2px' }}>
           <Avatar
             variant="rounded"
             sx={{
               ...theme.typography.commonAvatar,
               ...theme.typography.mediumAvatar,
               transition: 'all .2s ease-in-out',
-              background: theme.palette.secondary.light,
+              background: '#ffffff',
               color: theme.palette.secondary.dark,
               '&:hover': {
-                background: theme.palette.secondary.dark,
-                color: theme.palette.secondary.light
+                background: theme.palette.secondary.light,
+                color: theme.palette.secondary.dark
               }
             }}
             onClick={handleLeftDrawerToggle}
             color="inherit"
           >
-            <IconMenu2 stroke={1.5} size="1.3rem" />
+            <IconMenu2 stroke={1.5} size="1.1rem" />
           </Avatar>
         </ButtonBase>}
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>

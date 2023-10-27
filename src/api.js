@@ -11,6 +11,9 @@ const get = {
   // api: () => {return instance.post('/api경로')}
   userList: () => {
     return instance.get('/admin/list');
+  },
+  cvTest: () => {
+    return instance.get('/admin/main/cv/list');
   }
 };
 
@@ -27,6 +30,12 @@ const principal = {
   //로그인 api
   login: (data) => {
     return instance.post('/login', data);
+  },
+  setToken: (token) => {
+    return (axios.defaults.headers.common['Authorization'] = `Bearer ${token}`);
+  },
+  getUser: (token) => {
+    return instance.get('/login-user', token);
   },
   //로그아웃 api
   logout: (data) => {
@@ -67,8 +76,21 @@ const sort = {
   }
 };
 
+const cv = {
+  //이력서 api
+  getList: () => {
+    return instance.get('/admin/main/cv/list');
+  },
+  postList: (data) => {
+    return instance.post('/admin/main/cv/', data);
+  },
+  putList: (data) => {
+    return instance.put('/admin/main/cv/', data);
+  }
+};
+
 // 사용방법
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
 
-export { get, post, principal, sort };
+export { get, post, principal, sort, cv };
