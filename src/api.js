@@ -78,6 +78,9 @@ const sort = {
 
 const cv = {
   //이력서 api
+  postThumbnail: (data) => {
+    return instance.post('/admin/main/cv/imageUpload', data);
+  },
   getList: () => {
     return instance.get('/admin/main/cv/list');
   },

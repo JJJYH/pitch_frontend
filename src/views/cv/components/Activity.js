@@ -14,7 +14,6 @@ const Activity = () => {
   };
 
   const ActivityRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeActivity(index));
   };
 
