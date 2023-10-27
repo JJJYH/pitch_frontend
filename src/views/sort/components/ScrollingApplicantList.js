@@ -1,9 +1,10 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import styled from 'styled-components';
 import { sort } from 'api.js';
-import { getAge, getFormattedDate } from '../sorts.js';
+import { getAge } from '../sorts.js';
+import { useNavigate } from "react-router-dom";
 
 /* mui components */
 import ListItem from '@mui/material/ListItem';
@@ -16,17 +17,31 @@ import Avatar from '@mui/material/Avatar';
 
 
 
-const ScrollingApplicantList = ({height, width, itemSize, applyNo, postingNo}) => {
+const ScrollingApplicantList = ({height, width, itemSize, clickedBtn, postingNo, applyNo}) => {
   const [rows, setRows] = React.useState([]);
+  const [selectedApplyNo, setSelectedApplyNo] = useState(applyNo);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     sort.applicantList(postingNo, 'A') 
       .then((res) => {
         setRows(res.data);
+        setSelectedIndex(getIndex(res.data, applyNo));
       });
-    
+      setSelectedApplyNo(applyNo);
   }, []);
 
+  useEffect((e) => {
+    setNextIndex(clickedBtn);
+    console.log('clicked');
+  }, [clickedBtn]);
+
+  const handleItemClick = (e, applyNo, index) => {
+    setSelectedApplyNo(applyNo);
+    setSelectedIndex(index);
+    navigate(`/manage/${postingNo}/sort/${applyNo}/detail`);
+  };
 
   return(
     <MyScrollingElement 
@@ -36,17 +51,20 @@ const ScrollingApplicantList = ({height, width, itemSize, applyNo, postingNo}) =
       itemCount={rows.length} 
       overscanCount={5}
     >
-      {({ index, style }) => renderRow({ index, style }, rows)}
+      {({ index, style }) => renderRow({ index, style }, rows, handleItemClick, selectedApplyNo)}
     </MyScrollingElement>
   );
 }
 
 
-const renderRow = ({ index, style }, rows) => {
+const renderRow = ({ index, style }, rows, handleItemClick, selectedApplyNo) => {
   return (
     <>
-      <ListItem style={style} key={index} component="div" disablePadding>
-        <ListItemButton>
+      <ListItem style={style} component="div" disablePadding
+        onClick={(event) =>{ 
+          handleItemClick(event, rows[index].apply_no, index) 
+      }}>
+        <ListItemButton selected={selectedApplyNo == rows[index].apply_no}>
           <ListItemAvatar>
             <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" 
               sx={{
@@ -85,5 +103,17 @@ const MyScrollingElement = styled(FixedSizeList)(() => ({
     display: 'none'
   }
 }));
+
+
+const getIndex = (rows, applyNo) => rows.findIndex((row) => row.apply_no == applyNo);
+
+const setNextIndex = (op) => {
+  console.log(op)
+  if(op == '-') {
+    console.log('----');
+  } else if(op == '+') {
+    console.log('++++');
+  }
+}
 
 export default ScrollingApplicantList;

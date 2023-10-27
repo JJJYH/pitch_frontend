@@ -44,9 +44,35 @@ const principal = {
 };
 
 const sort = {
+  //공고 정보 api
+  postingInfo: (postingNo) => {
+    return instance.get(`/admin/${postingNo}/info`);
+  },
   // 지원자 목록 api
-  applicantList: (posting_no, type) => {
-    return instance.get(`/admin/${posting_no}/sort?type=${type}`);
+  applicantList: (postingNo, type) => {
+    return instance.get(`/admin/${postingNo}/sort?type=${type}`);
+  },
+  // 지원자 상세 api
+  applicantDetail: (applyNo) => {
+    return instance.get(`/admin/${applyNo}/detail`);
+  },
+  //합격 처리 api
+  applicantHandle: (type, data) => {
+    const requestData = data.map((applyNo) => {
+      return {
+        apply_no: applyNo,
+        status_type: type == 'pass' ? '합격대기' : '불합격대기'
+      };
+    });
+    return instance.put(`/admin/type`, requestData);
+  },
+  //합격 발표 api
+  noticeHandle: (postingNo, data) => {
+    const requestData = {
+      ...data,
+      job_posting_no: postingNo
+    };
+    return instance.put(`/admin/${postingNo}/acceptance`, requestData);
   }
 };
 
