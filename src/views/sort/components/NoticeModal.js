@@ -14,21 +14,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import Button from '@mui/material/Button';
-import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup, Select, TextField, TextareaAutosize } from '@mui/material';
+import {
+  Box,
+  FormControlLabel,
+  Grid,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+  TextareaAutosize
+} from '@mui/material';
+import { sort } from 'api';
 
 /* custom components */
-
-
 
 const NoticeModal = () => {
   const [open, setOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState('pass');
-  const [processType, setProcessType] = React.useState("");
+  const [processType, setProcessType] = React.useState('');
   const [noticeArea, setNoticeArea] = React.useState();
   const [cursorPos, setCursorPos] = React.useState(0);
   const noticeAreaRef = useRef(null);
 
-  const handleChangeSelect = (event) => { 
+  const handleChangeSelect = (event) => {
     setProcessType(event.target.value);
     setNoticeArea(noticeText[radioValue][event.target.value]);
   };
@@ -45,12 +55,12 @@ const NoticeModal = () => {
 
   const handleChangeTextArea = (event) => {
     setNoticeArea(event.target.value);
-  }
+  };
 
   const handleChangeRadio = (event) => {
     setRadioValue(event.target.value);
-    setProcessType("");
-    setNoticeArea("");
+    setProcessType('');
+    setNoticeArea('');
   };
 
   const addToText = (txt) => {
@@ -70,16 +80,16 @@ const NoticeModal = () => {
       setCursorPos(noticeArea.length);
     }
   }, [noticeArea, cursorPos]);
-  
+
   return (
     <div>
       <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
-        합격등록
+        합격발표
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
         <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
           <EventNoteIcon />
-          <Typography variant="h4">합격 등록</Typography>
+          <Typography variant="h4">합격 발표</Typography>
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -117,8 +127,8 @@ const NoticeModal = () => {
                   onChange={handleChangeRadio}
                   sx={{ marginLeft: '12px' }}
                 >
-                  <MyRadio value="pass" control={<Radio />} label="합격 안내" />
-                  <MyRadio value="fail" control={<Radio />} label="불합격 안내" />
+                  <MyRadio value="pass" control={<Radio />} label="합격" />
+                  <MyRadio value="fail" control={<Radio />} label="불합격" />
                 </RadioGroup>
               </Grid>
             </Grid>
@@ -133,7 +143,7 @@ const NoticeModal = () => {
                   onChange={handleChangeSelect}
                   input={<MyInput />}
                   renderValue={(selected) => {
-                    if (selected !== "") {
+                    if (selected !== '') {
                       return selected;
                     }
                     return <em>전형 선택</em>;
@@ -145,7 +155,7 @@ const NoticeModal = () => {
                     <em>전형 선택</em>
                   </MenuItem>
                   {names[radioValue].map((name) => (
-                    <MenuItem key={name} value={name} >
+                    <MenuItem key={name} value={name}>
                       {name}
                     </MenuItem>
                   ))}
@@ -162,18 +172,31 @@ const NoticeModal = () => {
                 <TextField
                   InputProps={{
                     startAdornment: (
-                    <Box sx={{display: 'flex', marginTop: '5px'}}>
-                      <StatusChip1 label={"지원자명"} onClick={(event) => {
-                        event.stopPropagation();
-                        addToText("%지원자명%")}} />
-                      <StatusChip2 label={"회사명"} onClick={(event) => {
-                        event.stopPropagation();
-                        addToText("%회사명%")}} />
-                      <StatusChip5 label={"공고명"} onClick={(event) => {
-                        event.stopPropagation();
-                        addToText("%공고명%")}} />
-                    </Box>
-                  )}}
+                      <Box sx={{ display: 'flex', marginTop: '5px' }}>
+                        <StatusChip1
+                          label={'지원자명'}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            addToText('%지원자명%');
+                          }}
+                        />
+                        <StatusChip2
+                          label={'회사명'}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            addToText('%회사명%');
+                          }}
+                        />
+                        <StatusChip5
+                          label={'공고명'}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            addToText('%공고명%');
+                          }}
+                        />
+                      </Box>
+                    )
+                  }}
                   id="notice_textarea"
                   multiline
                   rows={12}
@@ -187,7 +210,8 @@ const NoticeModal = () => {
                       flexDirection: 'column'
                     },
                     '& .MuiInputBase-input': {
-                      pl: '25px', pr: '25px'
+                      pl: '25px',
+                      pr: '25px'
                     }
                   }}
                 />
@@ -200,7 +224,7 @@ const NoticeModal = () => {
             미리보기
           </Button>
           <Box>
-            <Button autoFocus onClick={handleClose}>
+            <Button autoFocus onClick={onClickNotice}>
               발표 등록
             </Button>
             <Button autoFocus onClick={handleClose}>
@@ -213,6 +237,19 @@ const NoticeModal = () => {
   );
 };
 
+const onClickNotice = (event) => {
+  sort
+    .noticeHandle(1, {
+      //job_posting_no 넣어야 됨
+      type: radioValue,
+      status_type: processType,
+      contents: noticeArea
+    })
+    .then(() => {
+      console.log('fff');
+    });
+};
+
 /* styled components */
 
 const StatusChip1 = styled(Chip)(() => ({
@@ -222,7 +259,7 @@ const StatusChip1 = styled(Chip)(() => ({
   color: '#fff',
   fontWeight: 900,
   backgroundColor: '#FFD699',
-  minWidth:'82px',
+  minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
@@ -240,7 +277,7 @@ const StatusChip2 = styled(Chip)(() => ({
   color: '#fff',
   fontWeight: 900,
   backgroundColor: '#E1BEE7',
-  minWidth:'82px',
+  minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
@@ -258,7 +295,7 @@ const StatusChip5 = styled(Chip)(() => ({
   color: '#fff',
   fontWeight: 900,
   backgroundColor: '#90CAF9',
-  minWidth:'82px',
+  minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
@@ -308,15 +345,13 @@ const MenuProps = {
 };
 
 const names = {
-  'pass': ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'],
-  'fail': ['서류전형', '최종합격', '기타']
+  pass: ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'],
+  fail: ['서류전형', '최종합격', '기타']
 };
-
-
 
 const noticeText = {
   fail: {
-    '서류전형': `
+    서류전형: `
       안녕하세요, %이름% 님
       %회사명% 채용담당자입니다.
         
@@ -325,7 +360,7 @@ const noticeText = {
       비록 이번 기회에는 %이름%님과 함께 하지 못하지만, 향후 또 다른 기회로 만나 뵙기를 희망합니다.    
       감사합니다.\n
       %회사명% 드림`,
-    '최종합격': `
+    최종합격: `
       안녕하세요, %이름% 님
       %회사명% 채용담당자입니다.
         
@@ -336,19 +371,19 @@ const noticeText = {
       앞으로 %이름% 님의 앞날에 빛나는 일만 가득하시기를 진심으로 기원합니다.
       감사합니다.\n
       %회사명% 드림`,
-    '기타': `
+    기타: `
       안녕하세요, %이름% 님
       %회사명% 채용담당자입니다.
         
       
-      %회사명% 드림`,
+      %회사명% 드림`
   },
   pass: {
-    '인적성전형': `
+    인적성전형: `
     안녕하세요. %이름% 님, %회사명%입니다.
     인적성 검사를 안내드립니다.
     ###`,
-    '면접전형': `
+    면접전형: `
     안녕하세요, %이름% 님
     %회사명% 채용담당자 입니다.
     
@@ -367,7 +402,7 @@ const noticeText = {
     
     감사합니다.
     %회사명% 드림`,
-    '서류전형': `
+    서류전형: `
     안녕하세요, %이름% 님
     %회사명% 채용담당자입니다.
       
@@ -376,7 +411,7 @@ const noticeText = {
     이후의 일정은 추후 별도로 안내드릴 예정입니다.
     감사합니다.\n
     %회사명% 드림`,
-    '최종합격': `
+    최종합격: `
     축하합니다! %이름% 님
       
     %공고명% 채용에 최종 합격하셨음을 안내드립니다.
@@ -387,16 +422,15 @@ const noticeText = {
     이후의 일정은 추후 별도로 안내드릴 예정입니다.
     감사합니다.\n
     %회사명% 드림`,
-    '기타': `
+    기타: `
     안녕하세요, %이름% 님
     %회사명% 채용담당자입니다.
 
     기쁘게도 %이름% 님께 좋은 소식을 전해 드릴 수 있게 되었습니다.
 
     감사합니다.\n
-    %회사명% 드림`,
+    %회사명% 드림`
   }
 };
-
 
 export default NoticeModal;

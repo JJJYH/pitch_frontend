@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router';
+import { sort } from '../../api.js';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -16,7 +17,6 @@ import ApplicantTotalEval from './components/ApplicantTotalEval';
 import ApplicantExam from './components/ApplicantExam';
 import ScrollingApplicantList from './components/ScrollingApplicantList';
 
-
 /*
  *
  * 지원자 상세 페이지
@@ -24,31 +24,45 @@ import ScrollingApplicantList from './components/ScrollingApplicantList';
  *
  */
 const ApplicantDetailPage = () => {
-  const [tabValue, setTabValue] = useState(0);
   const { apply_no, job_posting_no } = useParams();
+
+  const [tabValue, setTabValue] = useState(0);
+  const [clickedBtn, setClickedBtn] = useState(null);
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
 
   return (
-    <Paper sx={{background: 'transparent', height: 1}}>
+    <Paper sx={{ background: 'transparent', height: 1 }}>
       <Grid container xs="12" spacing={'1'} sx={{ height: 1 }}>
-      <Grid item xs="3" container direction={'column'}>
+        <Grid item xs="3" container direction={'column'}>
           <Paper sx={{ height: 1 }}>
             {/* <applicant list> */}
             <Grid item xs={'3'}>
-              <Box sx={{ 
-                width: '390px', 
-                justifyContent: 'center', 
-                display: 'flex', 
-                marginTop: '15px', 
-                marginBottom: '10px' 
-              }}>
+              <Box
+                sx={{
+                  width: '390px',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  marginTop: '15px',
+                  marginBottom: '10px'
+                }}
+              >
                 <ButtonGroup size="large" variant="outlined" aria-label="large button group">
-                  <Button>
+                  <Button
+                    value={'-'}
+                    onClick={(event) => {
+                      setClickedBtn(event.target.value);
+                    }}
+                  >
                     <ChevronLeftIcon />
                   </Button>
-                  <Button>합격등록</Button>
-                  <Button>
+                  <Button>합격안내</Button>
+                  <Button
+                    value={'+'}
+                    onClick={(event) => {
+                      setClickedBtn(event.target.value);
+                    }}
+                  >
                     <ChevronRightIcon />
                   </Button>
                 </ButtonGroup>
@@ -56,12 +70,13 @@ const ApplicantDetailPage = () => {
             </Grid>
             <Divider variant="middle" />
             <Grid item xs={'9'}>
-              <ScrollingApplicantList 
-                height={770} 
-                width={390} 
-                itemSize={90} 
-                applyNo={apply_no}
+              <ScrollingApplicantList
+                height={770}
+                width={390}
+                itemSize={90}
                 postingNo={job_posting_no}
+                applyNo={apply_no}
+                clickedBtn={clickedBtn}
               />
             </Grid>
           </Paper>
@@ -88,13 +103,18 @@ const ApplicantDetailPage = () => {
               {/* <applicant detail header> */}
               <Grid container spacing={5}>
                 <Grid item xs={2}>
-                  <Avatar alt="profile" src="images/test2.png" sx={{ 
-                    width: '100%', height: '100%' 
-                    }} />
+                  <Avatar
+                    alt="profile"
+                    src="images/test2.png"
+                    sx={{
+                      width: '100%',
+                      height: '100%'
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={3} container direction="column">
                   <Grid item xs>
-                    <Typography variant="h2">이소영</Typography>
+                    <Typography variant="h2">{apply_no}</Typography>
                   </Grid>
                   <Grid item xs>
                     <Typography variant="subtitle1">1992.11.22</Typography>
@@ -110,7 +130,7 @@ const ApplicantDetailPage = () => {
                     </Stack>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto', mt: '-40px'  }}>
+                <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto', mt: '-40px' }}>
                   <Tabs value={tabValue} onChange={handleSetTabValue}>
                     <Tab label="종합평가" {...a11yProps(0)} />
                     <Tab label="입사지원서" {...a11yProps(0)} />
@@ -141,7 +161,6 @@ const ApplicantDetailPage = () => {
   );
 };
 
-
 /* styled components */
 
 const ScrollingPaper = styled(Paper)(() => ({
@@ -159,12 +178,7 @@ function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div role="tabpanel" 
-      hidden={value !== index} 
-      id={`simple-tabpanel-${index}`} 
-      aria-labelledby={`simple-tab-${index}`} 
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && (
         <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
@@ -180,5 +194,7 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
+
+const changeSelectedAppl = (e) => {};
 
 export default ApplicantDetailPage;
