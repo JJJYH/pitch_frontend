@@ -174,7 +174,7 @@ const SortingPage = () => {
               {value === 'F' && <FilteringModal />}
               {value === 'S' && <InterviewDateModal />}
               {value === 'FL' && <InterviewEvalModal />}
-              <NoticeModal />
+              <NoticeModal postingNo={job_posting_no} />
             </Box>
           </Box>
           <Box>

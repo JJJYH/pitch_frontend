@@ -30,7 +30,7 @@ import { sort } from 'api';
 
 /* custom components */
 
-const NoticeModal = () => {
+const NoticeModal = ({ postingNo }) => {
   const [open, setOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState('pass');
   const [processType, setProcessType] = React.useState('');
@@ -73,6 +73,19 @@ const NoticeModal = () => {
     // 커서 위치 조정
     textarea.setSelectionRange(start + txt.length, start + txt.length);
     textarea.focus();
+  };
+
+  const onClickNotice = (event) => {
+    sort
+      .noticeHandle(postingNo, {
+        job_posting_no: postingNo,
+        type: radioValue, //pass fail all
+        status_type: processType, //~전형
+        contents: noticeArea
+      })
+      .then(() => {
+        handleClose();
+      });
   };
 
   useEffect(() => {
@@ -237,19 +250,6 @@ const NoticeModal = () => {
   );
 };
 
-const onClickNotice = (event) => {
-  sort
-    .noticeHandle(1, {
-      //job_posting_no 넣어야 됨
-      type: radioValue,
-      status_type: processType,
-      contents: noticeArea
-    })
-    .then(() => {
-      console.log('fff');
-    });
-};
-
 /* styled components */
 
 const StatusChip1 = styled(Chip)(() => ({
@@ -345,7 +345,7 @@ const MenuProps = {
 };
 
 const names = {
-  pass: ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'],
+  pass: ['서류전형', '면접전형', '최종합격', '기타'],
   fail: ['서류전형', '최종합격', '기타']
 };
 
