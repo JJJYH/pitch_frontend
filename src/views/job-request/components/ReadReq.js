@@ -129,7 +129,7 @@ const ReadReq = ({ postStatusData, selectedChips, setRows }) => {
     const copyData = { ...formData, job_req_no: 0, job_req_date: new Date(), req_status: '작성중' };
     console.log(copyData);
     setCopiedData(copyData);
-    dispatch(resetSelectedRow());
+    // dispatch(resetSelectedRow());
   };
 
   const handlePaste = () => {

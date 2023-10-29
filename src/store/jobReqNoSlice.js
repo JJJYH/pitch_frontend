@@ -8,12 +8,12 @@ const jobReqNoSlice = createSlice({
   name: 'jobReqNo',
   initialState,
   reducers: {
-    setjobReqNo: (state, action) => {
+    setJobReqNo: (state, action) => {
       state.jobReqNo = action.payload;
     }
   }
 });
 
-export const { setjobReqNo } = jobReqNoSlice.actions;
+export const { setJobReqNo } = jobReqNoSlice.actions;
 export const jobReqNoSelector = (state) => state.jobReqNo.jobReqNo;
 export default jobReqNoSlice.reducer;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -17,6 +17,7 @@ import axios from 'axios';
 import ChipComp from './components/ChipComp';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
+import { jobReqNoSelector } from 'store/jobReqNoSlice';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -24,6 +25,8 @@ const JobReqPage = () => {
 
   const dispatch = useDispatch();
   //const selectedRow = useSelector(selectedRowSelector);
+  // const jobReqNo = useSelector(jobReqNoSelector);
+  const dataGridRef = useRef();
 
   // const rowClick = (data) => {
   //   console.log(data);
@@ -108,6 +111,24 @@ const JobReqPage = () => {
     }
   };
 
+  // const handleCheckedRowsDelete = async () => {
+  //   try {
+  //     // 삭제 요청을 보냅니다.
+  //     const response = await axios.delete(`http://localhost:8888/admin/hire/delete/checked`, { data: { jobReqNo } });
+
+  //     console.log(response);
+
+  //     const statusData = { selectedStatus: selectedChips };
+  //     const responseData = await postStatusData(statusData);
+  //     setRows(responseData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  const handleDataGrid = () => {
+    dataGridRef.current.handleCheckedRowsDelete();
+  };
+
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
@@ -139,7 +160,7 @@ const JobReqPage = () => {
                 <Button variant="contained" style={{ backgroundColor: '#b2cce1' }} onClick={handleCreate}>
                   등록
                 </Button>
-                <Button variant="outlined" style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
+                <Button variant="outlined" style={{ borderColor: '#b2cce1', color: '#b2cce1' }} onClick={handleDataGrid}>
                   삭제
                 </Button>
               </Stack>
@@ -166,7 +187,13 @@ const JobReqPage = () => {
                     margin: 'auto'
                   }}
                 >
-                  <ReqDataGrid rows={rows} />
+                  <ReqDataGrid
+                    rows={rows}
+                    ref={dataGridRef}
+                    postStatusData={postStatusData}
+                    setRows={setRows}
+                    selectedChips={selectedChips}
+                  />
                 </Box>
               </Grid>
             </Grid>

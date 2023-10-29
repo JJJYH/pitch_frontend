@@ -7,6 +7,9 @@ import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, Status
 import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
+import { setJobReqNo } from 'store/jobReqNoSlice';
+import { jobReqNoSelector } from 'store/jobReqNoSlice';
+import { useRef, useImperativeHandle, forwardRef } from 'react';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   '& .css-qvtrhg-MuiDataGrid-virtualScroller': {
@@ -24,9 +27,10 @@ const StyledDataGrid = styled(DataGrid)(() => ({
   }
 }));
 
-const ReqDataGrid = ({ rows }) => {
+const ReqDataGrid = forwardRef(({ rows, setRows, postStatusData, selectedChips }, ref) => {
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
+  const jobReqNo = useSelector(jobReqNoSelector);
 
   const getRowClassName = (params) => {
     const isSelected = selectedRow && selectedRow.job_req_no === params.row.job_req_no;
@@ -36,12 +40,32 @@ const ReqDataGrid = ({ rows }) => {
   const handleRowClick = async (job_req_no) => {
     try {
       const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
+
       dispatch(setSelectedRow(response.data));
       console.log(response.data);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const handleCheckedRowsDelete = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:8888/admin/hire/delete/checked`, { data: { jobReqNo } });
+
+      console.log(response);
+
+      const statusData = { selectedStatus: selectedChips };
+      const responseData = await postStatusData(statusData);
+      setRows(responseData);
+      dispatch(resetSelectedRow());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleCheckedRowsDelete
+  }));
 
   const columns = [
     {
@@ -99,9 +123,13 @@ const ReqDataGrid = ({ rows }) => {
           handleRowClick(row.row.job_req_no);
         }}
         getRowClassName={getRowClassName}
+        onRowSelectionModelChange={(rows) => {
+          console.log(rows);
+          dispatch(setJobReqNo(rows));
+        }}
       />
     </div>
   );
-};
+});
 
 export default ReqDataGrid;
