@@ -1,9 +1,12 @@
 import React from 'react';
+import axios from 'axios';
 import { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
 import { styled } from '@mui/material/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   '& .css-qvtrhg-MuiDataGrid-virtualScroller': {
@@ -15,10 +18,31 @@ const StyledDataGrid = styled(DataGrid)(() => ({
     '&-ms-overflow-style:': {
       display: 'none'
     }
+  },
+  '& .selected-row': {
+    backgroundColor: '#f0f0f0'
   }
 }));
 
-const ReqDataGrid = ({ rows, handleRowClick }) => {
+const ReqDataGrid = ({ rows }) => {
+  const dispatch = useDispatch();
+  const selectedRow = useSelector(selectedRowSelector);
+
+  const getRowClassName = (params) => {
+    const isSelected = selectedRow && selectedRow.job_req_no === params.row.job_req_no;
+    return isSelected ? 'selected-row' : '';
+  };
+
+  const handleRowClick = async (job_req_no) => {
+    try {
+      const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
+      dispatch(setSelectedRow(response.data));
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const columns = [
     {
       field: 'job_req_date',
@@ -70,7 +94,11 @@ const ReqDataGrid = ({ rows, handleRowClick }) => {
         checkboxSelection
         disableRowSelectionOnClick
         getRowId={(row) => row.job_req_no}
-        onRowClick={(selectedRow) => handleRowClick(selectedRow.row.job_req_no)}
+        onRowClick={(row) => {
+          console.log(row);
+          handleRowClick(row.row.job_req_no);
+        }}
+        getRowClassName={getRowClassName}
       />
     </div>
   );

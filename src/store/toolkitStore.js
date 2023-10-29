@@ -10,6 +10,8 @@ import certReducer from './certSlice';
 import langReducer from './langSlice';
 import advantageReducer from './advantageSlice';
 import activityReducer from './activitySlice';
+import selectedRowReducer from './selectedRowSlice';
+import jobReqNoReducer from './jobReqNoSlice';
 
 import userInfoReducer from './userInfoSlice';
 const toolkitStore = configureStore({
@@ -23,7 +25,9 @@ const toolkitStore = configureStore({
     lang: langReducer,
     activity: activityReducer,
     advantage: advantageReducer,
-    userInfo: userInfoReducer
+    userInfo: userInfoReducer,
+    selectedRow: selectedRowReducer,
+    jobReqNo: jobReqNoReducer
   }
 });
 

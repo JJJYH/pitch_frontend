@@ -15,11 +15,20 @@ import ReqDataGrid from './components/ReqDataGrid';
 import ReadReq from './components/ReadReq';
 import axios from 'axios';
 import ChipComp from './components/ChipComp';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
   const [rows, setRows] = useState([]);
-  const [selectedRow, setSelectedRow] = useState('');
+
+  const dispatch = useDispatch();
+  //const selectedRow = useSelector(selectedRowSelector);
+
+  // const rowClick = (data) => {
+  //   console.log(data);
+  //   dispatch(setSelectedRow(data));
+  // };
 
   const StyledBox = styled(Box)(() => ({
     margin: '15px 10px',
@@ -49,19 +58,33 @@ const JobReqPage = () => {
     reqlisthandler();
   }, []);
 
-  const handleCreate = () => {
-    setSelectedChips([]);
-    reqlisthandler();
-    setSelectedRow('');
+  const handleCreate = async () => {
+    // setSelectedChips([]);
+    // reqlisthandler();
+    const statusData = { selectedStatus: selectedChips };
+    const responseData = await postStatusData(statusData);
+    setRows(responseData);
+
+    dispatch(resetSelectedRow());
   };
 
-  const handleRowClick = async (job_req_no) => {
+  // const handleRowClick = async (job_req_no) => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
+  //     dispatch(setSelectedRow(response.data));
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const postStatusData = async (statusData) => {
     try {
-      const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
-      setSelectedRow(response.data);
-      //console.log(response.data);
+      const response = await axios.post('http://localhost:8888/admin/hire/statuslist', statusData);
+      return response.data;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   };
 
@@ -70,15 +93,16 @@ const JobReqPage = () => {
 
     setSelectedChips(newSelectedChips);
     //console.log(newSelectedChips);
-    setSelectedRow('');
+
+    dispatch(resetSelectedRow());
 
     const statusData = {
       selectedStatus: newSelectedChips
     };
 
     try {
-      const response = await axios.post('http://localhost:8888/admin/hire/statuslist', statusData);
-      setRows(response.data);
+      const responseData = await postStatusData(statusData);
+      setRows(responseData);
     } catch (error) {
       console.error(error);
     }
@@ -142,22 +166,14 @@ const JobReqPage = () => {
                     margin: 'auto'
                   }}
                 >
-                  <ReqDataGrid rows={rows} handleRowClick={handleRowClick} />
+                  <ReqDataGrid rows={rows} />
                 </Box>
               </Grid>
             </Grid>
           </StyledBox>
         </Grid>
         <Grid item xs={6}>
-          <StyledBox>
-            <ReadReq
-              selectedRow={selectedRow}
-              reqlisthandler={reqlisthandler}
-              handleRowClick={handleRowClick}
-              selectedChips={selectedChips}
-              setRows={setRows}
-            />
-          </StyledBox>
+          <ReadReq reqlisthandler={reqlisthandler} postStatusData={postStatusData} selectedChips={selectedChips} setRows={setRows} />
         </Grid>
       </Grid>
     </Paper>

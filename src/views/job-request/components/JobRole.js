@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-const JobRole = ({ onSelect, disabled, selectedRow }) => {
+const JobRole = ({ onSelect, disabled, formData }) => {
   //   console.log('v:' + value);
   //   console.log('d:' + disabled);
 
@@ -14,25 +14,12 @@ const JobRole = ({ onSelect, disabled, selectedRow }) => {
     { label: '직무5', qual: '- 자격조건5\n- 자격조건5', prefer: '- 우대사항5\n- 우대사항5', duties: '- 수행업무5\n- 수행업무5' }
   ];
 
-  const selectedOptionIndex = jobRoles.findIndex((option) => option.label === selectedRow.job_role);
-  //   console.log('index:' + selectedOptionIndex);
-  //   console.log(selectedRow);
-
   return (
     <Autocomplete
-      defaultValue={jobRoles[selectedOptionIndex]}
+      value={formData.job_role}
       disableClearable
       options={jobRoles}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          placeholder="직무 선택"
-          variant="outlined"
-          name="job_role"
-          size="small"
-          // value={selectedOption ? selectedOption.label : value}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} placeholder="직무 선택" variant="outlined" name="job_role" size="small" />}
       onChange={(event, value) => onSelect(value)}
       disabled={disabled} // Autocomplete를 비활성화
     />
