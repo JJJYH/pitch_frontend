@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -39,6 +39,7 @@ import { principal } from 'api.js';
 import { useDispatch } from 'react-redux/es';
 import { setUser } from 'store/userInfoSlice';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -65,7 +66,11 @@ const FirebaseLogin = ({ ...others }) => {
   };
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log(userInfo);
+  }, [userInfo]);
 
 
 
@@ -154,9 +159,14 @@ const FirebaseLogin = ({ ...others }) => {
               }
               principal.login(userData).then((res) => {
                 sessionStorage.setItem('AccessToken', res.headers.accesstoken);
-                principal.setToken(res.headers.accesstoken);
-                principal.getUser().then((res) => { dispatch(setUser(res.data)) })
+                principal.setToken(res.headers.accesstoken)
+                principal.getUser(res.headers.accesstoken).then((res) => {
+                  console.log(res.data);
+                  dispatch(setUser(res.data));
+                  navigate('/main');
+                });
               })
+              console.log(userInfo);
             }
           } catch (err) {
             console.error(err);

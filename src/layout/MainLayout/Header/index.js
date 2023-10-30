@@ -12,6 +12,8 @@ import NotificationSection from './NotificationSection';
 
 // assets
 import { IconMenu2 } from '@tabler/icons';
+import { Link } from 'react-router-dom';
+import classNames from './Header.module.scss';
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
@@ -50,19 +52,24 @@ const Header = ({ handleLeftDrawerToggle, isUser }) => {
             <IconMenu2 stroke={1.5} size="1.1rem" />
           </Avatar>
         </ButtonBase>}
+
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
           <LogoSection />
         </Box>
 
       </Box>
 
+      {/* <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: '50px', paddingTop: '8px', marginLeft: '30px' }}>
+        <Link className={classNames.links} to={'/manage/req'}>채용요청</Link>
+        <Link className={classNames.links} to={'/manage/req'}>공고목록</Link>
+        <Link className={classNames.links} to={'/manage/req'}>권한관리</Link>
+      </div> */}
+
       {/* header search */}
       <SearchSection />
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
-      {/* notification & profile */}
-      <NotificationSection />
       <ProfileSection />
     </>
   );

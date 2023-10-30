@@ -46,7 +46,7 @@ const SortingPage = () => {
         });
         setRows(arr);
       });
-    
+
   }, [value]);
 
   return (
@@ -106,9 +106,9 @@ const SortingPage = () => {
               marginRight: '25px'
             }}
           >
-            { value === 'F' && <FilteringModal /> }
-            { value === 'S' && <InterviewDateModal /> }
-            { value === 'FL' && <InterviewEvalModal /> }
+            {value === 'F' && <FilteringModal />}
+            {value === 'S' && <InterviewDateModal />}
+            {value === 'FL' && <InterviewEvalModal />}
             <NoticeModal />
           </Box>
           <Box>
@@ -116,13 +116,13 @@ const SortingPage = () => {
               <ApplicantDataGrid columns={fColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="S">
-              <ApplicantDataGrid columns={sColumns} rows={rows}/>
+              <ApplicantDataGrid columns={sColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="FL">
-              <ApplicantDataGrid columns={flColumns} rows={rows}/>
+              <ApplicantDataGrid columns={flColumns} rows={rows} />
             </MyTabPanel>
             <MyTabPanel value="FH">
-              <ApplicantDataGrid columns={fhColumns} rows={rows}/>
+              <ApplicantDataGrid columns={fhColumns} rows={rows} />
             </MyTabPanel>
           </Box>
         </TabContext>
@@ -144,10 +144,10 @@ const MyTabPanel = muiStyled(TabPanel)(({ theme }) => ({
 function RenderAvatar() {
   return (
     <Avatar
-        alt='profile'
-        src='images/test2.png'
-        sx={{ width: 50, height: 50 }}
-      />
+      alt='profile'
+      src='images/test2.png'
+      sx={{ width: 50, height: 50 }}
+    />
   );
 }
 
@@ -159,10 +159,10 @@ const StatusChip3 = styled(Chip)(() => ({
   color: 'white',
   fontWeight: 900,
   '&.Mui-selected': {
-      backgroundColor: '#A5D6A7',
-      color: '#fff',
+    backgroundColor: '#A5D6A7',
+    color: '#fff',
   },
-  minWidth:'82px',
+  minWidth: '82px',
   width: '82px'
 }));
 
@@ -174,10 +174,10 @@ const StatusChip4 = styled(Chip)(() => ({
   color: 'white',
   fontWeight: 900,
   '&.Mui-selected': {
-      backgroundColor: '#F48FB1',
-      color: '#fff',
+    backgroundColor: '#F48FB1',
+    color: '#fff',
   },
-  minWidth:'82px',
+  minWidth: '82px',
   width: '82px'
 }));
 
@@ -185,8 +185,8 @@ function RenderEval(score) {
   let isQualified = score >= 60 ? true : false;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center'}}>
-      <Typography variant='h2' 
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Typography variant='h2'
         style={{ marginRight: '15px' }}
       >{score}</Typography>
       {isQualified ? <StatusChip3 label={'적합인재'} /> : <StatusChip4 label={'부적합'} />}
@@ -195,10 +195,10 @@ function RenderEval(score) {
 }
 
 const RenderStar = (evals) => {
-  
-  if(evals.length == 0) return '평가전';
+
+  if (evals.length == 0) return '평가전';
   let total = 0;
-  
+
   evals.forEach(element => {
     total += (element["sub1_score"] + element["sub2_score"]) / 2;
   });
@@ -224,7 +224,7 @@ const fColumns = [
     headerName: ' ',
     sortable: false,
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: RenderAvatar
   },
@@ -232,16 +232,16 @@ const fColumns = [
     field: 'user_nm',
     headerName: '이름',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+      `${params.row.user_nm} (${params.row.gender})`,
   },
   {
     field: 'user_birth',
     headerName: '생년월일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${getAge(params.row.user_birth)}세 (${params.row.user_birth})`,
@@ -250,7 +250,7 @@ const fColumns = [
     field: 'career',
     headerName: '경력구분',
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${params.row.career == 'y' ? '경력' : '신입'}`,
@@ -259,32 +259,32 @@ const fColumns = [
     field: 'apply_date',
     headerName: '지원일',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${getFormattedDate(params.row.apply_date)}`,
+      `${getFormattedDate(params.row.apply_date)}`,
   },
   {
     field: 'eval',
     headerName: '평가',
     sortable: false,
     width: 230,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => 
+    renderCell: (params) =>
       RenderEval(params.row.score)
   },
   {
     field: 'status_type',
     headerName: '상태',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
   },
   {
     field: 'read_status',
     headerName: '열람여부',
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     width: 140
   },
@@ -293,7 +293,7 @@ const fColumns = [
     headerName: ' ',
     sortable: false,
     width: 210,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: MenuBtn
   },
@@ -313,7 +313,7 @@ const sColumns = [
     headerName: ' ',
     sortable: false,
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: RenderAvatar
   },
@@ -321,16 +321,16 @@ const sColumns = [
     field: 'user_nm',
     headerName: '이름',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+      `${params.row.user_nm} (${params.row.gender})`,
   },
   {
     field: 'user_birth',
     headerName: '생년월일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${getAge(params.row.user_birth)}세 (${params.row.user_birth})`,
@@ -339,7 +339,7 @@ const sColumns = [
     field: 'career',
     headerName: '경력구분',
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${params.row.career == 'y' ? '경력' : '신입'}`,
@@ -348,32 +348,32 @@ const sColumns = [
     field: 'apply_date',
     headerName: '지원일',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${getFormattedDate(params.row.apply_date)}`,
+      `${getFormattedDate(params.row.apply_date)}`,
   },
   {
     field: 'eval',
     headerName: '평가',
     sortable: false,
     width: 230,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => 
+    renderCell: (params) =>
       RenderEval(params.row.score)
   },
   {
     field: 'status_type',
     headerName: '상태',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
   },
   {
     field: 'read_status',
     headerName: '열람여부',
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     width: 140
   },
@@ -382,7 +382,7 @@ const sColumns = [
     headerName: ' ',
     sortable: false,
     width: 210,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: MenuBtn
   },
@@ -402,7 +402,7 @@ const flColumns = [
     headerName: ' ',
     sortable: false,
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: RenderAvatar
   },
@@ -410,16 +410,16 @@ const flColumns = [
     field: 'user_nm',
     headerName: '이름',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+      `${params.row.user_nm} (${params.row.gender})`,
   },
   {
     field: 'user_birth',
     headerName: '생년월일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${getAge(params.row.user_birth)}세 (${params.row.user_birth})`,
@@ -428,7 +428,7 @@ const flColumns = [
     field: 'career',
     headerName: '경력구분',
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${params.row.career == 'y' ? '경력' : '신입'}`,
@@ -437,23 +437,23 @@ const flColumns = [
     field: 'apply_date',
     headerName: '지원일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${getFormattedDate(params.row.apply_date)}`,
+      `${getFormattedDate(params.row.apply_date)}`,
   },
   {
     field: 'status_type',
     headerName: '상태',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'score',
     headerName: '면접 평가',
     width: 160,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: (params) => RenderStar(params.row.evals)
   },
@@ -461,7 +461,7 @@ const flColumns = [
     field: 'note',
     headerName: '비고',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
   },
   {
@@ -469,7 +469,7 @@ const flColumns = [
     headerName: ' ',
     sortable: false,
     width: 210,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: MenuBtn
   },
@@ -489,7 +489,7 @@ const fhColumns = [
     headerName: ' ',
     sortable: false,
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: RenderAvatar
   },
@@ -497,16 +497,16 @@ const fhColumns = [
     field: 'user_nm',
     headerName: '이름',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${params.row.user_nm} (${params.row.gender})`,
+      `${params.row.user_nm} (${params.row.gender})`,
   },
   {
     field: 'user_birth',
     headerName: '생년월일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${getAge(params.row.user_birth)}세 (${params.row.user_birth})`,
@@ -515,7 +515,7 @@ const fhColumns = [
     field: 'career',
     headerName: '경력구분',
     width: 120,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
       `${params.row.career == 'y' ? '경력' : '신입'}`,
@@ -524,23 +524,23 @@ const fhColumns = [
     field: 'apply_date',
     headerName: '지원일',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     valueGetter: (params) =>
-    `${getFormattedDate(params.row.apply_date)}`,
+      `${getFormattedDate(params.row.apply_date)}`,
   },
   {
     field: 'status_type',
     headerName: '상태',
     width: 140,
-    align:'center',
+    align: 'center',
     headerAlign: 'center'
   },
   {
     field: 'score',
     headerName: '면접 평가',
     width: 160,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: (params) => RenderStar(params.row.evals)
   },
@@ -548,7 +548,7 @@ const fhColumns = [
     field: 'note',
     headerName: '비고',
     width: 200,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
   },
   {
@@ -556,7 +556,7 @@ const fhColumns = [
     headerName: ' ',
     sortable: false,
     width: 210,
-    align:'center',
+    align: 'center',
     headerAlign: 'center',
     renderCell: MenuBtn
   },
@@ -568,8 +568,8 @@ const getFormattedDate = (data) => {
   const date = new Date(data);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0'); 
-  
+  const day = String(date.getDate()).padStart(2, '0');
+
   return `${year}/${month}/${day}`;
 }
 
@@ -584,7 +584,7 @@ const getAge = (data) => {
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
     age--;
   }
-  
+
   return age;
 }
 

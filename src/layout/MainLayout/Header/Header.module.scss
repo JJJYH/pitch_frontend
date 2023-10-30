@@ -1,0 +1,27 @@
+.links {
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #6e6e6e;
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -10px;
+        //border-radius: 10px;
+        border-bottom: 2.5px solid transparent;
+        transition: border-color 100ms ease-in-out;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    &:hover {
+        &::after {
+            border-color: #4682B4;
+
+        }
+
+        color: #3c6d95;
+    }
+}

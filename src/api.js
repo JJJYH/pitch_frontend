@@ -1,9 +1,43 @@
 import axios from 'axios';
 
+
 // axios 인스턴스를 생성합니다.
 const instance = axios.create({
-    baseURL: 'http://localhost:8888' // 여기에 원하는 기본 URL을 설정합니다.
+    baseURL: 'http://localhost:8888'
 });
+// AccessToken 검증 로직
+axios.interceptors.request.use((config) => {
+    if (!config.headers) return config;
+
+    let accessToken = sessionStorage.getItem('AccessToken');
+
+    if (accessToken !== null) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return config;
+})
+//accessToken 재발급 로직
+axios.interceptors.response.use((response) => {
+    console.log("get response", response);
+    const accessToken = response.headers.accesstoken;
+    console.log('1. ' + accessToken);
+    if (accessToken) {
+        sessionStorage.setItem('AccessToken', accessToken);
+        principal.setToken(accessToken);
+        console.log("accesstoken set storage");
+    }
+    return res;
+},//accessToken 에러로직(진행중)
+    async function (error) {
+        const originalConfig = error.config;
+        const msg = error.response.data.message;
+        const status = error.response.status;
+
+        console.log(error);
+        return Promise.reject(error);
+    }
+)
 
 // 각 방법별 예시
 const get = {
@@ -27,7 +61,7 @@ const principal = {
     //로그인 api
     login: (data) => { return instance.post('/login', data) },
     setToken: (token) => { return axios.defaults.headers.common['Authorization'] = `Bearer ${token}` },
-    getUser: (token) => { return instance.get('/login-user', token) },
+    getUser: (accessToken) => { return instance.get('/auth/login-user', { params: { token: accessToken } }) },
     //로그아웃 api
     logout: (data) => { return instance.post('/logout', data) }
 };
