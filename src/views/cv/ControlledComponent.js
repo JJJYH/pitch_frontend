@@ -24,6 +24,7 @@ export default function ControlledComponent({ labelName, BeforeDay, StartDate, E
           StartDate ? StartDate(event) : false;
           EndDate ? EndDate(event) : false;
         }}
+        slotProps={{ textField: { variant: 'standard' } }}
         label={labelName}
         format="YYYY.MM.DD"
         shouldDisableDate={(day) => (BeforeDay ? dayjs(day).isBefore(BeforeDay, 'YYYY/MM/DD') : false)}

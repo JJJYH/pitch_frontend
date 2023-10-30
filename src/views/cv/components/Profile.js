@@ -8,25 +8,24 @@ import {
   FormLabel,
   Grid,
   IconButton,
+  InputBase,
   Modal,
+  Paper,
   Radio,
   RadioGroup,
   TextField,
   Typography
 } from '@mui/material';
-import SmartButtonIcon from '@mui/icons-material/SmartButton';
 import React from 'react';
-import MainCard from 'ui-component/cards/MainCard';
 
-import { useState } from 'react';
 import { useEffect } from 'react';
 import DaumPostcode from 'react-daum-postcode';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from 'store/profileSlice';
 import TitlebarImageList from '../TitlebarImageList';
-
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 const Profile = () => {
-  const profileData = useSelector((state) => state.profile);
+  const profile_data = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
   const handleProfileChange = (e, index) => {
@@ -35,22 +34,13 @@ const Profile = () => {
     dispatch(updateProfile({ index, name, value }));
   };
 
-  const profileRemoveFields = (index) => {
-    if (careerData.length === 1) {
-      alert('At least one form must remain');
-      return;
-    }
-    console.log('Remove Target : ' + index);
-    dispatch(removeProfile(index));
-  };
-
   /**모달 핸들러 */
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   /**주소 찾기 모달 스타일 */
-  const Modalstyle = {
+  const modal_style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -62,122 +52,103 @@ const Profile = () => {
     p: 4
   };
 
-  useEffect(() => {
-    console.log('formFields changed:', profileData);
-  }, [profileData]);
-
-  return profileData.map((field, index) => (
+  return profile_data.map((field, index) => (
     <React.Fragment key={index}>
       <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-        <Grid item xs={8}>
+        <Grid item sx={{ flex: '1 1 auto' }}>
           <Grid item xs={12} sx={{ mb: 2.5 }}>
             <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <TextField
                   fullWidth
                   label="성명"
                   color="primary"
                   type="text"
-                  variant="filled"
-                  name="profileName"
-                  value={field.profileName}
+                  variant="standard"
+                  name="user_nm"
+                  value={field.user_nm}
                   onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={2}>
                 <TextField
                   fullWidth
                   label="전화번호"
                   color="primary"
                   type="text"
-                  variant="filled"
-                  name="phoneNumber"
-                  value={field.phoneNumber}
+                  variant="standard"
+                  name="user_phone"
+                  value={field.user_phone}
                   onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Grid item xs={3}>
                 <TextField
                   fullWidth
                   label="E-mail"
                   color="primary"
                   type="text"
-                  variant="filled"
-                  name="email"
-                  value={field.email}
+                  variant="standard"
+                  name="user_email"
+                  value={field.user_email}
                   onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sx={{ mb: 2.5 }}>
-            <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <TextField
                   fullWidth
                   label="지원 직무"
                   color="primary"
                   type="text"
-                  variant="filled"
+                  variant="standard"
                   name="position"
                   value={field.position}
                   onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={2}>
                 <TextField
                   fullWidth
                   label="생년월일"
                   color="primary"
                   type="text"
-                  name="birth"
-                  value={field.birth}
+                  name="user_birth"
+                  value={field.user_birth}
                   onChange={(e) => handleProfileChange(e, index)}
-                  variant="filled"
+                  variant="standard"
                   inputProps={{ readOnly: true }}
                 />
               </Grid>
-
-              <Grid item xs={4}>
-                <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    label="Gender"
-                    name="gender"
-                    value={field.gender}
-                    onChange={(e) => handleProfileChange(e, index)}
-                    sx={{ height: 10 }}
-                  >
-                    <FormControlLabel value="남성" control={<Radio size="small" />} label="남성" />
-                    <FormControlLabel value="여성" control={<Radio size="small" />} label="여성" />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
             </Box>
           </Grid>
+
           <Grid item xs={12}>
             <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="주소"
-                  color="primary"
-                  type="text"
-                  name="address"
-                  value={field.address}
-                  onChange={(e) => handleProfileChange(e, index)}
-                  variant="outlined"
-                />
-                <Button onClick={handleOpen}>주소 찾기</Button>
+                <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}>
+                  <TextField
+                    fullWidth
+                    label="주소"
+                    color="primary"
+                    type="text"
+                    name="address"
+                    placeholder="주소 입력"
+                    value={field.address}
+                    onChange={(e) => handleProfileChange(e, index)}
+                    variant="standard"
+                  />
+                  <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                  <IconButton color="primary" sx={{ p: '10px' }} onClick={handleOpen}>
+                    <LocationOnOutlinedIcon />
+                  </IconButton>
+                </Paper>
                 <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                  <Box sx={Modalstyle}>
+                  <Box sx={modal_style}>
                     <DaumPostcode
                       onComplete={(data) => {
                         handleProfileChange({ target: { name: 'address', value: data.address } }, index);
@@ -187,10 +158,30 @@ const Profile = () => {
                   </Box>
                 </Modal>
               </Grid>
+              <Grid item xs={4}>
+                <FormControl>
+                  <FormLabel size="small" id="demo-row-radio-buttons-group-label">
+                    Gender
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    label="Gender"
+                    name="gender"
+                    value={field.gender}
+                    onChange={(e) => handleProfileChange(e, index)}
+                    sx={{ height: 10 }}
+                    size="small"
+                  >
+                    <FormControlLabel value="남성" control={<Radio size="small" />} label="남성" />
+                    <FormControlLabel value="여성" control={<Radio size="small" />} label="여성" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
             </Box>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item sx={{ flex: '0 0 auto' }}>
           <Grid item xs={12}>
             <TitlebarImageList />
             {/* <Card sx={{ width: '128px', height: '135px', background: 'light-grey' }}></Card> */}

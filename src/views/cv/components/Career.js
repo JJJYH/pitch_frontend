@@ -2,14 +2,14 @@ import { Box, Divider, Grid, IconButton, TextField } from '@mui/material';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeCareer, updateCareer } from 'store/careerSlice';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
+import ClearIcon from '@mui/icons-material/Clear';
 import ControlledComponent from '../ControlledComponent';
 const Career = () => {
-  const careerData = useSelector((state) => state.career);
+  const career_data = useSelector((state) => state.career);
   const dispatch = useDispatch();
 
-  //   console.log('careerData : ' + JSON.stringify(careerData[0].companyName));
-  //   console.log('career Detail : ' + JSON.stringify(careerData[0]));
+  //   console.log('career_data : ' + JSON.stringify(career_data[0].company_name));
+  //   console.log('career Detail : ' + JSON.stringify(career_data[0]));
 
   const handleCareerChange = (e, index) => {
     const { name, value } = e.target;
@@ -17,13 +17,11 @@ const Career = () => {
   };
 
   const careerRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeCareer(index));
   };
 
-  return careerData.map((field, index) => (
+  return career_data.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
@@ -33,10 +31,10 @@ const Career = () => {
                 label="회사 입력"
                 color="primary"
                 type="text"
-                name="companyName"
-                value={field.companyName}
-                placeholder={careerData[index].companyName}
-                variant="outlined"
+                name="company_name"
+                value={field.company_name}
+                placeholder={career_data[index].company_name}
+                variant="standard"
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
@@ -46,10 +44,10 @@ const Career = () => {
                 label="부서 입력"
                 color="primary"
                 type="text"
-                name="deptName"
-                value={field.deptName}
-                placeholder={careerData[index].deptName}
-                variant="outlined"
+                name="cv_dept_name"
+                value={field.cv_dept_name}
+                placeholder={career_data[index].cv_dept_name}
+                variant="standard"
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
@@ -59,17 +57,13 @@ const Career = () => {
                 label="직책 입력"
                 color="primary"
                 type="text"
-                name="exPosition"
-                value={field.exPosition}
-                placeholder={careerData[index].exPosition}
-                variant="outlined"
+                name="position"
+                value={field.position}
+                placeholder={career_data[index].position}
+                variant="standard"
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
             <Grid item xs={3}>
               <TextField
                 fullWidth
@@ -78,6 +72,7 @@ const Career = () => {
                 placeholder="OOOO만원"
                 name="salary"
                 value={field.salary}
+                variant="standard"
                 onChange={(e) => handleCareerChange(e, index)}
                 InputProps={{
                   onBlur: (e) => {
@@ -95,29 +90,32 @@ const Career = () => {
                 label="직무"
                 color="primary"
                 type="text"
-                variant="outlined"
+                variant="standard"
                 name="job"
                 value={field.job}
                 onChange={(e) => handleCareerChange(e, index)}
               />
             </Grid>
             <Grid item xs={4}>
-              <ControlledComponent labelName={'입사일'} StartDate={(e) => handleCareerChange(e, index)} name="joinDate" />
+              <ControlledComponent labelName={'입사일'} StartDate={(e) => handleCareerChange(e, index)} name="join_date" />
             </Grid>
             <Grid item xs={4}>
               <ControlledComponent
                 labelName={'퇴사일'}
-                BeforeDay={field.joinDate}
+                BeforeDay={field.join_date}
                 EndDate={(e) => handleCareerChange(e, index)}
-                name="quitDate"
+                name="quit_date"
               />
             </Grid>
             <Grid item xs={1}>
               <IconButton onClick={() => careerRemoveFields(index)}>
-                <DisabledByDefaultOutlinedIcon />
+                <ClearIcon />
               </IconButton>
             </Grid>
           </Box>
+        </Grid>
+        <Grid item xs={12} sx={{ mb: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}></Box>
         </Grid>
       </Grid>
     </React.Fragment>

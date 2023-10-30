@@ -13,20 +13,22 @@ const careerSlice = createSlice({
     },
     updateCareer: (state, action) => {
       const { index, name, value } = action.payload;
-      if (name === 'companyName') {
-        state[index].companyName = value;
-      } else if (name === 'deptName') {
-        state[index].deptName = value;
-      } else if (name === 'exPosition') {
-        state[index].exPosition = value;
+      if (name === 'company_name') {
+        state[index].company_name = value;
+      } else if (name === 'cv_dept_name') {
+        state[index].cv_dept_name = value;
+      } else if (name === 'position') {
+        state[index].position = value;
       } else if (name === 'salary') {
         state[index].salary = value;
       } else if (name === 'job') {
         state[index].job = value;
-      } else if (name === 'joinDate') {
-        state[index].joinDate = value;
-      } else if (name === 'quitDate') {
-        state[index].quitDate = value;
+      } else if (name === 'join_date') {
+        state[index].join_date = value;
+      } else if (name === 'quit_date') {
+        state[index].quit_date = value;
+      } else if (name === 'note') {
+        state[index].note = value;
       }
     }
   }

@@ -2,9 +2,9 @@ import { Box, Divider, Grid, TextField, IconButton } from '@mui/material';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeLang, updateLang } from 'store/langSlice';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
+import ClearIcon from '@mui/icons-material/Clear';
 const Language = () => {
-  const langData = useSelector((state) => state.lang);
+  const lang_data = useSelector((state) => state.lang);
   const dispatch = useDispatch();
 
   const handleLangChange = (e, index) => {
@@ -13,13 +13,11 @@ const Language = () => {
   };
 
   const langRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeLang(index));
   };
 
-  return langData.map((field, index) => (
+  return lang_data.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
@@ -29,10 +27,10 @@ const Language = () => {
                 label="시험 구분"
                 color="primary"
                 type="text"
-                name="examType"
-                value={field.examType}
-                placeholder={langData[index].examType}
-                variant="outlined"
+                name="exam_type"
+                value={field.exam_type}
+                placeholder={lang_data[index].exam_type}
+                variant="standard"
                 onChange={(e) => handleLangChange(e, index)}
               />
             </Grid>
@@ -42,10 +40,10 @@ const Language = () => {
                 label="외국어명"
                 color="primary"
                 type="text"
-                name="langName"
-                value={field.langName}
-                placeholder={langData[index].langName}
-                variant="outlined"
+                name="language_name"
+                value={field.language_name}
+                placeholder={lang_data[index].language_name}
+                variant="standard"
                 onChange={(e) => handleLangChange(e, index)}
               />
             </Grid>
@@ -54,8 +52,9 @@ const Language = () => {
                 fullWidth
                 label="어학 점수"
                 type="number"
-                name="langScore"
-                value={field.langScore}
+                name="language_score"
+                value={field.language_score}
+                variant="standard"
                 onChange={(e) => handleLangChange(e, index)}
                 InputProps={{
                   onBlur: (e) => {
@@ -69,7 +68,7 @@ const Language = () => {
             </Grid>
             <Grid item xs={1} justifyContent={'end'}>
               <IconButton onClick={() => langRemoveFields(index)}>
-                <DisabledByDefaultOutlinedIcon />
+                <ClearIcon />
               </IconButton>
             </Grid>
           </Box>

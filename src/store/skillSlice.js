@@ -6,24 +6,24 @@ const skillSlice = createSlice({
   name: 'skill',
   initialState: [
     {
-      skillName: 'React',
-      skillDomain: '개발'
+      skill_name: 'React',
+      skill_domain: '개발'
     },
     {
-      skillName: 'Angular',
-      skillDomain: '개발'
+      skill_name: 'Angular',
+      skill_domain: '개발'
     },
     {
-      skillName: 'jQuery',
-      skillDomain: '개발'
+      skill_name: 'jQuery',
+      skill_domain: '개발'
     },
     {
-      skillName: 'Polymer',
-      skillDomain: '개발'
+      skill_name: 'Polymer',
+      skill_domain: '개발'
     },
     {
-      skillName: 'Vue.js',
-      skillDomain: '개발'
+      skill_name: 'Vue.js',
+      skill_domain: '개발'
     }
   ],
   reducers: {
@@ -35,7 +35,7 @@ const skillSlice = createSlice({
     },
     updateSkill: (state, action) => {
       const { index, value } = action.payload;
-      state[index].skillName = value;
+      state[index].skill_name = value;
     }
   }
 });

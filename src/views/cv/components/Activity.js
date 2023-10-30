@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Divider, Grid, IconButton, TextField } from '@mui/material';
 import { removeActivity, updateActivity } from 'store/activitySlice';
 import ControlledComponent from '../ControlledComponent';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
+import ClearIcon from '@mui/icons-material/Clear';
 const Activity = () => {
-  const activityData = useSelector((state) => state.activity);
+  const activity_data = useSelector((state) => state.activity);
   const dispatch = useDispatch();
 
   const handleActivityChange = (e, index) => {
@@ -14,13 +14,11 @@ const Activity = () => {
   };
 
   const ActivityRemoveFields = (index) => {
-    console.log('Remove Target : ' + index);
     dispatch(removeActivity(index));
   };
 
-  return activityData.map((field, index) => (
+  return activity_data.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
@@ -30,10 +28,10 @@ const Activity = () => {
                 label="활동 구분"
                 color="primary"
                 type="text"
-                name="activityType"
-                value={field.activityType}
-                placeholder={activityData[index].activityType}
-                variant="outlined"
+                name="activity_type"
+                value={field.activity_type}
+                placeholder={activity_data[index].activity_type}
+                variant="standard"
                 onChange={(e) => handleActivityChange(e, index)}
               />
             </Grid>
@@ -45,20 +43,20 @@ const Activity = () => {
                 type="text"
                 name="organization"
                 value={field.organization}
-                placeholder={activityData[index].organization}
-                variant="outlined"
+                placeholder={activity_data[index].organization}
+                variant="standard"
                 onChange={(e) => handleActivityChange(e, index)}
               />
             </Grid>
             <Grid item xs={3}>
-              <ControlledComponent labelName={'시작일'} StartDate={(e) => handleActivityChange(e, index)} name="startDate" />
+              <ControlledComponent labelName={'시작일'} StartDate={(e) => handleActivityChange(e, index)} name="start_date" />
             </Grid>
             <Grid item xs={3}>
               <ControlledComponent
                 labelName={'종료일'}
-                BeforeDay={field.startDate}
+                BeforeDay={field.start_date}
                 EndDate={(e) => handleActivityChange(e, index)}
-                name="endDate"
+                name="end_date"
               />
             </Grid>
           </Box>
@@ -71,17 +69,17 @@ const Activity = () => {
                 label="활동 내용"
                 color="primary"
                 type="text"
-                name="activityDetail"
-                value={field.activityDetail}
-                placeholder={activityData[index].activityDetail}
-                variant="outlined"
+                name="activity_detail"
+                value={field.activity_detail}
+                placeholder={activity_data[index].activity_detail}
+                variant="standard"
                 multiline={true}
                 onChange={(e) => handleActivityChange(e, index)}
               />
             </Grid>
             <Grid item xs={1} justifyContent={'end'}>
               <IconButton onClick={() => ActivityRemoveFields(index)}>
-                <DisabledByDefaultOutlinedIcon />
+                <ClearIcon />
               </IconButton>
             </Grid>
           </Box>

@@ -14,12 +14,12 @@ const langSlice = createSlice({
     },
     updateLang: (state, action) => {
       const { index, name, value } = action.payload;
-      if (name === 'examType') {
-        state[index].examType = value;
-      } else if (name === 'langName') {
-        state[index].langName = value;
-      } else if (name === 'langScore') {
-        state[index].langScore = value;
+      if (name === 'exam_type') {
+        state[index].exam_type = value;
+      } else if (name === 'language_name') {
+        state[index].language_name = value;
+      } else if (name === 'language_score') {
+        state[index].language_score = value;
       }
     }
   }
