@@ -74,7 +74,12 @@ const FilteringModal = () => {
 
   return (
     <div>
-      <Button variant="contained" size="medium" style={{ marginRight: '5px', borderColor: '#b2cce1', background: '#b2cce1' }} onClick={handleOpen}>
+      <Button
+        variant="contained"
+        size="medium"
+        style={{ marginRight: '5px', borderColor: '#38678f', background: '#38678f' }}
+        onClick={handleOpen}
+      >
         필터링
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
@@ -117,7 +122,9 @@ const FilteringModal = () => {
               <CustomizedSlider name={'경력'} />
             </AccordionDetails>
           </Accordion>
-          <Typography variant="h4" sx={{ mt: '20px', mb: '10px'}}>지원자 목록</Typography>
+          <Typography variant="h4" sx={{ mt: '20px', mb: '10px' }}>
+            지원자 목록
+          </Typography>
           <Divider />
           <ScrollingApplicantList height={400} width={768} itemSize={80} />
         </DialogContent>

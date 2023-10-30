@@ -30,7 +30,7 @@ import { sort } from 'api';
 
 /* custom components */
 
-const NoticeModal = () => {
+const NoticeModal = ({ postingNo, title }) => {
   const [open, setOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState('pass');
   const [processType, setProcessType] = React.useState('');
@@ -75,6 +75,20 @@ const NoticeModal = () => {
     textarea.focus();
   };
 
+  const onClickNotice = (event) => {
+    sort
+      .noticeHandle(postingNo, {
+        job_posting_no: postingNo,
+        type: radioValue,
+        status_type: processType,
+        contents: noticeArea,
+        title: title
+      })
+      .then(() => {
+        handleClose();
+      });
+  };
+
   useEffect(() => {
     if (noticeArea && cursorPos === 0) {
       setCursorPos(noticeArea.length);
@@ -83,7 +97,7 @@ const NoticeModal = () => {
 
   return (
     <div>
-      <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
+      <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#38678f', color: '#38678f' }}>
         합격발표
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
@@ -237,19 +251,6 @@ const NoticeModal = () => {
   );
 };
 
-const onClickNotice = (event) => {
-  sort
-    .noticeHandle(1, {
-      //job_posting_no 넣어야 됨
-      type: radioValue,
-      status_type: processType,
-      contents: noticeArea
-    })
-    .then(() => {
-      console.log('fff');
-    });
-};
-
 /* styled components */
 
 const StatusChip1 = styled(Chip)(() => ({
@@ -345,7 +346,7 @@ const MenuProps = {
 };
 
 const names = {
-  pass: ['서류전형', '인적성전형', '면접전형', '최종합격', '기타'],
+  pass: ['서류전형', '면접전형', '최종합격', '기타'],
   fail: ['서류전형', '최종합격', '기타']
 };
 

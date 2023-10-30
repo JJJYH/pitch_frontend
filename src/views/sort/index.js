@@ -37,7 +37,6 @@ const SortingPage = () => {
   const [rows, setRows] = useState([]);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
   const [btnType, setBtnType] = useState('');
-  const [title, setTitle] = useState('[개발직무] 개발자 채용~!@$@');
   const [info, setInfo] = useState({
     hire_num: 0,
     hired_num: 0,
@@ -149,8 +148,8 @@ const SortingPage = () => {
                 variant="contained"
                 size="medium"
                 sx={{
-                  borderColor: '#b2cce1',
-                  background: '#b2cce1',
+                  borderColor: '#38678f',
+                  background: '#38678f',
                   mr: '5px'
                 }}
                 onClick={(event) => handleBtnClick(event, 'pass')}
@@ -161,8 +160,8 @@ const SortingPage = () => {
                 variant="outlined"
                 size="medium"
                 sx={{
-                  borderColor: '#b2cce1',
-                  color: '#b2cce1',
+                  borderColor: '#38678f',
+                  color: '#38678f',
                   mr: '5px'
                 }}
                 onClick={(event) => handleBtnClick(event, 'fail')}
@@ -174,7 +173,7 @@ const SortingPage = () => {
               {value === 'F' && <FilteringModal />}
               {value === 'S' && <InterviewDateModal />}
               {value === 'FL' && <InterviewEvalModal />}
-              <NoticeModal />
+              <NoticeModal postingNo={job_posting_no} title={info.req_title} />
             </Box>
           </Box>
           <Box>
