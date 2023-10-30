@@ -51,7 +51,7 @@ const SelectBox = styled(Select)(({ value }) => ({
   }
 }));
 
-const ReadReq = ({ postStatusData, selectedChips, setRows }) => {
+const ReadReq = ({ reqlisthandler, postStatusData, selectedChips, setRows }) => {
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
@@ -197,9 +197,10 @@ const ReadReq = ({ postStatusData, selectedChips, setRows }) => {
           console.error(error);
         }
 
-        const statusData = { selectedStatus: selectedChips };
-        const responseData = await postStatusData(statusData);
-        setRows(responseData);
+        // const statusData = { selectedStatus: selectedChips };
+        // const responseData = await postStatusData(statusData);
+        // setRows(responseData);
+        reqlisthandler();
       }
     } catch (error) {
       console.error(error);
@@ -461,16 +462,16 @@ const ReadReq = ({ postStatusData, selectedChips, setRows }) => {
           <Grid item container justifyContent="center">
             {formData.req_status === '작성중' && (
               <Stack direction="row" spacing={1}>
-                <Button variant="contained" style={{ backgroundColor: '#b2cce1' }} onClick={(e) => onSubmit(e, '작성중')}>
+                <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '작성중')}>
                   임시 저장
                 </Button>
-                <Button variant="outlined" style={{ borderColor: '#b2cce1', color: '#b2cce1' }} onClick={(e) => onSubmit(e, '요청완료')}>
+                <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={(e) => onSubmit(e, '요청완료')}>
                   승인 요청
                 </Button>
               </Stack>
             )}
             {formData.req_status === '요청완료' && (
-              <Button variant="contained" style={{ backgroundColor: '#b2cce1' }} onClick={(e) => onSubmit(e, '작성중')}>
+              <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '작성중')}>
                 요청 취소
               </Button>
             )}

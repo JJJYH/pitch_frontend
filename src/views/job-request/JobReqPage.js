@@ -17,21 +17,19 @@ import axios from 'axios';
 import ChipComp from './components/ChipComp';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
-import { jobReqNoSelector } from 'store/jobReqNoSlice';
+import SearchIcon from '@mui/icons-material/Search';
+import ReqPageSearch from './components/ReqPageSearch';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
   const [rows, setRows] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   const dispatch = useDispatch();
-  //const selectedRow = useSelector(selectedRowSelector);
-  // const jobReqNo = useSelector(jobReqNoSelector);
-  const dataGridRef = useRef();
 
-  // const rowClick = (data) => {
-  //   console.log(data);
-  //   dispatch(setSelectedRow(data));
-  // };
+  const dataGridRef = useRef();
 
   const StyledBox = styled(Box)(() => ({
     margin: '15px 10px',
@@ -69,17 +67,10 @@ const JobReqPage = () => {
     setRows(responseData);
 
     dispatch(resetSelectedRow());
+    setStartDate(null);
+    setEndDate(null);
+    setSearchKeyword('');
   };
-
-  // const handleRowClick = async (job_req_no) => {
-  //   try {
-  //     const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
-  //     dispatch(setSelectedRow(response.data));
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const postStatusData = async (statusData) => {
     try {
@@ -111,22 +102,36 @@ const JobReqPage = () => {
     }
   };
 
-  // const handleCheckedRowsDelete = async () => {
-  //   try {
-  //     // 삭제 요청을 보냅니다.
-  //     const response = await axios.delete(`http://localhost:8888/admin/hire/delete/checked`, { data: { jobReqNo } });
-
-  //     console.log(response);
-
-  //     const statusData = { selectedStatus: selectedChips };
-  //     const responseData = await postStatusData(statusData);
-  //     setRows(responseData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
   const handleDataGrid = () => {
     dataGridRef.current.handleCheckedRowsDelete();
+  };
+
+  const handleStartDateChange = (date) => {
+    console.log(date.$d);
+    setStartDate(date.$d);
+  };
+
+  const handleEndDateChange = (date) => {
+    console.log(date);
+    setEndDate(date.$d);
+  };
+
+  const handleSearchInputChange = (value) => {
+    setSearchKeyword(value);
+  };
+
+  const handleCombinedSearch = async (startDate, endDate, searchKeyword, selectedStatus) => {
+    try {
+      const response = await axios.post('http://localhost:8888/admin/hire/search', {
+        startDate,
+        endDate,
+        searchKeyword,
+        selectedStatus
+      });
+      setRows(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -138,11 +143,11 @@ const JobReqPage = () => {
         <Box sx={{ padding: '0px 20px' }}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Grid container spacing={2}>
-                <Typography sx={{ marginTop: '28px', marginLeft: '20px' }}>신청일자</Typography>
-                <Grid item>
+              <Grid container spacing={1}>
+                {/* <Typography sx={{ marginTop: '20px', marginLeft: '20px' }}>신청일자</Typography> */}
+                <Grid item sx={{ marginLeft: '10px' }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} />
+                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={startDate} onChange={handleStartDateChange} />
                   </LocalizationProvider>
                 </Grid>
                 <Grid item>
@@ -150,17 +155,30 @@ const JobReqPage = () => {
                 </Grid>
                 <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} />
+                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={endDate} onChange={handleEndDateChange} />
                   </LocalizationProvider>
+                </Grid>
+                <Grid item sx={{ marginLeft: '20px' }}>
+                  <ReqPageSearch value={searchKeyword} handleSearchInputChange={handleSearchInputChange} />
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    style={{ height: '38px', minWidth: '40px', width: '40px', backgroundColor: '#38678f' }}
+                    onClick={() => handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips)}
+                  >
+                    <SearchIcon fontSize="small" />
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>
+
             <Grid item>
               <Stack direction="row" spacing={1}>
-                <Button variant="contained" style={{ backgroundColor: '#b2cce1' }} onClick={handleCreate}>
+                <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                   등록
                 </Button>
-                <Button variant="outlined" style={{ borderColor: '#b2cce1', color: '#b2cce1' }} onClick={handleDataGrid}>
+                <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
                   삭제
                 </Button>
               </Stack>
