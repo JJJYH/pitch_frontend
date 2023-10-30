@@ -30,7 +30,7 @@ import { sort } from 'api';
 
 /* custom components */
 
-const NoticeModal = ({ postingNo }) => {
+const NoticeModal = ({ postingNo, title }) => {
   const [open, setOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState('pass');
   const [processType, setProcessType] = React.useState('');
@@ -79,9 +79,10 @@ const NoticeModal = ({ postingNo }) => {
     sort
       .noticeHandle(postingNo, {
         job_posting_no: postingNo,
-        type: radioValue, //pass fail all
-        status_type: processType, //~전형
-        contents: noticeArea
+        type: radioValue,
+        status_type: processType,
+        contents: noticeArea,
+        title: title
       })
       .then(() => {
         handleClose();
@@ -96,7 +97,7 @@ const NoticeModal = ({ postingNo }) => {
 
   return (
     <div>
-      <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#b2cce1', color: '#b2cce1' }}>
+      <Button variant="outlined" size="medium" onClick={handleOpen} style={{ borderColor: '#38678f', color: '#38678f' }}>
         합격발표
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
