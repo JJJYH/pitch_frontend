@@ -62,14 +62,17 @@ const JobReqPage = () => {
   const handleCreate = async () => {
     // setSelectedChips([]);
     // reqlisthandler();
-    const statusData = { selectedStatus: selectedChips };
-    const responseData = await postStatusData(statusData);
-    setRows(responseData);
+    // const statusData = { selectedStatus: selectedChips };
+    // const responseData = await postStatusData(statusData);
+    // setRows(responseData);
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+    setRows(searchData);
 
     dispatch(resetSelectedRow());
-    setStartDate(null);
-    setEndDate(null);
-    setSearchKeyword('');
+
+    // setStartDate(null);
+    // setEndDate(null);
+    // setSearchKeyword('');
   };
 
   const postStatusData = async (statusData) => {
@@ -82,24 +85,35 @@ const JobReqPage = () => {
     }
   };
 
+  // const handleChipClick = async (status) => {
+  //   const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
+
+  //   setSelectedChips(newSelectedChips);
+  //   //console.log(newSelectedChips);
+
+  //   dispatch(resetSelectedRow());
+
+  //   const statusData = {
+  //     selectedStatus: newSelectedChips
+  //   };
+
+  //   try {
+  //     const responseData = await postStatusData(statusData);
+  //     setRows(responseData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
   const handleChipClick = async (status) => {
     const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
 
     setSelectedChips(newSelectedChips);
-    //console.log(newSelectedChips);
 
     dispatch(resetSelectedRow());
 
-    const statusData = {
-      selectedStatus: newSelectedChips
-    };
-
-    try {
-      const responseData = await postStatusData(statusData);
-      setRows(responseData);
-    } catch (error) {
-      console.error(error);
-    }
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, newSelectedChips);
+    setRows(searchData);
   };
 
   const handleDataGrid = () => {
@@ -128,10 +142,16 @@ const JobReqPage = () => {
         searchKeyword,
         selectedStatus
       });
-      setRows(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
+      throw error;
     }
+  };
+
+  const handleCombinedSearchButton = async (startDate, endDate, searchKeyword, selectedStatus) => {
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedStatus);
+    setRows(searchData);
   };
 
   return (
@@ -165,7 +185,7 @@ const JobReqPage = () => {
                   <Button
                     variant="contained"
                     style={{ height: '38px', minWidth: '40px', width: '40px', backgroundColor: '#38678f' }}
-                    onClick={() => handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips)}
+                    onClick={() => handleCombinedSearchButton(startDate, endDate, searchKeyword, selectedChips)}
                   >
                     <SearchIcon fontSize="small" />
                   </Button>
@@ -211,6 +231,10 @@ const JobReqPage = () => {
                     postStatusData={postStatusData}
                     setRows={setRows}
                     selectedChips={selectedChips}
+                    startDate={startDate}
+                    endDate={endDate}
+                    searchKeyword={searchKeyword}
+                    handleCombinedSearch={handleCombinedSearch}
                   />
                 </Box>
               </Grid>
@@ -218,7 +242,17 @@ const JobReqPage = () => {
           </StyledBox>
         </Grid>
         <Grid item xs={6}>
-          <ReadReq reqlisthandler={reqlisthandler} postStatusData={postStatusData} selectedChips={selectedChips} setRows={setRows} />
+          <ReadReq
+            reqlisthandler={reqlisthandler}
+            postStatusData={postStatusData}
+            selectedChips={selectedChips}
+            setSelectedChips={setSelectedChips}
+            setRows={setRows}
+            startDate={startDate}
+            endDate={endDate}
+            searchKeyword={searchKeyword}
+            handleCombinedSearch={handleCombinedSearch}
+          />
         </Grid>
       </Grid>
     </Paper>

@@ -51,7 +51,7 @@ const SelectBox = styled(Select)(({ value }) => ({
   }
 }));
 
-const ReadReq = ({ reqlisthandler, postStatusData, selectedChips, setRows }) => {
+const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelectedChips, setRows, startDate, endDate, searchKeyword }) => {
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
@@ -180,9 +180,11 @@ const ReadReq = ({ reqlisthandler, postStatusData, selectedChips, setRows }) => 
 
         dispatch(setSelectedRow(submitData));
 
-        const statusData = { selectedStatus: selectedChips };
-        const responseData = await postStatusData(statusData);
-        setRows(responseData);
+        // const statusData = { selectedStatus: selectedChips };
+        // const responseData = await postStatusData(statusData);
+        // setRows(responseData);
+        const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+        setRows(searchData);
       } else {
         const res = await axios.post('http://localhost:8888/admin/hire/create', submitData);
         console.log(res);
@@ -192,6 +194,7 @@ const ReadReq = ({ reqlisthandler, postStatusData, selectedChips, setRows }) => 
         try {
           const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${res.data}`);
           dispatch(setSelectedRow(response.data));
+          setSelectedChips([]);
           console.log(response.data);
         } catch (error) {
           console.error(error);

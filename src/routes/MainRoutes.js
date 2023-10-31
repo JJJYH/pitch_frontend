@@ -14,8 +14,10 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialIcons')));
 const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
-// sample page routing
+// job request page routing
 const JobReqPage = Loadable(lazy(() => import('views/job-request/JobReqPage')));
+// job posting page routing
+const PostingListPage = Loadable(lazy(() => import('views/posting/PostingListPage')));
 
 //test page routing
 const CVPage = Loadable(lazy(() => import('views/cv/Page')));
@@ -35,6 +37,10 @@ const MainRoutes = {
         {
           path: 'cv2',
           element: <CVPage />
+        },
+        {
+          path: 'careers',
+          element: <PostingListPage />
         }
       ]
     },
