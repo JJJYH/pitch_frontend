@@ -39,6 +39,7 @@ import User1 from 'assets/images/users/user-round.svg';
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
 import { logoutUser } from '../../../../store/userInfoSlice';
+import { principal } from 'api';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -60,9 +61,13 @@ const ProfileSection = () => {
   const anchorRef = useRef(null);
   const handleLogout = async () => {
     console.log('Logout');
-    sessionStorage.removeItem('AccessToken');
-    dispatch(logoutUser);
-    window.location.reload();
+    principal.logout().then(() => {
+      sessionStorage.removeItem('AccessToken');
+      localStorage.setItem('logoutEvent', 'true');
+      dispatch(logoutUser);
+      navigate('/main');
+      window.location.reload();
+    });
   };
 
   const handleClose = (event) => {

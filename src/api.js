@@ -6,7 +6,8 @@ const instance = axios.create({
   baseURL: 'http://localhost:8888'
 });
 // AccessToken 검증 로직
-axios.interceptors.request.use((config) => {
+instance.interceptors.request.use((config) => {
+  console.log(config.headers);
   if (!config.headers) return config;
 
   let accessToken = sessionStorage.getItem('AccessToken');
@@ -18,7 +19,7 @@ axios.interceptors.request.use((config) => {
   return config;
 })
 //accessToken 재발급 로직
-axios.interceptors.response.use((response) => {
+instance.interceptors.response.use((response) => {
   console.log("get response", response);
   const accessToken = response.headers.accesstoken;
   console.log('1. ' + accessToken);
@@ -27,7 +28,7 @@ axios.interceptors.response.use((response) => {
     principal.setToken(accessToken);
     console.log("accesstoken set storage");
   }
-  return res;
+  return response;
 },//accessToken 에러로직(진행중)
   async function (error) {
     const originalConfig = error.config;
@@ -66,7 +67,7 @@ const principal = {
   setToken: (token) => { return axios.defaults.headers.common['Authorization'] = `Bearer ${token}` },
   getUser: (accessToken) => { return instance.get('/auth/login-user', { params: { token: accessToken } }) },
   //로그아웃 api
-  logout: (data) => { return instance.post('/logout', data) }
+  logout: (data) => { return instance.post('/auth/logout', data) }
 };
 
 const sort = {
