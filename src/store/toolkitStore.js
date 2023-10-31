@@ -10,6 +10,7 @@ import certReducer from './certSlice';
 import langReducer from './langSlice';
 import advantageReducer from './advantageSlice';
 import activityReducer from './activitySlice';
+import postingReducer from './postingSlice';
 
 import userInfoReducer from './userInfoSlice';
 const toolkitStore = configureStore({
@@ -23,7 +24,8 @@ const toolkitStore = configureStore({
     lang: langReducer,
     activity: activityReducer,
     advantage: advantageReducer,
-    userInfo: userInfoReducer
+    userInfo: userInfoReducer,
+    posting: postingReducer
   }
 });
 
