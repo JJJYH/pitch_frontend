@@ -15,11 +15,14 @@ import { IconMenu2 } from '@tabler/icons';
 import { Link } from 'react-router-dom';
 import classNames from './Header.module.scss';
 
+// redux
+import { useDispatch, useSelector } from 'react-redux';
+
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
-const Header = ({ handleLeftDrawerToggle, isUser }) => {
+const Header = ({ handleLeftDrawerToggle }) => {
   const theme = useTheme();
-
+  const isUser = useSelector((state) => state.userInfo.isUser)
   return (
     <>
       {/* logo & toggler button */}
@@ -66,7 +69,8 @@ const Header = ({ handleLeftDrawerToggle, isUser }) => {
       </div> */}
 
       {/* header search */}
-      <SearchSection />
+      {/* <SearchSection /> */}
+      <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 

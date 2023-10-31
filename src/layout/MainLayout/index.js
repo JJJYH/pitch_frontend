@@ -63,8 +63,9 @@ const MainLayout = () => {
     dispatch(setMenu(!leftDrawerOpened));
   };
 
+  const isUser = useSelector((state) => state.userInfo.isUser)
   //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
-  const [isUser, setUser] = useState(false);
+  //const [isUser, setUser] = useState(false);
 
   return (
     <Box sx={{ display: 'flex' }}>
