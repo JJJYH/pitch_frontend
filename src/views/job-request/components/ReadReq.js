@@ -28,7 +28,7 @@ const FormTypo = styled(Typography)(({ disabled }) => ({
 }));
 
 const StyledBox = styled(Box)(() => ({
-  margin: '15px 10px',
+  margin: '10px',
   borderRadius: '8px',
   border: '3px solid #f0f0f0',
   height: 680,
@@ -224,12 +224,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               {selectedRow ? '요청 상세' : '요청서 등록'}
             </Typography>
             {formData.req_status !== '작성중' && (
-              <Button variant="contained" color="primary" onClick={handleCopy}>
+              <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCopy}>
                 복사하기
               </Button>
             )}
             {copiedData && !selectedRow && (
-              <Button variant="contained" color="primary" onClick={handlePaste}>
+              <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handlePaste}>
                 붙여넣기
               </Button>
             )}
