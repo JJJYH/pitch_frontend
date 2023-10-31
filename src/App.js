@@ -13,19 +13,21 @@ import themes from 'themes';
 import NavigationScroll from 'layout/NavigationScroll';
 
 // ==============================|| APP ||============================== //
-
+import { OpenCvProvider } from 'opencv-react';
 const App = () => {
   const customization = useSelector((state) => state.customization);
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={themes(customization)}>
-        <CssBaseline />
-        <NavigationScroll>
-          <Routes />
-        </NavigationScroll>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <OpenCvProvider openCvPath="/opencv/opencv.js">
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={themes(customization)}>
+          <CssBaseline />
+          <NavigationScroll>
+            <Routes />
+          </NavigationScroll>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </OpenCvProvider>
   );
 };
 

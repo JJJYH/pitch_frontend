@@ -20,7 +20,7 @@ const Language = () => {
     <React.Fragment key={index}>
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }} justifyContent={'space-between'} alignItems={'end'}>
             <Grid item xs={3}>
               <TextField
                 fullWidth
@@ -47,7 +47,7 @@ const Language = () => {
                 onChange={(e) => handleLangChange(e, index)}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <TextField
                 fullWidth
                 label="어학 점수"
@@ -66,7 +66,7 @@ const Language = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={1} justifyContent={'end'}>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
               <IconButton onClick={() => langRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>

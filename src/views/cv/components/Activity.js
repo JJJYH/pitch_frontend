@@ -21,7 +21,7 @@ const Activity = () => {
     <React.Fragment key={index}>
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }} justifyContent={'space-between'} alignItems={'end'}>
             <Grid item xs={3}>
               <TextField
                 fullWidth
@@ -59,6 +59,11 @@ const Activity = () => {
                 name="end_date"
               />
             </Grid>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
+              <IconButton onClick={() => ActivityRemoveFields(index)}>
+                <ClearIcon />
+              </IconButton>
+            </Grid>
           </Box>
         </Grid>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
@@ -76,11 +81,6 @@ const Activity = () => {
                 multiline={true}
                 onChange={(e) => handleActivityChange(e, index)}
               />
-            </Grid>
-            <Grid item xs={1} justifyContent={'end'}>
-              <IconButton onClick={() => ActivityRemoveFields(index)}>
-                <ClearIcon />
-              </IconButton>
             </Grid>
           </Box>
         </Grid>

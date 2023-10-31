@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useSelector } from 'react-redux';
 import { cv } from 'api';
 
-export default function OpenIconSpeedDial() {
+export default function OpenIconSpeedDial({ selectedFiles, endPath }) {
   const cvProfile = useSelector((state) => state.profile);
   const cvEducation = useSelector((state) => state.education);
   const cvActivity = useSelector((state) => state.activity);
@@ -36,15 +36,58 @@ export default function OpenIconSpeedDial() {
     }
   };
 
-  const sendCVData = (cvData) =>
-    cv
-      .postList(cvData)
-      .then((res) => {
-        console.log('Response : ' + JSON.stringify(res));
-      })
-      .catch((error) => {
-        console.log('Error : ' + error);
+  const handleUploadFiles = () => {
+    Object.keys(selectedFiles).map((groupKey) => {
+      const formData = new FormData();
+      selectedFiles[groupKey].forEach((file) => {
+        formData.append('cvfile', file);
       });
+      formData.append('endPath', groupKey);
+
+      cv.postMultiFile(formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then((response) => {
+          console.log('파일 업로드 성공: ' + response.data);
+        })
+        .catch((error) => {
+          console.log('파일 업로드 실패: ' + error);
+        });
+    });
+
+    // selectedFiles.forEach((file) => {
+    //   formData.append('cvfile', file);
+    // });
+
+    // formData.append('endPath', endPath);
+
+    // cv.postMultiFile(formData, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   }
+    // })
+    //   .then((response) => {
+    //     console.log('파일 업로드 성공: ' + response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log('파일 업로드 실패: ' + error);
+    //   });
+
+    console.log('Uploading files:', selectedFiles);
+  };
+
+  const sendCVData = async (cvData) => {
+    try {
+      handleUploadFiles();
+
+      const res = await cv.postList(cvData);
+      console.log('Response : ' + JSON.stringify(res));
+    } catch (error) {
+      console.log('Error : ' + error);
+    }
+  };
 
   const actions = [
     { icon: <FileCopyIcon />, name: 'Copy' },

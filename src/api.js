@@ -55,6 +55,9 @@ const cv = {
   postThumbnail: (data) => {
     return instance.post('/admin/main/cv/imageUpload', data);
   },
+  postMultiFile: (data) => {
+    return instance.post('/admin/main/cv/cvFileUpload', data);
+  },
   getList: () => {
     return instance.get('/admin/main/cv/list');
   },
