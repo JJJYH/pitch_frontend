@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { logoutUser } from './store/userInfoSlice';
 
 // ==============================|| APP ||============================== //
-
+import { OpenCvProvider } from 'opencv-react';
 const App = () => {
   const customization = useSelector((state) => state.customization);
   const userInfo = useSelector((state) => state.userInfo);
@@ -41,14 +41,16 @@ const App = () => {
   }, [userInfo])
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={themes(customization)}>
-        <CssBaseline />
-        <NavigationScroll>
-          <Routes />
-        </NavigationScroll>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <OpenCvProvider openCvPath="/opencv/opencv.js">
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={themes(customization)}>
+          <CssBaseline />
+          <NavigationScroll>
+            <Routes />
+          </NavigationScroll>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </OpenCvProvider>
   );
 };
 

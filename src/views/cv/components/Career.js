@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeCareer, updateCareer } from 'store/careerSlice';
 import ClearIcon from '@mui/icons-material/Clear';
 import ControlledComponent from '../ControlledComponent';
+import FileUpload from '../FileUpload';
+
 const Career = () => {
   const career_data = useSelector((state) => state.career);
   const dispatch = useDispatch();
@@ -24,7 +26,7 @@ const Career = () => {
     <React.Fragment key={index}>
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }} justifyContent={'space-between'} alignItems={'end'}>
             <Grid item xs={4}>
               <TextField
                 fullWidth
@@ -107,15 +109,12 @@ const Career = () => {
                 name="quit_date"
               />
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
               <IconButton onClick={() => careerRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>
             </Grid>
           </Box>
-        </Grid>
-        <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}></Box>
         </Grid>
       </Grid>
     </React.Fragment>

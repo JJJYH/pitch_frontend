@@ -24,8 +24,8 @@ const Certification = () => {
     <React.Fragment key={index}>
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-            <Grid item xs={3}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }} justifyContent={'space-between'} alignItems={'end'}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="자격증명"
@@ -38,7 +38,7 @@ const Certification = () => {
                 onChange={(e) => handleCertChange(e, index)}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <TextField
                 fullWidth
                 label="발행처"
@@ -51,11 +51,10 @@ const Certification = () => {
                 onChange={(e) => handleCertChange(e, index)}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <ControlledComponent labelName={'취득일'} StartDate={(e) => handleCertChange(e, index)} name="acquisition_date" />
             </Grid>
-
-            <Grid item xs={1}>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
               <IconButton onClick={() => certRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>

@@ -12,7 +12,7 @@ import advantageReducer from './advantageSlice';
 import activityReducer from './activitySlice';
 import selectedRowReducer from './selectedRowSlice';
 import jobReqNoReducer from './jobReqNoSlice';
-
+import cvFileReducer from './cvFileSlice';
 import userInfoReducer from './userInfoSlice';
 const toolkitStore = configureStore({
   reducer: {
@@ -27,7 +27,8 @@ const toolkitStore = configureStore({
     advantage: advantageReducer,
     userInfo: userInfoReducer,
     selectedRow: selectedRowReducer,
-    jobReqNo: jobReqNoReducer
+    jobReqNo: jobReqNoReducer,
+    cvfile: cvFileReducer
   }
 });
 

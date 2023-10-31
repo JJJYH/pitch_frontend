@@ -33,7 +33,7 @@ const Education = () => {
     <React.Fragment key={index}>
       <Grid item xs={12}>
         <Grid item xs={12} sx={{ mb: 2.5 }}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
+          <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }} justifyContent={'space-between'} alignItems={'end'}>
             <Grid item xs={2}>
               <TextField
                 fullWidth
@@ -130,7 +130,7 @@ const Education = () => {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={1} justifyContent={'end'}>
+            <Grid item xs={1} justifyContent={'space-between'} alignItems={'end'}>
               <IconButton onClick={() => eduRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>
