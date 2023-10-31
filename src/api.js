@@ -36,6 +36,12 @@ instance.interceptors.response.use(
     const status = error.response.status;
 
     console.log(error);
+    console.log(msg);
+    //AccessToken 값이 유효하지 않으면 없으면 자동 로그아웃
+    if (msg === 'AccessToken is not valid') {
+      sessionStorage.removeItem('AccessToken');
+      localStorage.setItem('logoutEvent', 'true');
+    }
     return Promise.reject(error);
   }
 );
@@ -71,6 +77,12 @@ const principal = {
   },
   getUser: (accessToken) => {
     return instance.get('/auth/login-user', { params: { token: accessToken } });
+  },
+  googleLogin: () => {
+    return instance.get('/auth/google-login');
+  },
+  googleSocialLogin: (code) => {
+    return instance.get('/auth/google', { params: { code: code } });
   },
   //로그아웃 api
   logout: (data) => {

@@ -52,8 +52,10 @@ const FirebaseLogin = ({ ...others }) => {
   //const [checked, setChecked] = useState(true);
 
   const googleHandler = async () => {
-    axios.get('http://localhost:8888/admin/loginUserTest').then((data) => { console.log });
-    console.error('Login');
+
+    const googleLoginUrl = 'https://accounts.google.com/o/oauth2/auth?client_id=1061330767873-0hsk6i0platdln04io0velba0ojonsc0.apps.googleusercontent.com&redirect_uri=http://localhost:3000/pages/redirect&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+    window.open(googleLoginUrl, '_blank', 'width=600, height=600');
+    //console.error('Login');
   };
 
   const [showPassword, setShowPassword] = useState(false);
