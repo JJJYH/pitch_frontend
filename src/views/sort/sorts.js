@@ -33,4 +33,27 @@ const getDday = (targetDate) => {
   return daysDiff;
 };
 
-export { getFormattedDate, getAge, getDday };
+const evalSub = [
+  {
+    sub: '기술',
+    description: '기술 점수 평가 기준 설명~~!@!@'
+  },
+  {
+    sub: '인성1',
+    description: '인성1 점수 평가 기준 설명~~!@!@'
+  },
+  {
+    sub: '인성2',
+    description: '인성2 점수 평가 기준 설명~~!@!@'
+  },
+  {
+    sub: '인성3',
+    description: '인성3 점수 평가 기준 설명~~!@!@'
+  },
+  {
+    sub: '태도',
+    description: '태도 점수 평가 기준 설명~~!@!@'
+  }
+];
+
+export { getFormattedDate, getAge, getDday, evalSub };

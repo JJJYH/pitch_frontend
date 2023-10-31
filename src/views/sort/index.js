@@ -5,6 +5,7 @@ import { sort } from 'api.js';
 import styled from 'styled-components';
 import { Link, useParams } from 'react-router-dom';
 import { getAge, getFormattedDate, getDday } from './sorts.js';
+import { useDispatch, useSelector } from 'react-redux';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -24,6 +25,7 @@ import InterviewDateModal from './components/InterviewDateModal';
 import InterviewEvalModal from './components/InterviewEvalModal';
 import MenuBtn from './components/MenuBtn';
 import classNames from './sort.module.scss';
+import { setPosting } from 'store/postingSlice.js';
 
 /*
  *
@@ -33,6 +35,7 @@ import classNames from './sort.module.scss';
  */
 const SortingPage = () => {
   const { job_posting_no } = useParams();
+  const dispatch = useDispatch();
   const [value, setValue] = useState('F');
   const [rows, setRows] = useState([]);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
@@ -77,6 +80,7 @@ const SortingPage = () => {
   useEffect(() => {
     sort.postingInfo(job_posting_no).then((res) => {
       setInfo({ ...res.data });
+      dispatch(setPosting({ postingNo: job_posting_no, reqNo: res.data.job_req_no }));
     });
   }, []);
 
@@ -172,7 +176,7 @@ const SortingPage = () => {
             <Box sx={{ display: 'flex' }}>
               {value === 'F' && <FilteringModal />}
               {value === 'S' && <InterviewDateModal />}
-              {value === 'FL' && <InterviewEvalModal />}
+              {/* {value === 'FL' && <InterviewEvalModal />} */}
               <NoticeModal postingNo={job_posting_no} title={info.req_title} />
             </Box>
           </Box>
@@ -249,17 +253,28 @@ const RenderEval = (score) => {
   );
 };
 
-const RenderStar = (evals) => {
-  if (evals.length == 0) return '평가전';
-  let total = 0;
+const RenderStar = (evals, apply_no) => {
+  const userInfo = useSelector((state) => state.userInfo);
 
+  let isEvaled = false;
   evals.forEach((element) => {
-    total += (element['sub1_score'] + element['sub2_score']) / 2;
+    if (element.user_id == userInfo.user_id) {
+      isEvaled = true;
+    }
   });
+  if (!isEvaled) {
+    return <InterviewEvalModal applyNo={apply_no} />;
+  } else {
+    let total = 0;
 
-  const avg = total / evals.length;
+    evals.forEach((element) => {
+      total += (element['sub1_score'] + element['sub2_score'] + element['sub3_score'] + element['sub4_score'] + element['sub5_score']) / 5;
+    });
 
-  return <Rating name="read-only" value={avg} precision={0.5} readOnly />;
+    const avg = total / evals.length;
+
+    return <Rating name="read-only" value={avg} precision={0.5} readOnly />;
+  }
 };
 
 const RenderName = (data) => {
@@ -506,7 +521,7 @@ const flColumns = [
     width: 160,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => RenderStar(params.row.evals)
+    renderCell: (params) => RenderStar(params.row.evals, params.row.apply_no)
   },
   {
     field: 'note',

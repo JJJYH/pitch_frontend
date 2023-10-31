@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 // axios 인스턴스를 생성합니다.
 const instance = axios.create({
   baseURL: 'http://localhost:8888'
@@ -17,19 +16,20 @@ instance.interceptors.request.use((config) => {
   }
 
   return config;
-})
+});
 //accessToken 재발급 로직
-instance.interceptors.response.use((response) => {
-  console.log("get response", response);
-  const accessToken = response.headers.accesstoken;
-  console.log('1. ' + accessToken);
-  if (accessToken) {
-    sessionStorage.setItem('AccessToken', accessToken);
-    principal.setToken(accessToken);
-    console.log("accesstoken set storage");
-  }
-  return response;
-},//accessToken 에러로직(진행중)
+instance.interceptors.response.use(
+  (response) => {
+    console.log('get response', response);
+    const accessToken = response.headers.accesstoken;
+    console.log('1. ' + accessToken);
+    if (accessToken) {
+      sessionStorage.setItem('AccessToken', accessToken);
+      principal.setToken(accessToken);
+      console.log('accesstoken set storage');
+    }
+    return response;
+  }, //accessToken 에러로직(진행중)
   async function (error) {
     const originalConfig = error.config;
     const msg = error.response.data.message;
@@ -38,7 +38,7 @@ instance.interceptors.response.use((response) => {
     console.log(error);
     return Promise.reject(error);
   }
-)
+);
 
 // 각 방법별 예시
 const get = {
@@ -63,11 +63,19 @@ const post = {
 //실제 작성 코드는 각자 변수를 만들어서 작성 후 api에 추가 각자 api에 대해 간단하게 명세
 const principal = {
   //로그인 api
-  login: (data) => { return instance.post('/login', data) },
-  setToken: (token) => { return axios.defaults.headers.common['Authorization'] = `Bearer ${token}` },
-  getUser: (accessToken) => { return instance.get('/auth/login-user', { params: { token: accessToken } }) },
+  login: (data) => {
+    return instance.post('/login', data);
+  },
+  setToken: (token) => {
+    return (axios.defaults.headers.common['Authorization'] = `Bearer ${token}`);
+  },
+  getUser: (accessToken) => {
+    return instance.get('/auth/login-user', { params: { token: accessToken } });
+  },
   //로그아웃 api
-  logout: (data) => { return instance.post('/auth/logout', data) }
+  logout: (data) => {
+    return instance.post('/auth/logout', data);
+  }
 };
 
 const sort = {
@@ -100,6 +108,10 @@ const sort = {
       job_posting_no: postingNo
     };
     return instance.put(`/admin/${postingNo}/acceptance`, requestData);
+  },
+  //지원자 면접 평가 api
+  applicantEval: (data) => {
+    return instance.post(`/admin/${data.apply_no}/evaluation`, data);
   }
 };
 

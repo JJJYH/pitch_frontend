@@ -3,14 +3,31 @@ import React from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router';
 import { sort } from '../../api.js';
+import { getFormattedDate, getAge } from './sorts.js';
+import { evalSub } from './sorts';
 
 /* mui components */
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
-import { Button, ButtonGroup, Chip, Divider, Paper, Stack, Tab, Tabs, Typography } from '@mui/material';
+import {
+  AvatarGroup,
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Paper,
+  Rating,
+  Stack,
+  Tab,
+  Tabs,
+  Typography
+} from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddchartIcon from '@mui/icons-material/Addchart';
 
 /* custom components */
 import ApplicantTotalEval from './components/ApplicantTotalEval';
@@ -28,8 +45,16 @@ const ApplicantDetailPage = () => {
 
   const [tabValue, setTabValue] = useState(0);
   const [clickedBtn, setClickedBtn] = useState(null);
+  const [applicantInfo, setApplicantInfo] = useState({});
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+
+  useEffect(() => {
+    sort.applicantDetail(apply_no).then((res) => {
+      setApplicantInfo({ ...res.data });
+      console.log(res.data);
+    });
+  }, [apply_no]);
 
   return (
     <Paper sx={{ background: 'transparent', height: 1 }}>
@@ -114,10 +139,12 @@ const ApplicantDetailPage = () => {
                 </Grid>
                 <Grid item xs={3} container direction="column">
                   <Grid item xs>
-                    <Typography variant="h2">{apply_no}</Typography>
+                    <Typography variant="h2">{`${applicantInfo['cv']?.['user_nm']} (${applicantInfo['cv']?.['gender']})`}</Typography>
                   </Grid>
                   <Grid item xs>
-                    <Typography variant="subtitle1">1992.11.22</Typography>
+                    <Typography variant="subtitle1">{`만 ${getAge(applicantInfo['cv']?.['user_birth'])}세 (${getFormattedDate(
+                      applicantInfo['cv']?.['user_birth']
+                    )})`}</Typography>
                   </Grid>
                   <Grid item xs>
                     <Typography variant="h6">이소영</Typography>
@@ -130,11 +157,12 @@ const ApplicantDetailPage = () => {
                     </Stack>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto', mt: '-40px' }}>
+                <Grid item xs={12} md={6} lg={4} sx={{ ml: 'auto', mt: '-40px', minWidth: '430px' }}>
                   <Tabs value={tabValue} onChange={handleSetTabValue}>
                     <Tab label="종합평가" {...a11yProps(0)} />
                     <Tab label="입사지원서" {...a11yProps(0)} />
                     <Tab label="인적성검사" {...a11yProps(0)} />
+                    <Tab label="면접평가" {...a11yProps(0)} />
                   </Tabs>
                 </Grid>
               </Grid>
@@ -151,6 +179,126 @@ const ApplicantDetailPage = () => {
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={2}>
                 <ApplicantExam />
+              </CustomTabPanel>
+              <CustomTabPanel value={tabValue} index={3}>
+                {applicantInfo.evals != null && (
+                  <Grid container direction={'column'} sx={{ mt: '20px' }}>
+                    <Grid item xs={11} sx={{ ml: '30px', mr: '30px' }}>
+                      <Stack direction={'row'}>
+                        <AddchartIcon />
+                        <Typography variant="h4" sx={{ mb: '10px', ml: '4px' }}>
+                          면접 종합 평가
+                        </Typography>
+                      </Stack>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Box sx={{ mb: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                            <Box>
+                              <Typography variant="h4" sx={{ mb: '10px' }}>
+                                평균 점수
+                              </Typography>
+                              <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+                                <Typography variant="h2" sx={{ mr: '3px', ml: '3px' }}>
+                                  4.0
+                                </Typography>
+                                <Rating size="large" value={4} readOnly />
+                              </Box>
+                            </Box>
+                            <AvatarGroup max={3}>
+                              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+                              <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
+                              <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
+                              <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
+                            </AvatarGroup>
+                          </Box>
+                          <Box>
+                            <Typography variant="h4" sx={{ mb: '10px' }}>
+                              항목별 점수
+                            </Typography>
+                            <Box sx={{ display: 'flex', '& .score': { mr: '60px' } }}>
+                              {evalSub.map((e, i) => {
+                                return (
+                                  <Box key={i} className={'score'} sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Typography component="legend" sx={{ mr: '5px' }}>
+                                      {e.sub}
+                                    </Typography>
+
+                                    <Rating value={3} readOnly max={1} sx={{ mr: '3px' }} />
+                                    <Typography variant="h5">3.0</Typography>
+                                  </Box>
+                                );
+                              })}
+                            </Box>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={11} sx={{ ml: '30px', mr: '30px', mt: '40px' }}>
+                      <Stack direction={'row'}>
+                        <AddchartIcon />
+                        <Typography variant="h4" sx={{ mb: '10px', ml: '4px' }}>
+                          면접 평가 상세
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                    {applicantInfo.evals.map((e, index) => {
+                      return (
+                        <Grid key={index} item xs={11} sx={{ ml: '30px', mr: '30px', mb: '30px' }}>
+                          <Card variant="outlined">
+                            <CardContent>
+                              <Box sx={{ mb: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <Box>
+                                  <Typography variant="h4" sx={{ mb: '10px' }}>
+                                    평균 점수
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+                                    <Typography variant="h2" sx={{ mr: '3px', ml: '3px' }}>
+                                      4.0
+                                    </Typography>
+                                    <Rating size="large" value={4} readOnly />
+                                  </Box>
+                                </Box>
+
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                                  <Typography variant="h5" sx={{ ml: '3px' }}>
+                                    서창훈
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              <Box>
+                                <Typography variant="h4" sx={{ mb: '10px' }}>
+                                  항목별 점수
+                                </Typography>
+                                <Box sx={{ display: 'flex', '& .score': { mr: '60px' } }}>
+                                  {evalSub.map((e, i) => {
+                                    return (
+                                      <Box key={i} className={'score'} sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography component="legend" sx={{ mr: '5px' }}>
+                                          {e.sub}
+                                        </Typography>
+
+                                        <Rating value={3} readOnly max={1} sx={{ mr: '3px' }} />
+                                        <Typography variant="h5">3.0</Typography>
+                                      </Box>
+                                    );
+                                  })}
+                                </Box>
+                              </Box>
+                              <Box>
+                                <Typography variant="h4" sx={{ mb: '10px' }}>
+                                  비고
+                                </Typography>
+                                <Typography>이 지원자는 어쩌구 저쩌구 해서 합격시키십쇼</Typography>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                )}
               </CustomTabPanel>
             </Box>
             {/* </applicant detail content> */}

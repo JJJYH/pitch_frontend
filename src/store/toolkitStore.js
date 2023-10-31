@@ -13,6 +13,7 @@ import activityReducer from './activitySlice';
 import selectedRowReducer from './selectedRowSlice';
 import jobReqNoReducer from './jobReqNoSlice';
 import cvFileReducer from './cvFileSlice';
+import postingReducer from './postingSlice';
 import userInfoReducer from './userInfoSlice';
 const toolkitStore = configureStore({
   reducer: {
@@ -28,7 +29,8 @@ const toolkitStore = configureStore({
     userInfo: userInfoReducer,
     selectedRow: selectedRowReducer,
     jobReqNo: jobReqNoReducer,
-    cvfile: cvFileReducer
+    cvfile: cvFileReducer,
+    posting: postingReducer
   }
 });
 
