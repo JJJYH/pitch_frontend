@@ -1,11 +1,27 @@
 import React, { useState } from 'react';
 import { useOpenCv } from 'opencv-react';
 import Tesseract, { OEM, PSM } from 'tesseract.js';
+import { display } from '@mui/system';
 
 const Ocr = () => {
   const { loaded, cv } = useOpenCv();
   const [progress, setProgress] = useState(0);
   const [ocrText, setOcrText] = useState('');
+  // 유클리드 거리 계산 함수
+  const calculateDistance = (box1, box2) => {
+    const center1 = {
+      x: box1.x + box1.width / 2,
+      y: box1.y + box1.height / 2
+    };
+    const center2 = {
+      x: box2.x + box2.width / 2,
+      y: box2.y + box2.height / 2
+    };
+
+    const dx = center1.x - center2.x;
+    const dy = center1.y - center2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -23,51 +39,125 @@ const Ocr = () => {
           ctx.drawImage(img, 0, 0, img.width, img.height);
 
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+          //Origin 파일
           const src = cv.matFromImageData(imgData);
+
+          //Destination 파일
           const dst = new cv.Mat();
 
           // 이미지 처리 작업 순차 실행: erode -> dilate
           let M = cv.Mat.ones(0, 0, cv.CV_8U);
           //cross kerner matrix
           let anchor = new cv.Point(-1, -1);
+
           //size resize
           let dsize = new cv.Size(2000, 2000);
-          cv.resize(src, dst, dsize, 0, 0, cv.INTER_AREA);
-          let ksize = new cv.Size(5, 5);
+          cv.resize(src, dst, dsize, -1, -1, cv.INTER_AREA);
+          let ksize = new cv.Size(7, 7);
+
           //GrayScale
           cv.cvtColor(dst, dst, cv.COLOR_BGR2RGB);
           cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY);
-          //cross kernel
+
+          //cross kernel + Change 2D
           let kernel = cv.matFromArray(3, 3, cv.CV_32FC1, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
           cv.filter2D(dst, dst, -1, kernel);
-          //   cv.medianBlur(dst, dst, 3);
-          //   cv.bilateralFilter(dst, dst, -1, 75, 75, cv.BORDER_DEFAULT);
+
+          //Pre Processing Openning
           cv.erode(dst, dst, M, anchor, 1, cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
           cv.dilate(dst, dst, M, anchor, 1, cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
-          cv.GaussianBlur(dst, dst, ksize, -1, -1, cv.BORDER_DEFAULT);
-          // cv.Canny(dst, dst, 60, 240, 3, false);
-          cv.threshold(dst, dst, 177, 255, cv.THRESH_OTSU);
 
+          //GaussianBlur
+          cv.GaussianBlur(dst, dst, ksize, -1, -1, cv.BORDER_DEFAULT);
+
+          //Binarization(SelectColor, White);
+          cv.threshold(dst, dst, 0, 255, cv.THRESH_OTSU);
+
+          //Contours + Bounding Box
           let contours = new cv.MatVector();
           let hierarchy = new cv.Mat();
           cv.findContours(dst, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
-          for (let i = 0; i < contours.size(); i++) {
-            let cnt = contours.get(i);
-            let rect = cv.boundingRect(cnt);
-            let point1 = new cv.Point(rect.x, rect.y);
-            let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-            cv.rectangle(dst, point1, point2, new cv.Scalar(0, 255, 0), 2, cv.LINE_AA, 0);
+          let mergedRects = [];
+          let box = [];
+          // 반복적으로 병합
+          while (contours.size() > 0) {
+            let rect = cv.boundingRect(contours.get(0));
+            let remainingContours = new cv.MatVector();
+
+            for (let i = 1; i < contours.size(); i++) {
+              let comp_cnt = contours.get(i);
+              let comp_rect = cv.boundingRect(comp_cnt);
+
+              if (calculateDistance(comp_rect, rect) < 55) {
+                // 인접한 contours라면, rect를 병합
+                rect = new cv.Rect(
+                  Math.min(rect.x, comp_rect.x),
+                  Math.min(rect.y, comp_rect.y),
+                  Math.max(rect.x + rect.width, comp_rect.x + comp_rect.width) - Math.min(rect.x, comp_rect.x),
+                  Math.max(rect.y + rect.height, comp_rect.y + comp_rect.height) - Math.min(rect.y, comp_rect.y)
+                );
+              } else {
+                // 인접하지 않는 contours는 유지
+                remainingContours.push_back(comp_cnt);
+              }
+            }
+
+            // 여기서 mergedRects 배열에 현재 rect를 추가
+            mergedRects.push(rect);
+
+            // 기존 contours를 업데이트
+            contours = remainingContours;
           }
 
-          cv.imshow(canvasOutput, dst);
+          //image output: mergedRects에 있는 rect만 그리도록 수정
+          // for (let rect of mergedRects) {
+          //   if (!(rect.x == 0 && rect.y == 0 && rect.width == dsize.width && rect.height == dsize.height)) {
+          //     const margin = 10;
+          //     cv.rectangle(
+          //       dst,
+          //       new cv.Point(rect.x - margin, rect.y - margin),
+          //       new cv.Point(rect.x + rect.width + margin, rect.y + rect.height + margin),
+          //       new cv.Scalar(0, 255, 0),
+          //       2,
+          //       cv.LINE_AA,
+          //       0
+          //     );
+          //   }
+          // }
 
+          let mask = new cv.Mat.zeros(dsize.width, dsize.height, cv.CV_8U);
+          let text_only = new cv.Mat();
+
+          for (let rect of mergedRects) {
+            if (!(rect.x == 0 && rect.y == 0 && rect.width == dsize.width && rect.height == dsize.height)) {
+              const margin = 10;
+              cv.rectangle(
+                mask,
+                new cv.Point(rect.x - margin, rect.y - margin),
+                new cv.Point(rect.x + rect.width + margin, rect.y + rect.height + margin),
+                new cv.Scalar(255, 255, 255),
+                -1,
+                cv.LINE_AA,
+                0
+              );
+            }
+          }
+
+          //Bit Wise And Calculate
+          cv.bitwise_and(mask, dst, text_only);
+
+          //image output
+          cv.imshow(canvasOutput, text_only);
+          // cv.imshow(canvasOutput, dst);
+
+          //configure text output => tessarect
           const ocrCanvas = document.createElement('canvas');
-          //   const ocrCtx = ocrCanvas.getContext('2d');
           ocrCanvas.width = dst.cols;
           ocrCanvas.height = dst.rows;
 
-          cv.imshow(ocrCanvas, dst);
+          cv.imshow(ocrCanvas, text_only);
 
           ocrCanvas.toBlob((blob) => {
             const ocrImage = new File([blob], 'ocr_image.png', {
@@ -85,13 +175,13 @@ const Ocr = () => {
                   }
                 }
               },
-              PSM.SINGLE_COLUMN,
-              OEM.TESSERACT_LSTM_COMBINED
+              PSM.SINGLE_COLUMN
+              // OEM.TESSERACT_LSTM_COMBINED
             ).then(({ data: { text } }) => {
-              //   text = text
-              //     .split('\n')
-              //     .map((line) => line.trim().replace(/\s/g, ''))
-              //     .filter((line) => line !== '');
+              text = text
+                .split('\n')
+                .map((line) => line.trim().replace(/\s/g, ''))
+                .filter((line) => line !== '' && '/^[가-힣A-Za-z0-9]*$/');
               setOcrText(text);
             });
           });
@@ -107,10 +197,7 @@ const Ocr = () => {
       <input type="file" accept="image/*" onChange={handleImageUpload} />
       <progress max="100" value={progress}></progress>
       <div className="inputoutput">
-        <canvas id="canvasOutput"></canvas>
-        <div className="caption">canvasOutput</div>
-        <div>Recognized Text:</div>
-        <pre>{ocrText}</pre>
+        <canvas id="canvasOutput" style={{ display: 'none' }}></canvas>
       </div>
     </div>
   );
