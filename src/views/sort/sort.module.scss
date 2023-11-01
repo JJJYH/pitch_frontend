@@ -29,3 +29,50 @@
     color: white;
   }
 }
+
+.cvRoot {
+  padding: 15px;
+  .row {
+    min-height: 150px;
+  }
+  .title {
+    display: flex;
+    justify-content: center;
+    min-height: 100px;
+  }
+  .subTitleGrid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #90CAF9;
+  }
+  .subTitle {
+    writing-mode: vertical-rl;
+  }
+  .type {
+    text-align: center;
+  }
+  .typeGrid {
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: antiquewhite;
+    
+  }
+  .contentGrid {
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f3f3f3;
+  }
+  .contentCenter{
+    text-align: center;
+
+  }
+  .contentEnd {
+    text-align: end;
+    padding-right: 60px;
+  }
+}
