@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router';
 import { sort } from '../../api.js';
 import { getFormattedDate, getAge } from './sorts.js';
 import { evalSub } from './sorts';
-
+import { useReactToPrint } from 'react-to-print';
 /* mui components */
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
+import DownloadIcon from '@mui/icons-material/Download';
+import PrintIcon from '@mui/icons-material/Print';
 import {
   AvatarGroup,
   Button,
@@ -33,6 +35,7 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 import ApplicantTotalEval from './components/ApplicantTotalEval';
 import ApplicantExam from './components/ApplicantExam';
 import ScrollingApplicantList from './components/ScrollingApplicantList';
+import ApplicantCV from './components/ApplicantCV.js';
 
 /*
  *
@@ -46,8 +49,12 @@ const ApplicantDetailPage = () => {
   const [tabValue, setTabValue] = useState(0);
   const [clickedBtn, setClickedBtn] = useState(null);
   const [applicantInfo, setApplicantInfo] = useState({});
+  const componentRef = useRef();
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current
+  });
 
   useEffect(() => {
     sort.applicantDetail(apply_no).then((res) => {
@@ -175,7 +182,18 @@ const ApplicantDetailPage = () => {
                 <ApplicantTotalEval />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={1}>
-                입사지원서
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  <Button onClick={handlePrint}>
+                    <PrintIcon />
+                    인쇄
+                  </Button>
+                  <Typography>|</Typography>
+                  <Button onClick={handlePrint}>
+                    <DownloadIcon />
+                    저장
+                  </Button>
+                </Box>
+                <ApplicantCV applicantInfo={applicantInfo} ref={componentRef} />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={2}>
                 <ApplicantExam />

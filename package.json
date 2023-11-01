@@ -36,6 +36,7 @@
     "react-router": "6.3.0",
     "react-router-dom": "6.3.0",
     "react-scripts": "^5.0.1",
+    "react-to-print": "^2.14.15",
     "react-window": "^1.8.9",
     "redux": "^4.2.0",
     "styled-components": "^6.1.0",
