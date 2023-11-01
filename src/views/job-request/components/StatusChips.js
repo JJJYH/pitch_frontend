@@ -3,12 +3,12 @@ import { Chip } from '@mui/material';
 
 const StatusChip1 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#FFD699',
-  borderRadius: '8px',
-  color: '#FFD699',
+  borderColor: '#FFBD33',
+  borderRadius: '16px',
+  color: '#FFBD33',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#FFD699',
+    backgroundColor: '#FFBD33',
     color: '#fff'
   },
   minWidth: '82px',
@@ -17,12 +17,12 @@ const StatusChip1 = styled(Chip)(() => ({
 
 const StatusChip2 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#E1BEE7',
-  borderRadius: '8px',
-  color: '#E1BEE7',
+  borderColor: '#D18AC7',
+  borderRadius: '16px',
+  color: '#D18AC7',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#E1BEE7',
+    backgroundColor: '#D18AC7',
     color: '#fff'
   },
   minWidth: '82px',
@@ -31,12 +31,12 @@ const StatusChip2 = styled(Chip)(() => ({
 
 const StatusChip3 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#A5D6A7',
-  borderRadius: '8px',
-  color: '#A5D6A7',
+  borderColor: '#7EBF6F',
+  borderRadius: '16px',
+  color: '#7EBF6F',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#A5D6A7',
+    backgroundColor: '#7EBF6F',
     color: '#fff'
   },
   minWidth: '82px',
@@ -45,12 +45,12 @@ const StatusChip3 = styled(Chip)(() => ({
 
 const StatusChip4 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#F48FB1',
-  borderRadius: '8px',
-  color: '#F48FB1',
+  borderColor: '#EC5C87',
+  borderRadius: '16px',
+  color: '#EC5C87',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#F48FB1',
+    backgroundColor: '#EC5C87',
     color: '#fff'
   },
   minWidth: '82px',
@@ -59,12 +59,12 @@ const StatusChip4 = styled(Chip)(() => ({
 
 const StatusChip5 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#90CAF9',
-  borderRadius: '8px',
-  color: '#90CAF9',
+  borderColor: '#5092E2',
+  borderRadius: '16px',
+  color: '#5092E2',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#90CAF9',
+    backgroundColor: '#5092E2',
     color: '#fff'
   },
   minWidth: '82px',
@@ -73,12 +73,12 @@ const StatusChip5 = styled(Chip)(() => ({
 
 const StatusChip6 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#B0BEC5',
-  borderRadius: '8px',
-  color: '#B0BEC5',
+  borderColor: '#809B95',
+  borderRadius: '16px',
+  color: '#809B95',
   fontWeight: 900,
   '&.Mui-selected': {
-    backgroundColor: '#B0BEC5',
+    backgroundColor: '#809B95',
     color: '#fff'
   },
   minWidth: '82px',

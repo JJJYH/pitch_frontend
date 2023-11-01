@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -10,10 +10,16 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { Box, TextField } from '@mui/material';
+import { Box, Divider, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
+import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
+import { column } from 'stylis';
 
 //import dayjs from 'dayjs';
 
@@ -33,33 +39,35 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   }
 }));
 
-const ModalTypo = styled(Typography)(() => ({
-  margin: '10px',
-  display: 'flex',
-  alignItems: 'center'
-}));
-
 const PostingDetailModal = ({ open, handleClose }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: ''
-  });
+  const [isSticky, setIsSticky] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleToggle = () => {
+    setIsLiked((prev) => !prev); // 현재 상태를 토글
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleScroll = (e) => {
+    const scrollY = e.target.scrollTop;
+
+    if (scrollY > 200) {
+      setIsSticky(true);
+    } else {
+      setIsSticky(false);
+    }
   };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [open]);
 
   return (
     <div>
       <StyledDialog maxWidth="xl" onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        {/* <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          <Typography sx={{ color: '#616161', fontSize: '20px', fontWeight: 'bold' }}>채용 요청서 등록</Typography>
-        </DialogTitle> */}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -72,250 +80,184 @@ const PostingDetailModal = ({ open, handleClose }) => {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent dividers style={{ width: '1200px' }}>
+
+        <DialogContent style={{ width: '1200px', overflow: 'auto', padding: 0 }} onScroll={handleScroll}>
+          <Box
+            sx={{
+              position: 'sticky',
+              top: 0,
+              backgroundColor: 'white',
+              zIndex: 10,
+              borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+              opacity: isSticky ? 1 : 0,
+              height: '100px',
+              transition: 'opacity 0.5s ease-in-out',
+              display: isSticky ? 'block' : 'none'
+            }}
+          >
+            제발 돼라
+          </Box>
           <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
             <Grid item>
               <Box
                 sx={{
                   width: '1100px',
-                  border: '1px solid',
-                  height: '100px'
+                  // border: '1px solid',
+                  height: '50px'
                 }}
               >
-                좋아요, 공유
+                <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} spacing={2}>
+                  <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
+                    {isLiked ? (
+                      <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} onClick={handleToggle} />
+                    ) : (
+                      <FavoriteBorderIcon style={{ fontSize: 30, color: ' #666666' }} onClick={handleToggle} />
+                    )}
+                    <Typography ml={1}>관심공고</Typography>
+                  </Grid>
+                  <Grid item sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                    <ShareRoundedIcon />
+                    <Typography ml={1}>공유</Typography>
+                  </Grid>
+                </Grid>
               </Box>
             </Grid>
             <Grid item>
               <Box
                 sx={{
                   width: '1100px',
-                  border: '1px solid',
-                  height: '150px'
+                  // border: '1px solid',
+                  height: '150px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
                 }}
               >
-                제목
+                <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>채용공고 제목입니다 어쩌구저쩌구어쩌구저쩌구</Typography>
+                <Typography sx={{ fontSize: '16px', mt: 2 }}>신입인지... 경력인지..</Typography>
               </Box>
             </Grid>
             <Grid item>
               <Box
                 sx={{
                   width: '1100px',
-                  border: '1px solid',
-                  height: '150px'
+                  // border: '1px solid',
+                  height: '150px',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                d-day
+                <Box
+                  sx={{
+                    width: '1100px',
+                    border: '2px solid',
+                    height: '90px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '30px'
+                  }}
+                >
+                  <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>공고마감</Typography>
+                      <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f', mr: 1 }}>D-어쩌구</Typography>
+                      <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>확인해주세요!</Typography>
+                    </Grid>
+                    <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography sx={{ fontSize: '16px' }}>게시</Typography>
+                        <Typography ml={2} mr={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
+                          공고시작날짜
+                        </Typography>
+                      </Grid>
+                      <Typography ml={1} sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                        |
+                      </Typography>
+                      <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography ml={2} sx={{ fontSize: '16px' }}>
+                          마감
+                        </Typography>
+                        <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
+                          공고종료날짜
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
               </Box>
             </Grid>
             <Grid item>
               <Box
                 sx={{
                   width: '1100px',
-                  border: '1px solid',
-                  height: '800px'
+                  // border: '1px solid',
+                  maxHeight: '1000px'
                 }}
               >
-                모집직무 및 지원자격
+                <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 4, mb: 4, ml: 3 }}>모집분야 및 지원자격</Typography>
+                <Box
+                  sx={{
+                    width: '1100px',
+                    border: '1px solid #ddd',
+                    borderTop: ' 2px solid #364152',
+                    maxHeight: '900px'
+                  }}
+                >
+                  <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 3, ml: 5 }}>직무이름</Typography>
+                  <Box sx={{ width: '1050px', borderTop: '1px solid #ddd', marginLeft: '25px', p: 2, pb: 3 }}>
+                    <Grid container direction="column">
+                      <Grid item>
+                        <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 3 }}>공통지원자격</Typography>
+                        <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
+                        <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
+                        <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 3 }}>공통지원자격</Typography>
+                        <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
+                        <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
+                        <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 3 }}>공통지원자격</Typography>
+                        <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
+                        <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
+                        <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 3 }}>공통지원자격</Typography>
+                        <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
+                        <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
+                        <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
+            <Grid item>
+              <Box sx={{ width: '1100px', height: '200px', border: '1px solid' }}>첨부자료</Box>
+            </Grid>
+            <Grid item>
+              <Box sx={{ width: '1100px', height: '400px', border: '1px solid' }}>채용절차</Box>
+            </Grid>
+            <Grid item>
+              <Box sx={{ width: '1100px', height: '200px', border: '1px solid' }}>지원서 작성</Box>
+            </Grid>
+            <Grid item mb={3}>
+              <Box sx={{ width: '1100px', height: '400px', border: '1px solid' }}>지원 안내, 기타사항</Box>
+            </Grid>
           </Grid>
-          {/* <form onSubmit={handleSubmit}>
-            <Grid container direction="column" spacing={2}>
-              <Grid item xs={12} container direction="row" spacing={2}>
-                <Grid item xs={8}>
-                  <ModalTypo>제목</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="제목"
-                    variant="outlined"
-                    name="name"
-                    size="small"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <ModalTypo>요청일</ModalTypo>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} />
-                  </LocalizationProvider>
-                </Grid>
-              </Grid>
-              <Grid item xs={12} container direction="row" spacing={2}>
-                <Grid item xs={6}>
-                  <ModalTypo>직무</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="직무"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <ModalTypo>근무지</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="근무지"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12} container direction="row" spacing={2}>
-                <Grid item xs={6}>
-                  <ModalTypo>채용인원</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="채용인원"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <ModalTypo>학력</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="학력"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12} container direction="row" spacing={2}>
-                <Grid item xs={6}>
-                  <ModalTypo>채용형태</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="채용형태"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <ModalTypo>경력기간</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="경력기간"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12} container direction="row" spacing={2}>
-                <Grid item xs={4}>
-                  <ModalTypo>공고타입</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="공고타입"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <ModalTypo>공고시작</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="공고시작"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <ModalTypo>공고종료</ModalTypo>
-                  <TextField
-                    fullWidth
-                    label="공고종료"
-                    variant="outlined"
-                    name="email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <ModalTypo>지원자격</ModalTypo>
-                <TextField
-                  fullWidth
-                  label="지원자격"
-                  variant="outlined"
-                  multiline
-                  rows={10}
-                  name="email"
-                  size="small"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ModalTypo>우대사항</ModalTypo>
-                <TextField
-                  fullWidth
-                  label="우대사항"
-                  variant="outlined"
-                  multiline
-                  rows={10}
-                  name="email"
-                  size="small"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ModalTypo>수행업무</ModalTypo>
-                <TextField
-                  fullWidth
-                  label="수행업무"
-                  variant="outlined"
-                  multiline
-                  rows={10}
-                  name="email"
-                  size="small"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-            </Grid>
-          </form> */}
         </DialogContent>
-        <DialogActions>
+
+        {/* <DialogActions>
           <Button type="submit" variant="contained" color="primary">
             등록
           </Button>
           <Button autoFocus onClick={handleClose}>
             Save changes
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </StyledDialog>
     </div>
   );

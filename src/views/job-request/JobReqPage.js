@@ -32,7 +32,7 @@ const JobReqPage = () => {
   const dataGridRef = useRef();
 
   const StyledBox = styled(Box)(() => ({
-    margin: '15px 10px',
+    margin: '10px',
     borderRadius: '8px',
     border: '3px solid #f0f0f0',
     height: 680,
@@ -157,7 +157,7 @@ const JobReqPage = () => {
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
-        <Typography sx={{ color: '#757575', padding: '40px 0px 20px 20px' }} variant="h2">
+        <Typography sx={{ color: '#757575', padding: '35px 0px 20px 20px' }} variant="h2">
           <TaskOutlinedIcon /> 채용 요청 관리
         </Typography>
         <Box sx={{ padding: '0px 20px' }}>
@@ -193,7 +193,7 @@ const JobReqPage = () => {
               </Grid>
             </Grid>
 
-            <Grid item>
+            <Grid item sx={{ marginRight: '10px' }}>
               <Stack direction="row" spacing={1}>
                 <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                   등록
