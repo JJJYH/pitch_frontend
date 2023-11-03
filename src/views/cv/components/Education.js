@@ -10,7 +10,7 @@ import { addEducation, removeEducation, updateEducation } from 'store/educationS
 import ClearIcon from '@mui/icons-material/Clear';
 const Education = () => {
   /**Default Setting Values */
-  const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학'];
+  const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학', '편입'];
   const score_arr = ['4.0', '4.3', '4.5', '100'];
 
   const education_data = useSelector((state) => state.education);
@@ -51,7 +51,7 @@ const Education = () => {
             <Grid item xs={2}>
               <TextField
                 fullWidth
-                label="전공"
+                label={field.edu_type.includes('대학교') ? '전공' : '계열'}
                 color="primary"
                 type="text"
                 placeholder={education_data[index].major}
@@ -62,43 +62,55 @@ const Education = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={1}>
-              <TextField
-                fullWidth
-                label="점수"
-                color="primary"
-                type="text"
-                variant="standard"
-                name="score"
-                value={field.score}
-                onChange={(e) => handleEduChange(e, index)}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <Box>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">총점</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    label="총점"
-                    id="demo-simple-select"
+            {field.edu_type.includes('대학교') ? (
+              <>
+                <Grid item xs={1}>
+                  <TextField
+                    fullWidth
+                    label="점수"
+                    color="primary"
+                    type="text"
                     variant="standard"
-                    name="total_score"
-                    value={field.total_score}
+                    name="score"
+                    value={field.score}
                     onChange={(e) => handleEduChange(e, index)}
-                  >
-                    {score_arr.map((type, index) => (
-                      <MenuItem key={index} value={type}>
-                        {type}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
+                    size="small"
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Box>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">총점</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        label="총점"
+                        id="demo-simple-select"
+                        variant="standard"
+                        name="total_score"
+                        value={field.total_score}
+                        onChange={(e) => handleEduChange(e, index)}
+                      >
+                        {score_arr.map((type, index) => (
+                          <MenuItem key={index} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                </Grid>
+              </>
+            ) : (
+              ''
+            )}
+
             <Grid item xs={2}>
-              <ControlledComponent labelName={'입학일'} StartDate={(e) => handleEduChange(e, index)} name="enter_date" />
+              <ControlledComponent
+                labelName={'입학일'}
+                StartDate={(e) => handleEduChange(e, index)}
+                name="enter_date"
+                propState={field.enter_date}
+              />
             </Grid>
             <Grid item xs={2}>
               <ControlledComponent
@@ -106,6 +118,7 @@ const Education = () => {
                 BeforeDay={field.enter_date}
                 EndDate={(e) => handleEduChange(e, index)}
                 name="graduate_date"
+                propState={field.graduate_date}
               />
             </Grid>
             <Grid item xs={2}>
@@ -130,7 +143,7 @@ const Education = () => {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={1} justifyContent={'space-between'} alignItems={'end'}>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
               <IconButton onClick={() => eduRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>

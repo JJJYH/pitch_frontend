@@ -16,8 +16,8 @@ export default function ControllableStates() {
   const [inputValue, setInputValue] = useState('');
 
   const skillAddFields = (index, value) => {
-    if (chip_data.some((skill) => skill.skill_name !== value)) {
-      const new_skill_arr = { skill_name: value, skill_domain: '개발' };
+    if (!chip_data.some((skill) => skill.skill_name === value)) {
+      const new_skill_arr = { skill_no: '', skill_name: value, skill_domain: '개발' };
 
       setInputValue(''); // 입력 필드 초기화
       dispatch(addSkill(new_skill_arr));

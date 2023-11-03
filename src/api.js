@@ -53,8 +53,8 @@ const get = {
   userList: () => {
     return instance.get('/admin/list');
   },
-  cvTest: () => {
-    return instance.get('/admin/main/cv/list');
+  cvTest: (data) => {
+    return instance.get('/admin/main/cv/list', { params: { cv_no: data } });
   }
 };
 
@@ -135,14 +135,17 @@ const cv = {
   postMultiFile: (data) => {
     return instance.post('/admin/main/cv/cvFileUpload', data);
   },
-  getList: () => {
-    return instance.get('/admin/main/cv/list');
+  getList: (data) => {
+    return instance.get('/admin/main/cv/list', { params: { cv_no: data } });
   },
   postList: (data) => {
     return instance.post('/admin/main/cv/', data);
   },
   putList: (data) => {
     return instance.put('/admin/main/cv/', data);
+  },
+  getInit: () => {
+    return instance.get('/admin/main/cv/init-cv');
   }
 };
 

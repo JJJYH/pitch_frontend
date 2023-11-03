@@ -54,7 +54,6 @@ const Profile = () => {
 
   return profile_data.map((field, index) => (
     <React.Fragment key={index}>
-      <Divider color="#4682B4" sx={{ mb: 2.5, height: 5, width: '100%' }} />
       <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
         <Grid item sx={{ flex: '1 1 auto' }}>
           <Grid item xs={12} sx={{ mb: 2.5 }}>
@@ -69,7 +68,7 @@ const Profile = () => {
                   name="user_nm"
                   value={field.user_nm}
                   onChange={(e) => handleProfileChange(e, index)}
-                  inputProps={{ readOnly: true }}
+                  inputProps={{ readOnly: false }}
                 />
               </Grid>
               <Grid item xs={2}>
@@ -82,7 +81,7 @@ const Profile = () => {
                   name="user_phone"
                   value={field.user_phone}
                   onChange={(e) => handleProfileChange(e, index)}
-                  inputProps={{ readOnly: true }}
+                  inputProps={{ readOnly: false }}
                 />
               </Grid>
               <Grid item xs={3}>
@@ -95,7 +94,7 @@ const Profile = () => {
                   name="user_email"
                   value={field.user_email}
                   onChange={(e) => handleProfileChange(e, index)}
-                  inputProps={{ readOnly: true }}
+                  inputProps={{ readOnly: false }}
                 />
               </Grid>
               <Grid item xs={3}>
@@ -121,12 +120,11 @@ const Profile = () => {
                   value={field.user_birth}
                   onChange={(e) => handleProfileChange(e, index)}
                   variant="standard"
-                  inputProps={{ readOnly: true }}
+                  inputProps={{ readOnly: false }}
                 />
               </Grid>
             </Box>
           </Grid>
-
           <Grid item xs={12}>
             <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
               <Grid item xs={12}>
@@ -173,8 +171,16 @@ const Profile = () => {
                     sx={{ height: 10 }}
                     size="small"
                   >
-                    <FormControlLabel value="남성" control={<Radio size="small" />} label="남성" />
-                    <FormControlLabel value="여성" control={<Radio size="small" />} label="여성" />
+                    <FormControlLabel
+                      value="남성"
+                      control={<Radio size="small" checked={field.gender === '남성' ? true : false} />}
+                      label="남성"
+                    />
+                    <FormControlLabel
+                      value="여성"
+                      control={<Radio size="small" checked={field.gender === '여성' ? true : false} />}
+                      label="여성"
+                    />
                   </RadioGroup>
                 </FormControl>
               </Grid>

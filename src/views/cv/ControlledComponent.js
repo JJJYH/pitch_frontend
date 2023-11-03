@@ -4,14 +4,15 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TextField } from '@mui/material';
+import { useEffect } from 'react';
 
-export default function ControlledComponent({ labelName, BeforeDay, StartDate, EndDate, name }) {
+export default function ControlledComponent({ labelName, BeforeDay, StartDate, EndDate, name, propState }) {
   const [value, setValue] = React.useState(null);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         sx={{ width: '100%' }}
-        value={value}
+        value={propState === '' || propState === null ? value : dayjs(propState)}
         name={name}
         onChange={(newValue) => {
           const event = {

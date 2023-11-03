@@ -49,7 +49,12 @@ const Activity = () => {
               />
             </Grid>
             <Grid item xs={3}>
-              <ControlledComponent labelName={'시작일'} StartDate={(e) => handleActivityChange(e, index)} name="start_date" />
+              <ControlledComponent
+                labelName={'시작일'}
+                StartDate={(e) => handleActivityChange(e, index)}
+                name="start_date"
+                propState={field.start_date}
+              />
             </Grid>
             <Grid item xs={3}>
               <ControlledComponent
@@ -57,6 +62,7 @@ const Activity = () => {
                 BeforeDay={field.start_date}
                 EndDate={(e) => handleActivityChange(e, index)}
                 name="end_date"
+                propState={field.end_date}
               />
             </Grid>
             <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>

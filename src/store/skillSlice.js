@@ -4,28 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const skillSlice = createSlice({
   name: 'skill',
-  initialState: [
-    {
-      skill_name: 'React',
-      skill_domain: '개발'
-    },
-    {
-      skill_name: 'Angular',
-      skill_domain: '개발'
-    },
-    {
-      skill_name: 'jQuery',
-      skill_domain: '개발'
-    },
-    {
-      skill_name: 'Polymer',
-      skill_domain: '개발'
-    },
-    {
-      skill_name: 'Vue.js',
-      skill_domain: '개발'
-    }
-  ],
+  initialState: [],
   reducers: {
     addSkill: (state, action) => {
       return [...state, action.payload];

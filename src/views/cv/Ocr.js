@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { useOpenCv } from 'opencv-react';
 import Tesseract, { OEM, PSM } from 'tesseract.js';
 import { display } from '@mui/system';
-
+import { SmartButton } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import { useRef } from 'react';
+import Tooltip from '@mui/material/Tooltip';
 const Ocr = () => {
   const { loaded, cv } = useOpenCv();
   const [progress, setProgress] = useState(0);
@@ -61,8 +64,8 @@ const Ocr = () => {
           cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY);
 
           //cross kernel + Change 2D
-          let kernel = cv.matFromArray(3, 3, cv.CV_32FC1, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
-          cv.filter2D(dst, dst, -1, kernel);
+          // let kernel = cv.matFromArray(3, 3, cv.CV_32FC1, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
+          // cv.filter2D(dst, dst, -1, kernel);
 
           //Pre Processing Openning
           cv.erode(dst, dst, M, anchor, 1, cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
@@ -72,44 +75,44 @@ const Ocr = () => {
           cv.GaussianBlur(dst, dst, ksize, -1, -1, cv.BORDER_DEFAULT);
 
           //Binarization(SelectColor, White);
-          cv.threshold(dst, dst, 0, 255, cv.THRESH_OTSU);
+          // cv.threshold(dst, dst, 0, 255, cv.THRESH_OTSU);
 
           //Contours + Bounding Box
-          let contours = new cv.MatVector();
-          let hierarchy = new cv.Mat();
-          cv.findContours(dst, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+          // let contours = new cv.MatVector();
+          // let hierarchy = new cv.Mat();
+          // cv.findContours(dst, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
 
-          let mergedRects = [];
-          let box = [];
-          // 반복적으로 병합
-          while (contours.size() > 0) {
-            let rect = cv.boundingRect(contours.get(0));
-            let remainingContours = new cv.MatVector();
+          // let mergedRects = [];
+          // let box = [];
+          // // 반복적으로 병합
+          // while (contours.size() > 0) {
+          //   let rect = cv.boundingRect(contours.get(0));
+          //   let remainingContours = new cv.MatVector();
 
-            for (let i = 1; i < contours.size(); i++) {
-              let comp_cnt = contours.get(i);
-              let comp_rect = cv.boundingRect(comp_cnt);
+          //   for (let i = 1; i < contours.size(); i++) {
+          //     let comp_cnt = contours.get(i);
+          //     let comp_rect = cv.boundingRect(comp_cnt);
 
-              if (calculateDistance(comp_rect, rect) < 55) {
-                // 인접한 contours라면, rect를 병합
-                rect = new cv.Rect(
-                  Math.min(rect.x, comp_rect.x),
-                  Math.min(rect.y, comp_rect.y),
-                  Math.max(rect.x + rect.width, comp_rect.x + comp_rect.width) - Math.min(rect.x, comp_rect.x),
-                  Math.max(rect.y + rect.height, comp_rect.y + comp_rect.height) - Math.min(rect.y, comp_rect.y)
-                );
-              } else {
-                // 인접하지 않는 contours는 유지
-                remainingContours.push_back(comp_cnt);
-              }
-            }
+          //     if (calculateDistance(comp_rect, rect) < 55) {
+          //       // 인접한 contours라면, rect를 병합
+          //       rect = new cv.Rect(
+          //         Math.min(rect.x, comp_rect.x),
+          //         Math.min(rect.y, comp_rect.y),
+          //         Math.max(rect.x + rect.width, comp_rect.x + comp_rect.width) - Math.min(rect.x, comp_rect.x),
+          //         Math.max(rect.y + rect.height, comp_rect.y + comp_rect.height) - Math.min(rect.y, comp_rect.y)
+          //       );
+          //     } else {
+          //       // 인접하지 않는 contours는 유지
+          //       remainingContours.push_back(comp_cnt);
+          //     }
+          //   }
 
-            // 여기서 mergedRects 배열에 현재 rect를 추가
-            mergedRects.push(rect);
+          //   // 여기서 mergedRects 배열에 현재 rect를 추가
+          //   mergedRects.push(rect);
 
-            // 기존 contours를 업데이트
-            contours = remainingContours;
-          }
+          //   // 기존 contours를 업데이트
+          //   contours = remainingContours;
+          // }
 
           //image output: mergedRects에 있는 rect만 그리도록 수정
           // for (let rect of mergedRects) {
@@ -127,37 +130,38 @@ const Ocr = () => {
           //   }
           // }
 
-          let mask = new cv.Mat.zeros(dsize.width, dsize.height, cv.CV_8U);
-          let text_only = new cv.Mat();
+          // let mask = new cv.Mat.zeros(dsize.width, dsize.height, cv.CV_8U);
+          // let text_only = new cv.Mat();
 
-          for (let rect of mergedRects) {
-            if (!(rect.x == 0 && rect.y == 0 && rect.width == dsize.width && rect.height == dsize.height)) {
-              const margin = 10;
-              cv.rectangle(
-                mask,
-                new cv.Point(rect.x - margin, rect.y - margin),
-                new cv.Point(rect.x + rect.width + margin, rect.y + rect.height + margin),
-                new cv.Scalar(255, 255, 255),
-                -1,
-                cv.LINE_AA,
-                0
-              );
-            }
-          }
+          // for (let rect of mergedRects) {
+          //   if (!(rect.x == 0 && rect.y == 0 && rect.width == dsize.width && rect.height == dsize.height)) {
+          //     const margin = 10;
+          //     cv.rectangle(
+          //       mask,
+          //       new cv.Point(rect.x - margin, rect.y - margin),
+          //       new cv.Point(rect.x + rect.width + margin, rect.y + rect.height + margin),
+          //       new cv.Scalar(255, 255, 255),
+          //       -1,
+          //       cv.LINE_AA,
+          //       0
+          //     );
+          //   }
+          // }
 
           //Bit Wise And Calculate
-          cv.bitwise_and(mask, dst, text_only);
+          // cv.bitwise_and(mask, dst, text_only);
 
           //image output
-          cv.imshow(canvasOutput, text_only);
-          // cv.imshow(canvasOutput, dst);
+          // cv.imshow(canvasOutput, text_only);
+          cv.imshow(canvasOutput, dst);
 
           //configure text output => tessarect
           const ocrCanvas = document.createElement('canvas');
           ocrCanvas.width = dst.cols;
           ocrCanvas.height = dst.rows;
 
-          cv.imshow(ocrCanvas, text_only);
+          // cv.imshow(ocrCanvas, text_only);
+          cv.imshow(ocrCanvas, dst);
 
           ocrCanvas.toBlob((blob) => {
             const ocrImage = new File([blob], 'ocr_image.png', {
@@ -192,13 +196,20 @@ const Ocr = () => {
     }
   };
   console.log(ocrText);
+
+  const ocrRef = useRef(null);
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
       <progress max="100" value={progress}></progress>
+      <Tooltip title="OCR로 편하게 입력하세요!">
+        <IconButton onClick={() => ocrRef.current.click()}>
+          <SmartButton />
+        </IconButton>
+      </Tooltip>
       <div className="inputoutput">
         <canvas id="canvasOutput" style={{ display: 'none' }}></canvas>
       </div>
+      <input type="file" accept="*" onChange={handleImageUpload} style={{ display: 'none' }} ref={ocrRef} value="" />
     </div>
   );
 };
