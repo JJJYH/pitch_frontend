@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, Divider, FormControl, MenuItem, TextField } from '@mui/material';
+import { Button, Divider, FormControl, IconButton, MenuItem, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -19,6 +19,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
+import PostingDetailModal from 'views/posting/components/PostingDetailModal';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -29,8 +30,9 @@ const FormTypo = styled(Typography)(({ disabled }) => ({
 
 const StyledBox = styled(Box)(() => ({
   margin: '10px',
-  borderRadius: '8px',
-  border: '3px solid #f0f0f0',
+  borderRadius: '4px',
+  // border: '3px solid #f0f0f0',
+  border: '1px solid #c0c0c0',
   height: 680,
   overflow: 'auto',
   scrollbarWidth: 'none',
@@ -68,8 +70,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     job_type: '',
     job_year: '',
     posting_type: '',
-    posting_start: '',
-    posting_end: '',
+    posting_period: '',
+    posting_start: new Date(),
+    posting_end: new Date(),
     qualification: '',
     preferred: '',
     job_duties: '',
@@ -77,7 +80,19 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   });
 
   const [copiedData, setCopiedData] = useState('');
+  const [open, setOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // 공고 등록 모달
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // 직무 선택
   const handleJobRoleSelect = (selectedJobRole) => {
     console.log(selectedJobRole);
     if (!selectedRow)
@@ -90,6 +105,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
       }));
   };
 
+  // 근무지 선택
   const handleLocation = (event) => {
     const selectedLocation = event.target.value;
     //setLocation(selectedLocation);
@@ -100,6 +116,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }));
   };
 
+  // 학력 선택
   const handleEducation = (event) => {
     const selectedEducation = event.target.value;
     //setEducation(selectedEducation);
@@ -109,6 +126,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }));
   };
 
+  // 채용형태
   const handleJobType = (event) => {
     const selectedJobType = event.target.value;
     //console.log(selectedJobType);
@@ -125,6 +143,14 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }));
   };
 
+  // 공고 기간 선택
+  const handlePeriod = (event) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      posting_period: event.target.value
+    }));
+  };
+
   const handleCopy = () => {
     const copyData = { ...formData, job_req_no: 0, job_req_date: new Date(), req_status: '작성중' };
     console.log(copyData);
@@ -137,8 +163,39 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     setCopiedData('');
   };
 
-  useEffect(() => {
+  const handlePosting = async () => {
+    try {
+      const jobPostingData = {
+        jobReq: { job_req_no: selectedRow.job_req_no }
+      };
+
+      console.log(jobPostingData);
+
+      await axios.post('http://localhost:8888/admin/hire/create-post', jobPostingData);
+
+      const updatedJobReqNo = jobPostingData.jobReq.job_req_no;
+
+      // 전체 데이터를 가져오기 위한 요청
+      const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${updatedJobReqNo}`);
+
+      const newSelectedRowData = response.data;
+      console.log(newSelectedRowData);
+
+      dispatch(setSelectedRow(newSelectedRowData));
+
+      setSelectedChips([]);
+      reqlisthandler();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const scrollToTop = () => {
     contentRef.current.scrollTo(0, 0);
+  };
+
+  useEffect(() => {
+    scrollToTop();
     if (selectedRow) {
       setFormData(selectedRow);
 
@@ -156,8 +213,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
         job_type: '',
         job_year: '',
         posting_type: '',
-        posting_start: '',
-        posting_end: '',
+        posting_period: '',
+        posting_start: new Date(),
+        posting_end: new Date(),
         qualification: '',
         preferred: '',
         job_duties: '',
@@ -174,17 +232,27 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
     try {
       if (selectedRow) {
-        const job_req_no = selectedRow.job_req_no;
-        const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
-        console.log(res);
+        if (status === '요청완료') {
+          const job_req_no = selectedRow.job_req_no;
+          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          console.log(res);
 
-        dispatch(setSelectedRow(submitData));
+          dispatch(setSelectedRow(submitData));
+          setSelectedChips([]);
+          reqlisthandler();
+        } else {
+          const job_req_no = selectedRow.job_req_no;
+          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          console.log(res);
 
-        // const statusData = { selectedStatus: selectedChips };
-        // const responseData = await postStatusData(statusData);
-        // setRows(responseData);
-        const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
-        setRows(searchData);
+          dispatch(setSelectedRow(submitData));
+
+          // const statusData = { selectedStatus: selectedChips };
+          // const responseData = await postStatusData(statusData);
+          // setRows(responseData);
+          const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+          setRows(searchData);
+        }
       } else {
         const res = await axios.post('http://localhost:8888/admin/hire/create', submitData);
         console.log(res);
@@ -235,9 +303,11 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
             )}
           </Grid>
 
-          <Divider sx={{ marginTop: '10px', marginLeft: '15px' }} />
+          <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
           <TextField value={formData.job_req_no} style={{ display: 'none' }} />
           <TextField value={formData.users.user_id} style={{ display: 'none' }} />
+          <TextField value={formData.posting_start} style={{ display: 'none' }} />
+          <TextField value={formData.posting_end} style={{ display: 'none' }} />
 
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={8}>
@@ -331,14 +401,20 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
             <Grid item xs={6}>
               <FormTypo>채용형태</FormTypo>
 
-              <FormControl sx={{ paddingLeft: '40px' }}>
+              <FormControl sx={{ paddingLeft: '50px' }}>
                 <RadioGroup row onChange={handleJobType}>
                   <FormControlLabel
                     value="신입"
-                    control={<Radio size="small" checked={formData.job_type === '신입'} disabled={formData.req_status !== '작성중'} />}
+                    control={
+                      <Radio
+                        size="small"
+                        checked={formData.job_type === '신입' || !formData.job_type}
+                        disabled={formData.req_status !== '작성중'}
+                      />
+                    }
                     label="신입"
                   />
-                  <Box sx={{ width: 20 }} />
+                  <Box sx={{ width: 60 }} />
                   <FormControlLabel
                     value="경력"
                     control={<Radio size="small" checked={formData.job_type === '경력'} disabled={formData.req_status !== '작성중'} />}
@@ -355,7 +431,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 variant="outlined"
                 name="job_year"
                 size="small"
-                value={formData.job_type === '신입' ? null : formData.job_year}
+                value={formData.job_type === '신입' ? '' : formData.job_year}
                 disabled={formData.req_status !== '작성중' || formData.job_type !== '경력'}
                 onChange={(e) => {
                   setFormData({ ...formData, job_year: e.target.value });
@@ -364,18 +440,22 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
             </Grid>
           </Grid>
           <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <FormTypo>공고타입</FormTypo>
-              <FormControl sx={{ paddingLeft: '40px' }}>
+              <FormControl sx={{ paddingLeft: '50px' }}>
                 <RadioGroup row onChange={handlePostingType}>
                   <FormControlLabel
                     value="수시채용"
                     control={
-                      <Radio size="small" checked={formData.posting_type === '수시채용'} disabled={formData.req_status !== '작성중'} />
+                      <Radio
+                        size="small"
+                        checked={formData.posting_type === '수시채용' || !formData.posting_type}
+                        disabled={formData.req_status !== '작성중'}
+                      />
                     }
                     label="수시"
                   />
-                  <Box sx={{ width: 20 }} />
+                  <Box sx={{ width: 60 }} />
                   <FormControlLabel
                     value="상시채용"
                     control={
@@ -386,7 +466,24 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 </RadioGroup>
               </FormControl>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
+              <FormTypo disabled={formData.posting_type === '상시채용'}>공고기간</FormTypo>
+              <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중' || formData.posting_type === '상시채용'}>
+                <SelectBox
+                  value={formData.posting_type === '상시채용' || !formData.posting_period ? 'defaultPeriod' : formData.posting_period}
+                  onChange={handlePeriod}
+                >
+                  <MenuItem value="defaultPeriod" disabled>
+                    기간 선택
+                  </MenuItem>
+                  <MenuItem value="15일">15일</MenuItem>
+                  <MenuItem value="30일">30일</MenuItem>
+                  <MenuItem value="기타">기타</MenuItem>
+                </SelectBox>
+              </FormControl>
+            </Grid>
+
+            {/* <Grid item xs={4}>
               <FormTypo disabled={formData.posting_type === '상시채용'}>공고시작</FormTypo>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
@@ -405,7 +502,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               <FormTypo disabled={formData.posting_type == '상시채용'}>공고종료</FormTypo>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  value={formData.posting_type === '상시채용' || !formData.posting_end ? null : dayjs(formData.posting_start)}
+                  value={formData.posting_type === '상시채용' || !formData.posting_end ? null : dayjs(formData.posting_end)}
                   onChange={(data) => {
                     console.log(data);
                     setFormData({ ...formData, posting_end: data.$d });
@@ -414,7 +511,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                   slotProps={{ textField: { size: 'small' } }}
                 />
               </LocalizationProvider>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Grid item xs={12}>
             <FormTypo>지원자격</FormTypo>
@@ -461,6 +558,24 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               disabled={formData.req_status !== '작성중'}
             />
           </Grid>
+          {/* <Grid item container xs={12}>
+            <FormTypo>면접관 목록</FormTypo>
+            <IconButton>
+              <AddIcon onClick={handleOpenInterviewers} />
+            </IconButton>
+            <TextField
+              fullWidth
+              variant="outlined"
+              multiline
+              rows={10}
+              name="job_duties"
+              size="small"
+              // value={formData.job_duties}
+              // onChange={(e) => setFormData({ ...formData, job_duties: e.target.value })}
+              // disabled={formData.req_status !== '작성중'}
+            />
+            <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} />
+          </Grid> */}
           <Divider sx={{ marginTop: '40px' }} />
           <Grid item container justifyContent="center">
             {formData.req_status === '작성중' && (
@@ -478,6 +593,21 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 요청 취소
               </Button>
             )}
+            {formData.req_status === '승인' && (
+              <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={handleOpen}>
+                공고 등록
+              </Button>
+            )}
+            <PostingDetailModal
+              open={open}
+              close={handleClose}
+              page="readReq"
+              handlePosting={handlePosting}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              formData={formData}
+              setFormData={setFormData}
+            />
           </Grid>
         </Grid>
       </ReadBox>
