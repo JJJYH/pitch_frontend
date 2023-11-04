@@ -95,14 +95,14 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   // 직무 선택
   const handleJobRoleSelect = (selectedJobRole) => {
     console.log(selectedJobRole);
-    if (!selectedRow)
-      setFormData((prevData) => ({
-        ...prevData,
-        job_role: selectedJobRole.label,
-        qualification: selectedJobRole.qual,
-        preferred: selectedJobRole.prefer,
-        job_duties: selectedJobRole.duties
-      }));
+
+    setFormData((prevData) => ({
+      ...prevData,
+      job_role: selectedJobRole.label,
+      qualification: `${prevData.qualification ? prevData.qualification + '\n' : ''}${selectedJobRole.qual || ''}`,
+      preferred: `${prevData.preferred ? prevData.preferred + '\n' : ''}${selectedJobRole.prefer || ''}`,
+      job_duties: `${prevData.job_duties ? prevData.job_duties + '\n' : ''}${selectedJobRole.duties || ''}`
+    }));
   };
 
   // 근무지 선택

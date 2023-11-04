@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -10,7 +11,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -43,13 +44,27 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   }
 }));
 
-const InterviewerListModal = ({ open, close }) => {
-  const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+const InterviewerListModal = ({ open, close, handleInterviewers }) => {
+  const [checked, setChecked] = useState([]);
+  const [left, setLeft] = useState([]);
+  const [right, setRight] = useState([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
+
+  const getDeptUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8888/admin/hire/deptusers');
+      //console.log(response.data);
+      setLeft(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getDeptUsers();
+  }, []);
 
   function not(a, b) {
     return a.filter((value) => b.indexOf(value) === -1);
@@ -87,15 +102,13 @@ const InterviewerListModal = ({ open, close }) => {
   };
 
   const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
+    setRight([...right, ...left.filter((item) => checked.includes(item))]);
+    setChecked([]);
   };
 
   const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+    setRight(right.filter((item) => !checked.includes(item)));
+    setChecked([]);
   };
 
   const customList = (title, items) => (
@@ -132,7 +145,7 @@ const InterviewerListModal = ({ open, close }) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
           return (
-            <ListItem key={value} role="listitem" button onClick={handleToggle(value)}>
+            <ListItem key={value.users.user_id} role="listitem" button onClick={handleToggle(value)}>
               <ListItemIcon>
                 <Checkbox
                   checked={checked.indexOf(value) !== -1}
@@ -143,7 +156,7 @@ const InterviewerListModal = ({ open, close }) => {
                   }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`List item ${value + 1}`} />
+              <ListItemText id={labelId} primary={`${value.department.dept_name}\n ${value.users.user_nm}\n  ${value.users.user_email}`} />
             </ListItem>
           );
         })}
@@ -154,7 +167,7 @@ const InterviewerListModal = ({ open, close }) => {
   return (
     <StyledDialog maxWidth="md" onClose={close} aria-labelledby="customized-dialog-title" open={open}>
       <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-        <Typography sx={{ color: '#616161', fontSize: '20px', fontWeight: 'bold' }}>채용 요청서 등록</Typography>
+        <Typography sx={{ color: '#616161', fontSize: '20px', fontWeight: 'bold' }}>면접관 리스트</Typography>
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -170,7 +183,7 @@ const InterviewerListModal = ({ open, close }) => {
       </IconButton>
       <DialogContent dividers style={{ width: '800px', padding: '20px 40px' }}>
         <Grid container spacing={2} justifyContent="center" alignItems="center">
-          <Grid item>{customList('Choices', left)}</Grid>
+          <Grid item>{customList('후보 목록', left)}</Grid>
           <Grid item>
             <Grid container direction="column" alignItems="center">
               <Button
@@ -195,11 +208,20 @@ const InterviewerListModal = ({ open, close }) => {
               </Button>
             </Grid>
           </Grid>
-          <Grid item>{customList('Chosen', right)}</Grid>
+          <Grid item>{customList('선택 목록', right)}</Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            console.log(right);
+            close();
+            handleInterviewers(right);
+          }}
+        >
           등록
         </Button>
         <Button autoFocus onClick={close}>

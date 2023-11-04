@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import dayjs from 'dayjs';
 import AddIcon from '@mui/icons-material/Add';
-import InterviewerListModal from 'views/job-request/components/InterviewerListModal';
+import InterviewerListModal from 'views/posting/components/InterviewerListModal';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -47,6 +47,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
   const [isSticky, setIsSticky] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
+  const [interviewers, setInterviewers] = useState([]);
 
   const selectedRow = useSelector(selectedRowSelector);
 
@@ -138,6 +139,10 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
     }
   }, [formData.posting_start, formData.posting_period, formData.posting_end]);
 
+  const handleInterviewers = (list) => {
+    setInterviewers(list);
+  };
+
   return (
     <div>
       <StyledDialog maxWidth="xl" onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
@@ -213,21 +218,25 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
               </Grid>
               <Grid item container xs={12}>
                 <Typography>면접관 목록</Typography>
-                <IconButton>
-                  <AddIcon onClick={handleOpenInterviewers} />
+                <IconButton onClick={handleOpenInterviewers}>
+                  <AddIcon />
                 </IconButton>
                 <TextField
                   fullWidth
                   variant="outlined"
                   multiline
                   rows={10}
-                  name="job_duties"
+                  name="interviewers"
                   size="small"
-                  // value={formData.job_duties}
+                  value={interviewers
+                    .map(
+                      (interviewer) => ` ${interviewer.department.dept_name} ${interviewer.users.user_nm} ${interviewer.users.user_email}`
+                    )
+                    .join('\n')}
                   // onChange={(e) => setFormData({ ...formData, job_duties: e.target.value })}
                   // disabled={formData.req_status !== '작성중'}
                 />
-                <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} />
+                <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} handleInterviewers={handleInterviewers} />
               </Grid>
             </Grid>
           )}
