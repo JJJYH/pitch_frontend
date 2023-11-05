@@ -8,7 +8,7 @@ const advantageSlice = createSlice({
   reducers: {
     addAdvantage: (state, action) => {
       // 체크된 항목의 이름과 초기 advantage_type 값을 포함한 객체 생성
-      const new_advantage = { advantage_no: '', advantage_type: action.payload, advantage_detail: '', consent: '' };
+      const new_advantage = action.payload;
       return [...state, new_advantage];
     },
     removeAdvantage: (state, action) => {

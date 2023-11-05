@@ -23,6 +23,7 @@ import { addCert } from 'store/certSlice';
 import { addLang } from 'store/langSlice';
 import { addActivity } from 'store/activitySlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
+import { flushSync } from 'react-dom';
 
 export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef }) {
   const cvProfile = useSelector((state) => state.profile);
@@ -33,68 +34,21 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
   const cvLanguage = useSelector((state) => state.lang);
   const cvSkill = useSelector((state) => state.skill);
   const cvCertification = useSelector((state) => state.cert);
-  const [isWritten, setIsWritten] = useState(true);
+  const [isWritten, setIsWritten] = useState();
   const dispatch = useDispatch();
 
-  const eduUpdateFields = (data) => {
-    const new_edu_arr = {
-      edu_no: data.data.edu_no,
-      edu_type: '',
-      enter_date: '',
-      graduate_date: '',
-      major: '',
-      graduate_type: '',
-      total_score: '',
-      score: ''
-    };
-    dispatch(addEducation(new_edu_arr));
-  };
-
-  const careerUpdateFields = (data) => {
-    const new_career_arr = {
-      career_no: data.data.career_no,
-      company_name: '',
-      cv_dept_name: '',
-      position: '',
-      join_date: '',
-      salary: '',
-      job: '',
-      quit_date: '',
-      note: ''
-    };
-    dispatch(addCareer(new_career_arr));
-  };
-
-  const langUpdateFields = (data) => {
-    const new_lang_arr = { language_no: data.data.language_no, exam_type: '', language_name: '', language_score: '' };
-    dispatch(addLang(new_lang_arr));
-  };
-
-  const activityUpdateFields = (data) => {
-    const new_activity_arr = {
-      activity_no: data.data.activity_no,
-      activity_type: '',
-      organization: '',
-      start_date: '',
-      end_date: '',
-      activity_detail: ''
-    };
-    dispatch(addActivity(new_activity_arr));
-  };
-
-  const certUpdateFields = (data) => {
-    const new_cert_arr = { cert_no: data.data.cert_no, cert_name: '', publisher: '', acquisition_date: '' };
-    dispatch(addCert(new_cert_arr));
-  };
+  // useEffect(() => {
+  //   sendCVData(cvData);
+  // }, [isWritten]);
 
   // CV_LIST 쪽에서 받아와야 하는 cv_no 임시 설정
-  const proto_cv_no = 48;
+  const proto_cv_no = 49;
 
   //CV 데이터 포집 기능
   const cvData = {
     cv: {
       cv_no: proto_cv_no,
-      user_id: 'doubest',
+      user_id: cvProfile[0].user_id,
       user_nm: cvProfile[0].user_nm,
       ps_statement: null,
       gender: cvProfile[0].gender,
@@ -115,15 +69,14 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
     content: () => componentRef.current
   });
 
-  //cv_no는 list쪽에서 받아와야함 지금은 임시로 7번 사용 중
-
-  const loadCV = () => {
+  const loadCV = async () => {
+    //이력서 불러오기 요청 시 이력서가 없을 경우 Written false
     cv.getList(proto_cv_no).then((data) => {
       if (data.data === '') {
         console.log('IS Empty');
         setIsWritten(false);
       } else {
-        console.log('LIST GET : ' + JSON.stringify(data));
+        // console.log('LIST GET : ' + JSON.stringify(data));
         setIsWritten(true);
         dispatch(updateProfile({ index: 0, name: 'user_id', value: data.data.user_id }));
         dispatch(updateProfile({ index: 0, name: 'address', value: data.data.address }));
@@ -247,13 +200,6 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
     });
   };
 
-  const updateCV = () => {
-    cv.getList(proto_cv_no).then((data) => {
-      console.log('LIST GET : ' + JSON.stringify(data));
-      data.map((data) => {});
-    });
-  };
-
   const handleUploadFiles = () => {
     Object.keys(selectedFiles).map((groupKey) => {
       const formData = new FormData();
@@ -283,29 +229,41 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
     console.log('Uploading files:', selectedFiles);
   };
 
+  const CVChecked = async () => {
+    // `cv.getList()` 함수의 비동기 호출 결과를 기다립니다.
+    const data = await cv.getList(proto_cv_no);
+
+    // 작성 기록이 있는지 확인합니다.
+    if (data.data === '') {
+      console.log('작성 기록 없음');
+      return false;
+    } else {
+      console.log('작성 기록 있음');
+      return true;
+    }
+  };
+
   //CV Data Send 기능
   const sendCVData = async (cvData) => {
-    loadCV();
-    if (isWritten) {
-      console.log('기존에 작성중인 이력서가 존재합니다.');
-      try {
-        updateCV;
-        const put_res = cv.putList(cvData);
-        handleUploadFiles();
-        console.log('Response : ' + JSON.stringify(res));
-      } catch (error) {
-        console.log('Error : ' + error);
-      }
-    } else {
-      console.log('처음 작성하는 이력서 입니다.');
-      try {
-        const res = await cv.postList(cvData);
-        handleUploadFiles();
-        console.log('Response : ' + JSON.stringify(res));
-      } catch (error) {
-        console.log('Error : ' + error);
-      }
+    // CVChecked() 함수를 외부에서 호출합니다.
+    const isUpdate = await CVChecked();
+
+    // 기존에 작성한 이력서가 있는지 확인합니다.
+    if (isUpdate === false) {
+      // 새 이력서를 생성합니다.
+      const res = cv.postList(cvData);
+      // 응답을 출력합니다.
+      console.log('Response : ' + JSON.stringify(res));
     }
+    if (isUpdate === true) {
+      // 기존 이력서를 업데이트합니다.
+      const res = cv.putList(cvData);
+      // 응답을 출력합니다.
+      console.log('Response : ' + JSON.stringify(res));
+    }
+
+    // 첨부 파일을 처리합니다.
+    handleUploadFiles();
   };
 
   const actions = [

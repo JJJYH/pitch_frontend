@@ -17,6 +17,8 @@ const educationSlice = createSlice({
       const { index, name, value } = action.payload;
       if (name === 'edu_type') {
         state[index].edu_type = value;
+      } else if (name === 'edu_no') {
+        state[index].edu_no = value;
       } else if (name === 'enter_date') {
         state[index].enter_date = value;
       } else if (name === 'graduate_date') {

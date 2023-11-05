@@ -40,6 +40,13 @@ const CV = () => {
       dispatch(
         updateProfile({
           index: 0,
+          name: 'user_id',
+          value: res.data.user_id || ''
+        })
+      );
+      dispatch(
+        updateProfile({
+          index: 0,
           name: 'user_nm',
           value: res.data.user_nm || ''
         })
