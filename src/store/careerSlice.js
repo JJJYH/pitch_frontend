@@ -15,6 +15,8 @@ const careerSlice = createSlice({
       const { index, name, value } = action.payload;
       if (name === 'company_name') {
         state[index].company_name = value;
+      } else if (name === 'career_no') {
+        state[index].career_no = value;
       } else if (name === 'cv_dept_name') {
         state[index].cv_dept_name = value;
       } else if (name === 'position') {

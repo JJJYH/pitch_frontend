@@ -45,30 +45,52 @@ const Advantage = () => {
   };
 
   const advantage_type_arr = ['병역', '보훈 대상', '장애', '고용지원금 대상', '취업보호 대상'];
-  const advantage_detail = {
+  const advantage_detail_arr = {
     병역: ['군필', '미필', '면제', '해당없음'],
     장애: ['중증', '경증', '1급', '2급', '3급', '4급', '5급', '6급']
   };
-  useEffect(() => {
-    set_checked_items(advantage_data);
-  }, []);
   //체크 여부
   const [checked_items, set_checked_items] = useState([]);
 
+  useEffect(() => {
+    set_checked_items(advantage_data);
+    console.log(checked_items);
+    console.log(advantage_data);
+  }, [advantage_data]);
+
   const isChecked = (event) => {
-    if (checked_items.includes(event.target.value)) {
+    if (checked_items.some((item) => item.advantage_type === event.target.value)) {
       // 체크 해제되면 해당 항목 제거
-      const index = checked_items.indexOf(event.target.value);
-      set_checked_items(checked_items.filter((item) => item !== event.target.value));
+      // const index = checked_items.indexOf(event.target.value);
+      // set_checked_items(checked_items.filter((item) => item.advantage_type !== event.target.value));
+      const index = checked_items.findIndex((item) => item.advantage_type === event.target.value);
+      set_checked_items(checked_items.filter((item, i) => i !== index));
       dispatch(removeAdvantage(index));
+      console.log(advantage_data);
     } else {
       // 체크되면 액션 호출하여 객체 추가
-      set_checked_items((prev) => [...prev, event.target.value]);
-      dispatch(addAdvantage(event.target.value));
+      set_checked_items((prev) => [
+        ...prev,
+        {
+          advantage_no: '',
+          advantage_type: event.target.value,
+          advantage_detail: '',
+          consent: ''
+        }
+      ]);
+      dispatch(
+        addAdvantage({
+          advantage_no: '',
+          advantage_type: event.target.value,
+          advantage_detail: '',
+          consent: ''
+        })
+      );
+      console.log(advantage_data);
     }
   };
 
-  console.log('CHECK ADVANATGE: ' + checked_items);
+  console.log(checked_items);
 
   return (
     <>
@@ -82,12 +104,13 @@ const Advantage = () => {
                     key={index}
                     control={<Checkbox icon={<CheckCircleOutline />} checkedIcon={<CheckCircle />} value={type} onChange={isChecked} />}
                     label={type}
+                    checked={advantage_data.some((item) => item.advantage_type === type)}
                   />
                 ))}
               </FormGroup>
             </div>
           </Grid>
-          {checked_items.includes('병역') && (
+          {checked_items.some((item) => item.advantage_type === '병역') && (
             <Grid item xs={12} sx={{ mb: 2.5 }}>
               <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
                 <Grid item xs={4}>
@@ -95,12 +118,18 @@ const Advantage = () => {
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">병역 상태</InputLabel>
                       <Select
-                        value={checked_items.includes('병역') ? (military_advantage ? military_advantage.advantage_detail : '') : ''}
+                        value={
+                          checked_items.some((item) => item.advantage_type === '병역')
+                            ? military_advantage
+                              ? military_advantage.advantage_detail
+                              : ''
+                            : ''
+                        }
                         name="military_detail"
                         onChange={handleMilitaryChange}
                         variant="standard"
                       >
-                        {advantage_detail['병역'].map((type) => (
+                        {advantage_detail_arr['병역'].map((type) => (
                           <MenuItem key={type} value={type}>
                             {type}
                           </MenuItem>
@@ -117,6 +146,7 @@ const Advantage = () => {
                       label={'수집동의'}
                       name="military_consent"
                       onChange={handleConsentChange}
+                      checked={checked_items.some((item) => item.advantage_type === '병역' && item.consent === 'T')}
                     />
                   </FormGroup>
                 </Grid>
@@ -124,7 +154,7 @@ const Advantage = () => {
             </Grid>
           )}
 
-          {checked_items.includes('장애') && (
+          {checked_items.some((item) => item.advantage_type === '장애') && (
             <Grid item xs={12}>
               <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
                 <Grid item xs={4}>
@@ -132,12 +162,18 @@ const Advantage = () => {
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">장애 등급</InputLabel>
                       <Select
-                        value={checked_items.includes('장애') ? (obstacle_advantage ? obstacle_advantage.advantage_detail : '') : ''}
+                        value={
+                          checked_items.some((item) => item.advantage_type === '장애')
+                            ? obstacle_advantage
+                              ? obstacle_advantage.advantage_detail
+                              : ''
+                            : ''
+                        }
                         name="obstacle_detail"
                         onChange={handleObstacleChange}
                         variant="standard"
                       >
-                        {advantage_detail['장애'].map((type) => (
+                        {advantage_detail_arr['장애'].map((type) => (
                           <MenuItem key={type} value={type}>
                             {type}
                           </MenuItem>
@@ -154,6 +190,7 @@ const Advantage = () => {
                       label={'수집동의'}
                       name="obstacle_consent"
                       onChange={handleConsentChange}
+                      checked={checked_items.some((item) => item.advantage_type === '장애' && item.consent === 'T')}
                     />
                   </FormGroup>
                 </Grid>

@@ -76,7 +76,7 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
         console.log('IS Empty');
         setIsWritten(false);
       } else {
-        // console.log('LIST GET : ' + JSON.stringify(data));
+        console.log('LIST GET : ' + JSON.stringify(data));
         setIsWritten(true);
         dispatch(updateProfile({ index: 0, name: 'user_id', value: data.data.user_id }));
         dispatch(updateProfile({ index: 0, name: 'address', value: data.data.address }));
@@ -152,21 +152,26 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
         data.data['skills'].map((item, key) => {
           const new_skill_arr = { skill_no: item.skill_no, skill_name: item.skill_name, skill_domain: item.skill_domain };
 
-          if (data.data['skills'].length > cvSkill.length && !cvSkill.some((skill) => skill.skill_name === item.skill_name)) {
+          if (
+            data.data['skills'].length > cvSkill.length &&
+            !cvSkill.some((skill) => skill.skill_name === item.skill_name) &&
+            item.skill_no !== 0
+          ) {
             dispatch(addSkill(item));
-          } else {
+          } else if (item.skill_no !== 0) {
             dispatch(updateSkill({ index: key, value: item.skill_name }));
           }
+          console.log(item);
         });
         data.data['careers'].map((item, key) => {
-          if (data.data['careers'].length > cvCareer.length) {
+          if (data.data['careers'].length > cvCareer.length && item.career_no !== 0) {
             dispatch(addCareer(item));
           }
           console.log(key);
           console.log(item);
         });
         data.data['certifications'].map((item, key) => {
-          if (data.data['certifications'].length > cvCertification.length) {
+          if (data.data['certifications'].length > cvCertification.length && item.cert_no !== 0) {
             console.log('들어옴');
             dispatch(addCert(item));
           }
@@ -175,21 +180,21 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
           console.log(cvCertification);
         });
         data.data['languages'].map((item, key) => {
-          if (data.data['languages'].length > cvLanguage.length) {
+          if (data.data['languages'].length > cvLanguage.length && item.language_no !== 0) {
             dispatch(addLang(item));
           }
           console.log(key);
           console.log(item);
         });
         data.data['activities'].map((item, key) => {
-          if (data.data['activities'].length > cvActivity.length) {
+          if (data.data['activities'].length > cvActivity.length && item.activity_no !== 0) {
             dispatch(addActivity(item));
           }
           console.log(key);
           console.log(item);
         });
         data.data['advantages'].map((item, key) => {
-          if (data.data['advantages'].length > cvAdvantage.length) {
+          if (data.data['advantages'].length > cvAdvantage.length && item.advantage_no !== 0) {
             dispatch(addAdvantage(item));
           }
           console.log(key);
