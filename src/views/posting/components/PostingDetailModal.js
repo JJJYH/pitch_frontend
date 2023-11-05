@@ -52,7 +52,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
   const selectedRow = useSelector(selectedRowSelector);
 
   const currentDate = dayjs();
-  const postingEndDate = dayjs(selectedRow.posting_end);
+  const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
 
   const handleToggle = () => {
@@ -77,31 +77,35 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
     };
   }, [open]);
 
-  // const handlePosting = async () => {
-  //   close();
-  //   const jobPostingData = {
-  //     jobReq: { job_req_no: selectedRow.job_req_no }
-  //   };
-
-  //   try {
-  //     const res = await axios.post('http://localhost:8888/admin/hire/create-post', jobPostingData);
-  //     console.log(res.data);
-  //     setSelectedChips([]);
-  //     reqlisthandler();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const handlePostingFunc = () => {
     close();
     setCurrentPage(1);
     handlePosting();
   };
 
-  // 페이지를 변경하는 함수
-  const handleNextPage = () => {
-    setCurrentPage(2);
+  const handleNextPage = async () => {
+    try {
+      const interviewerIds = interviewers.map((interviewer) => interviewer.users.user_id);
+      console.log(interviewerIds);
+
+      const updatewithInterviewers = {
+        jobReq: {
+          ...formData,
+          posting_start: formData.posting_start,
+          posting_end: formData.posting_end
+        },
+        interviewer_id: interviewerIds
+      };
+
+      console.log(updatewithInterviewers);
+
+      const jobReqNo = formData.job_req_no;
+
+      const response = await axios.put(`http://localhost:8888/admin/hire/addInterviewers/${jobReqNo}`, updatewithInterviewers);
+      setCurrentPage(2);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleClose = () => {
@@ -134,7 +138,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
     } else if (formData.posting_period === '기타') {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        posting_end: formData.posting_start
+        posting_end: prevFormData.posting_end || new Date()
       }));
     }
   }, [formData.posting_start, formData.posting_period, formData.posting_end]);
@@ -233,10 +237,11 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                       (interviewer) => ` ${interviewer.department.dept_name} ${interviewer.users.user_nm} ${interviewer.users.user_email}`
                     )
                     .join('\n')}
-                  // onChange={(e) => setFormData({ ...formData, job_duties: e.target.value })}
-                  // disabled={formData.req_status !== '작성중'}
                 />
                 <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} handleInterviewers={handleInterviewers} />
+              </Grid>
+              <Grid item>
+                <Typography>파일업로드</Typography>
               </Grid>
             </Grid>
           )}
@@ -311,7 +316,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                         <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
                           <Typography sx={{ fontSize: '16px' }}>게시</Typography>
                           <Typography ml={2} mr={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            {dayjs(selectedRow.posting_start).format('YYYY-MM-DD')}
+                            {dayjs(formData.posting_start).format('YYYY-MM-DD')}
                           </Typography>
                         </Grid>
                         <Typography ml={1} sx={{ fontSize: '24px', fontWeight: 'bold' }}>
@@ -322,7 +327,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                             마감
                           </Typography>
                           <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            {dayjs(selectedRow.posting_end).format('YYYY-MM-DD')}
+                            {dayjs(formData.posting_end).format('YYYY-MM-DD')}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -486,27 +491,6 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
         {page === 'readReq' && (
           <DialogActions sx={{ minHeight: '80px' }}>
             <Box sx={{ border: '1px, solid' }}>
-              {/* <Button
-                variant="contained"
-                style={{
-                  backgroundColor: '#38678f',
-                  marginRight: '10px'
-                }}
-                onClick={handlePostingFunc}
-              >
-                공고등록
-              </Button>
-              <Button
-                variant="outlined"
-                style={{
-                  borderColor: '#38678f',
-                  color: '#38678f',
-                  width: '80px'
-                }}
-                onClick={handleClose}
-              >
-                취소
-              </Button> */}
               {currentPage === 1 && (
                 <Button
                   variant="contained"
@@ -516,7 +500,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                   }}
                   onClick={handleNextPage}
                 >
-                  다음페이지
+                  다음
                 </Button>
               )}
               {currentPage === 2 && (

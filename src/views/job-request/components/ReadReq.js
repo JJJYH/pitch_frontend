@@ -85,6 +85,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
   // 공고 등록 모달
   const handleOpen = () => {
+    const today = new Date();
+    setFormData((prevData) => ({
+      ...prevData,
+      posting_start: today
+    }));
+
     setOpen(true);
   };
 
@@ -99,9 +105,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     setFormData((prevData) => ({
       ...prevData,
       job_role: selectedJobRole.label,
-      qualification: `${prevData.qualification ? prevData.qualification + '\n' : ''}${selectedJobRole.qual || ''}`,
-      preferred: `${prevData.preferred ? prevData.preferred + '\n' : ''}${selectedJobRole.prefer || ''}`,
-      job_duties: `${prevData.job_duties ? prevData.job_duties + '\n' : ''}${selectedJobRole.duties || ''}`
+      qualification: selectedJobRole.qual,
+      preferred: selectedJobRole.prefer,
+      job_duties: selectedJobRole.duties
     }));
   };
 
@@ -306,8 +312,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
           <TextField value={formData.job_req_no} style={{ display: 'none' }} />
           <TextField value={formData.users.user_id} style={{ display: 'none' }} />
-          <TextField value={formData.posting_start} style={{ display: 'none' }} />
-          <TextField value={formData.posting_end} style={{ display: 'none' }} />
+          {/* <TextField value={formData.posting_start} style={{ display: 'none' }} />
+          <TextField value={formData.posting_end} style={{ display: 'none' }} /> */}
 
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={8}>
@@ -482,36 +488,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 </SelectBox>
               </FormControl>
             </Grid>
-
-            {/* <Grid item xs={4}>
-              <FormTypo disabled={formData.posting_type === '상시채용'}>공고시작</FormTypo>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  value={formData.posting_type === '상시채용' || !formData.posting_end ? null : dayjs(formData.posting_start)}
-                  onChange={(data) => {
-                    console.log(data);
-
-                    setFormData({ ...formData, posting_start: data.$d });
-                  }}
-                  disabled={formData.req_status !== '작성중' || formData.posting_type === '상시채용'}
-                  slotProps={{ textField: { size: 'small' } }}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={4}>
-              <FormTypo disabled={formData.posting_type == '상시채용'}>공고종료</FormTypo>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  value={formData.posting_type === '상시채용' || !formData.posting_end ? null : dayjs(formData.posting_end)}
-                  onChange={(data) => {
-                    console.log(data);
-                    setFormData({ ...formData, posting_end: data.$d });
-                  }}
-                  disabled={formData.req_status !== '작성중' || formData.posting_type == '상시채용'}
-                  slotProps={{ textField: { size: 'small' } }}
-                />
-              </LocalizationProvider>
-            </Grid> */}
           </Grid>
           <Grid item xs={12}>
             <FormTypo>지원자격</FormTypo>
@@ -558,24 +534,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               disabled={formData.req_status !== '작성중'}
             />
           </Grid>
-          {/* <Grid item container xs={12}>
-            <FormTypo>면접관 목록</FormTypo>
-            <IconButton>
-              <AddIcon onClick={handleOpenInterviewers} />
-            </IconButton>
-            <TextField
-              fullWidth
-              variant="outlined"
-              multiline
-              rows={10}
-              name="job_duties"
-              size="small"
-              // value={formData.job_duties}
-              // onChange={(e) => setFormData({ ...formData, job_duties: e.target.value })}
-              // disabled={formData.req_status !== '작성중'}
-            />
-            <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} />
-          </Grid> */}
           <Divider sx={{ marginTop: '40px' }} />
           <Grid item container justifyContent="center">
             {formData.req_status === '작성중' && (
