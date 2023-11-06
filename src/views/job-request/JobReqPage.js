@@ -86,26 +86,6 @@ const JobReqPage = () => {
     }
   };
 
-  // const handleChipClick = async (status) => {
-  //   const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
-
-  //   setSelectedChips(newSelectedChips);
-  //   //console.log(newSelectedChips);
-
-  //   dispatch(resetSelectedRow());
-
-  //   const statusData = {
-  //     selectedStatus: newSelectedChips
-  //   };
-
-  //   try {
-  //     const responseData = await postStatusData(statusData);
-  //     setRows(responseData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const handleChipClick = async (status) => {
     const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
 

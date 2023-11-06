@@ -39,9 +39,21 @@ const StyledDialog = styled(Dialog)(() => ({
   }
 }));
 
-const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, setCurrentPage, formData, setFormData }) => {
+const PostingDetailModal = ({
+  open,
+  close,
+  page,
+  handlePosting,
+  currentPage,
+  setCurrentPage,
+  formData,
+  setFormData,
+  isLiked,
+  handleToggle,
+  job_posting_no
+}) => {
   const [isSticky, setIsSticky] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  //const [isLiked, setIsLiked] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
   const [interviewers, setInterviewers] = useState([]);
 
@@ -49,9 +61,9 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
   const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
 
-  const handleToggle = () => {
-    setIsLiked((prev) => !prev); // 현재 상태를 토글
-  };
+  // const handleToggle = () => {
+  //   setIsLiked((prev) => !prev); // 현재 상태를 토글
+  // };
 
   const handleScroll = (e) => {
     const scrollY = e.target.scrollTop;
@@ -275,6 +287,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                     justifyContent: 'center'
                   }}
                 >
+                  <Typography>{job_posting_no}</Typography>
                   <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
                   <Typography sx={{ fontSize: '16px', mt: 2 }}>{formData.job_type}</Typography>
                 </Box>
