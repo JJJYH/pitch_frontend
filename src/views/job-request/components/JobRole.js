@@ -19,6 +19,7 @@ const JobRole = ({ onSelect, disabled, formData }) => {
       value={formData.job_role}
       disableClearable
       options={jobRoles}
+      isOptionEqualToValue={(option, value) => option.label === value}
       renderInput={(params) => <TextField {...params} placeholder="직무 선택" variant="outlined" name="job_role" size="small" />}
       onChange={(event, value) => onSelect(value)}
       disabled={disabled} // Autocomplete를 비활성화

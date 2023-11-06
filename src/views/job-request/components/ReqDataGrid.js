@@ -10,8 +10,12 @@ import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/sel
 import { setJobReqNo } from 'store/jobReqNoSlice';
 import { jobReqNoSelector } from 'store/jobReqNoSlice';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
+import CircleIcon from '@mui/icons-material/Circle';
+import { Typography } from '@mui/material';
+import { typography } from '@mui/system';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
+  border: '1px solid #c0c0c0',
   '& .css-qvtrhg-MuiDataGrid-virtualScroller': {
     overflow: 'auto',
     scrollbarWidth: 'none',
@@ -24,6 +28,9 @@ const StyledDataGrid = styled(DataGrid)(() => ({
   },
   '& .selected-row': {
     backgroundColor: '#f0f0f0'
+  },
+  '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
+    outline: 'none !important'
   }
 }));
 
@@ -91,22 +98,69 @@ const ReqDataGrid = forwardRef(
         headerName: '상태',
         width: 180,
         headerAlign: 'center',
-        align: 'center',
+        align: 'left',
+        // renderCell: (params) => {
+        //   const status = params.row.req_status;
+        //   switch (status) {
+        //     case '작성중':
+        //       return <StatusChip1 label={status} variant="selected" />;
+        //     case '요청완료':
+        //       return <StatusChip2 label={status} variant="selected" />;
+        //     case '승인':
+        //       return <StatusChip3 label={status} variant="selected" />;
+        //     case '반려':
+        //       return <StatusChip4 label={status} variant="selected" />;
+        //     case '공고중':
+        //       return <StatusChip5 label={status} variant="selected" />;
+        //     case '공고종료':
+        //       return <StatusChip6 label={status} variant="selected" />;
+        //   }
+        // }
         renderCell: (params) => {
           const status = params.row.req_status;
           switch (status) {
             case '작성중':
-              return <StatusChip1 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#FFBD33', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
             case '요청완료':
-              return <StatusChip2 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
             case '승인':
-              return <StatusChip3 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#7EBF6F', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
             case '반려':
-              return <StatusChip4 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#EC5C87', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
             case '공고중':
-              return <StatusChip5 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#5092E2', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
             case '공고종료':
-              return <StatusChip6 label={status} variant="selected" />;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                  <CircleIcon fontSize="16px" style={{ color: '#809B95', marginRight: '8px' }} />
+                  <Typography>{status}</Typography>
+                </div>
+              );
           }
         }
       }

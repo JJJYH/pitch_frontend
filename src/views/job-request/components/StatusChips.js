@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 import { Chip } from '@mui/material';
 
 const StatusChip1 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#FFBD33',
   borderRadius: '16px',
   color: '#FFBD33',
@@ -16,7 +16,7 @@ const StatusChip1 = styled(Chip)(() => ({
 }));
 
 const StatusChip2 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#D18AC7',
   borderRadius: '16px',
   color: '#D18AC7',
@@ -30,7 +30,7 @@ const StatusChip2 = styled(Chip)(() => ({
 }));
 
 const StatusChip3 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#7EBF6F',
   borderRadius: '16px',
   color: '#7EBF6F',
@@ -44,7 +44,7 @@ const StatusChip3 = styled(Chip)(() => ({
 }));
 
 const StatusChip4 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#EC5C87',
   borderRadius: '16px',
   color: '#EC5C87',
@@ -58,7 +58,7 @@ const StatusChip4 = styled(Chip)(() => ({
 }));
 
 const StatusChip5 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#5092E2',
   borderRadius: '16px',
   color: '#5092E2',
@@ -72,7 +72,7 @@ const StatusChip5 = styled(Chip)(() => ({
 }));
 
 const StatusChip6 = styled(Chip)(() => ({
-  border: '3px solid',
+  border: '2px solid',
   borderColor: '#809B95',
   borderRadius: '16px',
   color: '#809B95',
