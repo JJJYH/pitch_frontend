@@ -1,17 +1,29 @@
 import axios from 'axios';
 
+const encodeIfNeeded = (value) => {
+  // 정규식을 사용하여 문자열에 한글이 포함되어 있는지 체크합니다.
+  const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(value);
+
+  // 한글이 포함되어 있다면 인코딩을 수행합니다.
+  if (hasKorean) {
+    return encodeURIComponent(value);
+  }
+
+  return value;
+}
+
 // axios 인스턴스를 생성합니다.
 const instance = axios.create({
   baseURL: 'http://localhost:8888'
 });
 // AccessToken 검증 로직
 instance.interceptors.request.use((config) => {
-  console.log(config.headers);
+  console.log(config);
   if (!config.headers) return config;
-
   let accessToken = sessionStorage.getItem('AccessToken');
 
   if (accessToken !== null) {
+    accessToken = encodeIfNeeded(accessToken);
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
@@ -32,6 +44,7 @@ instance.interceptors.response.use(
   }, //accessToken 에러로직(진행중)
   async function (error) {
     const originalConfig = error.config;
+    console.log(error);
     const msg = error.response.data.message;
     const status = error.response.status;
 
@@ -87,6 +100,10 @@ const principal = {
   //로그아웃 api
   logout: (data) => {
     return instance.post('/auth/logout', data);
+  },
+  //회원가입 api
+  register: (data) => {
+    return instance.post('/auth/create', data);
   }
 };
 

@@ -46,8 +46,15 @@ const App = () => {
     }
   };
 
+  var updateSession = (event) => {
+    if (event.data.accessToken) {
+      sessionStorage.setItem('AccessToken', event.data.accessToken);
+    }
+  }
+
   if (window.addEventListener) {
     window.addEventListener("storage", sessionStorage_transfer, false);
+    window.addEventListener("message", updateSession);
   } else {
     window.attachEvent("onstorage", sessionStorage_transfer);
   }
@@ -56,6 +63,15 @@ const App = () => {
     localStorage.setItem('getSessionStorage', 'foobar');
     localStorage.removeItem('getSessionStorage', 'foobar');
   }
+
+  // channel = new BroadcastChannel('token_channel');
+  // channel.onmessage = (event) => {
+  //   const receivedToken = event.data.accessToken;
+  //   if(receivedToken){
+  //     setT
+  //   }
+  // }
+
   //====================================================================//
   const [accessToken, setAccessToken] = useState(sessionStorage.getItem('AccessToken'))
   const customization = useSelector((state) => state.customization);
@@ -73,6 +89,26 @@ const App = () => {
       dispatch(logoutUser());
     }
   }
+  let channel;
+
+  useEffect(() => {
+    // 채널 생성
+    channel = new BroadcastChannel('token_channel');
+
+    channel.onmessage = (event) => {
+      const receivedToken = event.data.accesstoken;
+      console.log(event);
+      if (receivedToken) {
+        setAccessToken(receivedToken);
+        sessionStorage.setItem('AccessToken', event.data.accesstoken);
+      }
+    };
+
+    return () => {
+      // 컴포넌트가 언마운트되면 채널을 닫음
+      channel.close();
+    };
+  }, []);
 
   useEffect(() => {
     console.log(userInfo);
