@@ -17,12 +17,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
-import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
-import { column } from 'stylis';
-import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
+
 import dayjs from 'dayjs';
 import AddIcon from '@mui/icons-material/Add';
 import InterviewerListModal from 'views/posting/components/InterviewerListModal';
@@ -48,8 +44,6 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
   const [isLiked, setIsLiked] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
   const [interviewers, setInterviewers] = useState([]);
-
-  const selectedRow = useSelector(selectedRowSelector);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
@@ -110,7 +104,6 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
 
   const handleClose = () => {
     close();
-    setCurrentPage(1);
   };
 
   // 면접관 리스트 모달
@@ -186,7 +179,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
               제발 돼라
             </Box>
           )}
-          {currentPage === 1 && (
+          {page === 'readReq' && currentPage === 1 && (
             <Grid container>
               <Grid item>
                 <Typography>공고 기간</Typography>
@@ -282,8 +275,8 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                     justifyContent: 'center'
                   }}
                 >
-                  <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>{selectedRow.req_title}</Typography>
-                  <Typography sx={{ fontSize: '16px', mt: 2 }}>{selectedRow.job_type}</Typography>
+                  <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
+                  <Typography sx={{ fontSize: '16px', mt: 2 }}>{formData.job_type}</Typography>
                 </Box>
               </Grid>
               <Grid item>
@@ -352,7 +345,7 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                       maxHeight: '900px'
                     }}
                   >
-                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 3, ml: 5 }}>{selectedRow.job_role}</Typography>
+                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 3, ml: 5 }}>{formData.job_role}</Typography>
                     <Box sx={{ width: '1050px', borderTop: '1px solid #ddd', marginLeft: '25px', p: 2, pb: 3 }}>
                       <Grid container direction="column">
                         <Grid item mb={2}>
@@ -363,28 +356,28 @@ const PostingDetailModal = ({ open, close, page, handlePosting, currentPage, set
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>채용인원</Typography>
-                          <Typography mb={1}>{selectedRow.hire_num}명</Typography>
+                          <Typography mb={1}>{formData.hire_num}명</Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>근무지</Typography>
-                          <Typography mb={1}>{selectedRow.location}</Typography>
+                          <Typography mb={1}>{formData.location}</Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>수행업무</Typography>
                           <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
-                            {selectedRow.job_duties}
+                            {formData.job_duties}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>지원자격</Typography>
                           <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
-                            {selectedRow.qualification}
+                            {formData.qualification}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>우대사항</Typography>
                           <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
-                            {selectedRow.preferred}
+                            {formData.preferred}
                           </Typography>
                         </Grid>
                       </Grid>

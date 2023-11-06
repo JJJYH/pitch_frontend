@@ -85,6 +85,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
   // 공고 등록 모달
   const handleOpen = () => {
+    setCurrentPage(1);
     const today = new Date();
     setFormData((prevData) => ({
       ...prevData,
