@@ -48,22 +48,17 @@ const PostingDetailModal = ({
   setCurrentPage,
   formData,
   setFormData,
-  isLiked,
   handleToggle,
-  job_posting_no
+  job_posting_no,
+  jobPosting
 }) => {
   const [isSticky, setIsSticky] = useState(false);
-  //const [isLiked, setIsLiked] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
   const [interviewers, setInterviewers] = useState([]);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
-
-  // const handleToggle = () => {
-  //   setIsLiked((prev) => !prev); // 현재 상태를 토글
-  // };
 
   const handleScroll = (e) => {
     const scrollY = e.target.scrollTop;
@@ -262,12 +257,19 @@ const PostingDetailModal = ({
                 >
                   <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} spacing={2}>
                     <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                      {isLiked ? (
-                        <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} onClick={handleToggle} />
+                      {jobPosting && jobPosting.isLiked ? (
+                        <FavoriteIcon
+                          style={{ fontSize: 30, color: '#FF6F6F' }}
+                          onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                        />
                       ) : (
-                        <FavoriteBorderIcon style={{ fontSize: 30, color: ' #666666' }} onClick={handleToggle} />
+                        <FavoriteBorderIcon
+                          style={{ fontSize: 30, color: ' #666666' }}
+                          onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                        />
                       )}
-                      <Typography ml={1}>관심공고</Typography>
+
+                      <Typography ml={2}>관심공고</Typography>
                     </Grid>
                     <Grid item sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
                       <ShareRoundedIcon />

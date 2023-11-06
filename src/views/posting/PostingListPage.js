@@ -1,20 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Card, CardContent, Divider, Grid, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { Button, Card, CardContent, Divider, Grid, IconButton, MenuItem, Paper, Select, Typography } from '@mui/material';
 import PostingDetailModal from './components/PostingDetailModal';
 import { Box } from '@mui/system';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(2);
   const [jobPostings, setJobPostings] = useState([]);
   const [selectedJobPosting, setSelectedJobPosting] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
+  const userId = useSelector((state) => state.userInfo.user_id);
 
   useEffect(() => {
     axios
@@ -23,9 +24,29 @@ const PostingListPage = () => {
         setJobPostings(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching job postings:', error);
+        console.error(error);
       });
-  }, []);
+
+    axios
+      .get('http://localhost:8888/admin/hire/liked')
+      .then((response) => {
+        const likedJobPostings = response.data;
+        console.log(likedJobPostings);
+        setJobPostings((prevJobPostings) =>
+          prevJobPostings.map((jobPosting) => {
+            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
+            return {
+              ...jobPosting,
+              isLiked: isLiked
+            };
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [userId]);
+  // }, []);
 
   const handleJobPostingClick = (jobPosting) => {
     setSelectedJobPosting(jobPosting);
@@ -37,8 +58,26 @@ const PostingListPage = () => {
     setOpen(false);
   };
 
-  const handleToggle = () => {
-    setIsLiked((prev) => !prev); // 현재 상태를 토글
+  const handleToggle = (e, jobPostingNo) => {
+    e.stopPropagation();
+    setJobPostings((prevJobPostings) => {
+      return prevJobPostings.map((jobPosting) => {
+        if (jobPosting.job_posting_no === jobPostingNo) {
+          const updatedJobPosting = {
+            ...jobPosting,
+            isLiked: !jobPosting.isLiked
+          };
+
+          if (updatedJobPosting.isLiked) {
+            axios.post('http://localhost:8888/admin/hire/liked', { job_posting_no: jobPostingNo });
+          } else {
+            axios.delete('http://localhost:8888/admin/hire/liked', { data: { job_posting_no: jobPostingNo } });
+          }
+          return updatedJobPosting;
+        }
+        return jobPosting;
+      });
+    });
   };
 
   return (
@@ -105,18 +144,31 @@ const PostingListPage = () => {
                         <Grid item xs={4} key={jobPosting.job_posting_no}>
                           <Card sx={{ border: '1px solid', cursor: 'pointer' }} onClick={() => handleJobPostingClick(jobPosting)}>
                             <CardContent>
-                              <Grid container sx={{ display: 'flex', justifyContent: 'flex-end' }} spacing={2}>
-                                <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                                  {isLiked ? (
-                                    <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} onClick={handleToggle} />
-                                  ) : (
-                                    <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} onClick={handleToggle} />
-                                  )}
+                              <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
+                                <Grid item>
+                                  <IconButton
+                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                    sx={{ display: jobPosting.isLiked ? 'block' : 'none', p: 0 }}
+                                  >
+                                    <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                    sx={{
+                                      display: !jobPosting.isLiked ? 'block' : 'none',
+                                      p: 0
+                                    }}
+                                  >
+                                    <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} />
+                                  </IconButton>
                                 </Grid>
-                                <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <ShareRoundedIcon style={{ fontSize: 18 }} />
+                                <Grid item>
+                                  <IconButton sx={{ p: 0 }}>
+                                    <ShareRoundedIcon style={{ fontSize: 20 }} />
+                                  </IconButton>
                                 </Grid>
                               </Grid>
+
                               <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
                               <Grid container mt={1}>
                                 <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
@@ -145,9 +197,9 @@ const PostingListPage = () => {
                     formData={selectedJobPosting.jobReq}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
-                    isLiked={isLiked}
-                    handleToggle={handleToggle}
+                    handleToggle={(e) => handleToggle(e, selectedJobPosting.job_posting_no)}
                     job_posting_no={selectedJobPosting.job_posting_no}
+                    jobPosting={selectedJobPosting}
                   />
                 )}
               </Box>

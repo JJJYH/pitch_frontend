@@ -57,10 +57,11 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
+  const userId = useSelector((state) => state.userInfo.user_id);
 
   const [formData, setFormData] = useState({
     job_req_no: '',
-    users: { user_id: 'hr' },
+    users: { user_id: userId },
     req_title: '',
     job_req_date: new Date(),
     job_role: '',
@@ -210,7 +211,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     } else {
       setFormData({
         job_req_no: '',
-        users: { user_id: 'hr' },
+        users: { user_id: userId },
         req_title: '',
         job_req_date: new Date(),
         job_role: '',
