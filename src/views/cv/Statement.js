@@ -1,4 +1,5 @@
 import { Button, Grid, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 import React from 'react';
 
 const Statement = ({ selectedFiles, setSelectedFiles }) => {
@@ -12,10 +13,10 @@ const Statement = ({ selectedFiles, setSelectedFiles }) => {
     <>
       {Object.keys(selectedFiles).map((groupKey) => (
         <Grid item xs={12} key={groupKey}>
-          <Typography sx={{ fontSize: '20px', color: '#cccccc' }}>{groupKey}</Typography>
+          <Typography sx={{ fontSize: '25px', color: '#cccccc' }}>{groupKey}</Typography>
           {selectedFiles[groupKey].length > 0 && (
             <div>
-              <h3>Selected Files:</h3>
+              <Typography sx={{ mt: 2.5, fontSize: '14px', fontWeight: 'bold' }}>선택된 파일</Typography>
               <ul>
                 {selectedFiles[groupKey].map((file, index) => (
                   <li key={index}>

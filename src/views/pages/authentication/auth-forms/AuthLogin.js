@@ -50,11 +50,23 @@ const FirebaseLogin = ({ ...others }) => {
   const customization = useSelector((state) => state.customization);
   const userInfo = useSelector((state) => state.userInfo);
   //const [checked, setChecked] = useState(true);
+  let channel;
+
+  useEffect(() => {
+    // 채널 생성
+    channel = new BroadcastChannel('token_channel');
+
+    return () => {
+      // 컴포넌트가 언마운트되면 채널을 닫음
+      channel.close();
+    };
+  }, []);
 
   const googleHandler = async () => {
 
     const googleLoginUrl = 'https://accounts.google.com/o/oauth2/auth?client_id=1061330767873-0hsk6i0platdln04io0velba0ojonsc0.apps.googleusercontent.com&redirect_uri=http://localhost:3000/pages/redirect&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-    window.open(googleLoginUrl, '_blank', 'width=600, height=600');
+    window.location.href = googleLoginUrl;
+    //window.open(googleLoginUrl, 'width=600,height=700');
     //console.error('Login');
   };
 
@@ -162,11 +174,13 @@ const FirebaseLogin = ({ ...others }) => {
               principal.login(userData).then((res) => {
                 sessionStorage.setItem('AccessToken', res.headers.accesstoken);
                 principal.setToken(res.headers.accesstoken)
-                principal.getUser(res.headers.accesstoken).then((res) => {
-                  console.log(res.data);
-                  dispatch(setUser(res.data));
-                  navigate('/main');
-                });
+                // principal.getUser(res.headers.accesstoken).then((res) => {
+                //   console.log(res.data);
+                //   dispatch(setUser(res.data));
+                //   navigate('/main');
+                // });
+                channel.postMessage({ accesstoken: res.headers.accesstoken });
+                window.close();
               })
               console.log(userInfo);
             }

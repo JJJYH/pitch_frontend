@@ -12,9 +12,10 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { cv } from '../../api';
-
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import preview_image from '../../preview_icon.png';
 export default function TitlebarImageList() {
-  const [img_src, set_img_src] = useState(null);
+  const [img_src, set_img_src] = useState('');
   const file_input_ref = useRef(null);
   const [file_info, set_file_info] = useState([
     {
@@ -84,13 +85,14 @@ export default function TitlebarImageList() {
       cols={1}
     >
       <ImageListItem>
-        <img src={img_src} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
+        <img src={img_src || preview_image} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
         <input
           accept="image/jpg, image/jpeg, image/png"
           type="file"
           onChange={(e) => img_upload(e)}
           style={{ display: 'none' }}
           ref={file_input_ref}
+          value=""
         />
         <ImageListItemBar
           title="이미지 업로드"

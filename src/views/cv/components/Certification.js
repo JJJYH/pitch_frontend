@@ -52,7 +52,12 @@ const Certification = () => {
               />
             </Grid>
             <Grid item xs={3}>
-              <ControlledComponent labelName={'취득일'} StartDate={(e) => handleCertChange(e, index)} name="acquisition_date" />
+              <ControlledComponent
+                labelName={'취득일'}
+                StartDate={(e) => handleCertChange(e, index)}
+                name="acquisition_date"
+                propState={field.acquisition_date}
+              />
             </Grid>
             <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
               <IconButton onClick={() => certRemoveFields(index)}>

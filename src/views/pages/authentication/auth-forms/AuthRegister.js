@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -41,6 +41,17 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { placeholder } from '@babel/types';
+import dayjs from 'dayjs';
+import ko from 'dayjs/locale/ko';
+import { principal } from 'api';
+
+// dayjs.extend(utc);
+// dayjs.extend(timezone);
+
+// const user_birth = dayjs('1999-12-31').locale('ko').format();
+// console.log(user_birth);
+// const user_birth2 = dayjs(user_birth).locale('ko')
+// console.log(user_birth2);
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
@@ -51,9 +62,9 @@ const FirebaseRegister = ({ ...others }) => {
   const customization = useSelector((state) => state.customization);
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
-
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
+  const navigate = useNavigate();
 
   const googleHandler = async () => {
     console.error('Register');
@@ -134,25 +145,37 @@ const FirebaseRegister = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          birthday: null,
-          name: '',
-          email: '',
-          password: '',
+          user_birth: dayjs('1999-12-31').locale('ko').format('YYYY-MM-DD'),
+          user_nm: '',
+          user_email: '',
+          user_pw: '',
           passwordRepeat: '',
+          user_id: '',
+          user_phone: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          birthday: Yup.date().required('생일 입력은 필수입니다.'),
-          name: Yup.string().max(255).required('이름 입력은 필수입니다.'),
-          email: Yup.string().email('이메일 형식이 올바르지 않습니다.').max(255).required('이메일 아이디 입력은 필수입니다.'),
-          password: Yup.string().max(255).required('비밀번호 입력은 필수입니다.'),
-          passwordRepeat: Yup.string().max(255).required('비밀번호 확인은 필수입니다.')
+          //user_birth: Yup.date().required('생일 입력은 필수입니다.'),
+          user_nm: Yup.string().max(255).required('이름 입력은 필수입니다.'),
+          user_email: Yup.string().email('이메일 형식이 올바르지 않습니다.').max(255).required('이메일 아이디 입력은 필수입니다.'),
+          user_pw: Yup.string().min(4, '비밀번호는 4자리 이상 입력해주세요.').max(255).required('비밀번호 입력은 필수입니다.'),
+          passwordRepeat: Yup.string().max(255).oneOf([Yup.ref('user_pw'), null], '비밀번호가 일치하지 않습니다.').required('비밀번호 확인은 필수입니다.'),
+          user_id: Yup.string().max(40).required('ID 입력은 필수입니다.'),
+          user_phone: Yup.string().matches(/^\d{3}-\d{3,4}-\d{4}$/, '유효한 전화번호 형식이 아닙니다. ( - )을 포합한 형식').required('휴대폰번호 입력은 필수입니다.')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
               setStatus({ success: true });
               setSubmitting(false);
+              console.log(values);
+              principal.register(values).then((res) => {
+                console.log(res);
+                navigate('/main');
+              }).catch((err) => {
+                console.log(err);
+                //중복체크에 관한 내용추가
+              })
             }
           } catch (err) {
             console.error(err);
@@ -160,6 +183,7 @@ const FirebaseRegister = ({ ...others }) => {
               setStatus({ success: false });
               setErrors({ submit: err.message });
               setSubmitting(false);
+              console.log(values);
             }
           }
         }}
@@ -167,49 +191,66 @@ const FirebaseRegister = ({ ...others }) => {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
 
-            <FormControl fullWidth error={Boolean(touched.name && errors.name)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-name-register">이름</InputLabel>
+            <FormControl fullWidth error={Boolean(touched.user_nm && errors.user_nm)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user_nm-register">이름</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-name-register"
+                id="outlined-adornment-user_nm-register"
                 type="text"
-                value={values.name}
-                name="name"
+                value={values.user_nm}
+                name="user_nm"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 inputProps={{}}
               />
-              {touched.name && errors.name && (
-                <FormHelperText error id="standard-weight-helper-text-name-register">
-                  {errors.name}
+              {touched.user_nm && errors.user_nm && (
+                <FormHelperText error id="standard-weight-helper-text-user_nm-register">
+                  {errors.user_nm}
                 </FormHelperText>
               )}
             </FormControl>
-            <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-register">이메일</InputLabel>
+            <FormControl fullWidth error={Boolean(touched.user_id && errors.user_id)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user_id-register">ID</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-email-register"
-                type="email"
-                value={values.email}
-                name="email"
+                id="outlined-adornment-user_id-register"
+                type="text"
+                value={values.user_id}
+                name="user_id"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
-                <FormHelperText error id="standard-weight-helper-text-email-register">
-                  {errors.email}
+              {touched.user_id && errors.user_id && (
+                <FormHelperText error id="standard-weight-helper-text-user_id-register">
+                  {errors.user_id}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth error={Boolean(touched.user_email && errors.user_email)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user_email-register">이메일</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-user_email-register"
+                type="email"
+                value={values.user_email}
+                name="user_email"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                inputProps={{}}
+              />
+              {touched.user_email && errors.user_email && (
+                <FormHelperText error id="standard-weight-helper-text-user_email-register">
+                  {errors.user_email}
                 </FormHelperText>
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-password-register">비밀번호</InputLabel>
+            <FormControl fullWidth error={Boolean(touched.user_pw && errors.user_pw)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user_pw-register">비밀번호</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-password-register"
+                id="outlined-adornment-user_pw-register"
                 type={showPassword ? 'text' : 'password'}
-                value={values.password}
-                name="password"
-                label="Password"
+                value={values.user_pw}
+                name="user_pw"
+                label="password"
                 onBlur={handleBlur}
                 onChange={(e) => {
                   handleChange(e);
@@ -230,9 +271,9 @@ const FirebaseRegister = ({ ...others }) => {
                 }
                 inputProps={{}}
               />
-              {touched.password && errors.password && (
-                <FormHelperText error id="standard-weight-helper-text-password-register">
-                  {errors.password}
+              {touched.user_pw && errors.user_pw && (
+                <FormHelperText error id="standard-weight-helper-text-user_pw-register">
+                  {errors.user_pw}
                 </FormHelperText>
               )}
             </FormControl>
@@ -264,7 +305,6 @@ const FirebaseRegister = ({ ...others }) => {
                 onBlur={handleBlur}
                 onChange={(e) => {
                   handleChange(e);
-                  changePassword(e.target.value);
                 }}
                 endAdornment={
                   <InputAdornment position="end">
@@ -287,13 +327,31 @@ const FirebaseRegister = ({ ...others }) => {
                 </FormHelperText>
               )}
             </FormControl>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <FormControl fullWidth error={Boolean(touched.birthday && errors.birthday)} sx={{ ...theme.typography.customInput }}>
+            <FormControl fullWidth error={Boolean(touched.user_phone && errors.user_phone)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user_phone-register">휴대폰 번호</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-user_phone-register"
+                type="text"
+                value={values.user_phone}
+                name="user_phone"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                inputProps={{}}
+              />
+              {touched.user_phone && errors.user_phone && (
+                <FormHelperText error id="standard-weight-helper-text-user_phone-register">
+                  {errors.user_phone}
+                </FormHelperText>
+              )}
+            </FormControl>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ko}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <DatePicker
-                  id="outlined-adornment-birthday"
+                  id="outlined-adornment-user_birth"
                   type="date"
                   label="생년월일"
-                  value={values.birthday}
+                  format='YYYY.MM.DD'
+                  value={dayjs(values.user_birth).locale('ko')}
                   sx={{
                     // marginTop: 1,
                     // marginBottom: 1,
@@ -315,39 +373,31 @@ const FirebaseRegister = ({ ...others }) => {
                       top: 0
                     }
                   }}
-                  name="birthday"
+                  name="user_birth"
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    console.log(e);
+                    handleChange({
+                      target: {
+                        name: "user_birth",
+                        value: e.format('YYYY-MM-DD')
+                      }
+                    });
+                  }}
                   inputProps={{}}
 
                 />
-                {touched.birthday && errors.birthday && (
-                  <FormHelperText error id="standard-weight-helper-text-birthday-register">
-                    {errors.birthday}
+                {/* {touched.user_birth && errors.user_birth && (
+                  <FormHelperText error id="standard-weight-helper-text-user_birth-register">
+                    {errors.user_birth}
                   </FormHelperText>
-                )}
+                )} */}
               </FormControl>
             </LocalizationProvider>
 
 
 
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
-                  }
-                  label={
-                    <Typography variant="subtitle1">
-                      Agree with &nbsp;
-                      <Typography variant="subtitle1" component={Link} to="#">
-                        Terms & Condition.
-                      </Typography>
-                    </Typography>
-                  }
-                />
-              </Grid>
-            </Grid>
+
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
                 <FormHelperText error>{errors.submit}</FormHelperText>

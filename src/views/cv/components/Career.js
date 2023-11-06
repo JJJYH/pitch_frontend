@@ -5,7 +5,7 @@ import { removeCareer, updateCareer } from 'store/careerSlice';
 import ClearIcon from '@mui/icons-material/Clear';
 import ControlledComponent from '../ControlledComponent';
 import FileUpload from '../FileUpload';
-
+import InputMask from 'react-input-mask';
 const Career = () => {
   const career_data = useSelector((state) => state.career);
   const dispatch = useDispatch();
@@ -75,12 +75,20 @@ const Career = () => {
                 name="salary"
                 value={field.salary}
                 variant="standard"
-                onChange={(e) => handleCareerChange(e, index)}
+                onChange={(e) => {
+                  e.target.value > -1 ? handleCareerChange(e, index) : handleCareerChange({ target: { name: 'salary', value: 0 } }, index);
+                }}
                 InputProps={{
+                  inputProps: {
+                    max: 100000,
+                    min: 0
+                  },
                   onBlur: (e) => {
                     const value = parseInt(e.target.value, 10);
                     if (isNaN(value) || value < 0 || value > 100000000) {
-                      e.target.value = ''; // 유효하지 않은 값일 경우 입력 지우기 또는 오류 메시지 표시
+                      // 유효하지 않은 값일 경우 입력값 초기화
+                      e.target.value = '';
+                      alert('올바르지 않은 값입니다. 연봉은 0에서 100,000,000 사이여야 합니다.');
                     }
                   }
                 }}
@@ -99,7 +107,12 @@ const Career = () => {
               />
             </Grid>
             <Grid item xs={4}>
-              <ControlledComponent labelName={'입사일'} StartDate={(e) => handleCareerChange(e, index)} name="join_date" />
+              <ControlledComponent
+                labelName={'입사일'}
+                StartDate={(e) => handleCareerChange(e, index)}
+                name="join_date"
+                propState={field.join_date}
+              />
             </Grid>
             <Grid item xs={4}>
               <ControlledComponent
@@ -107,9 +120,10 @@ const Career = () => {
                 BeforeDay={field.join_date}
                 EndDate={(e) => handleCareerChange(e, index)}
                 name="quit_date"
+                propState={field.quit_date}
               />
             </Grid>
-            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row' }}>
+            <Grid item xs={1} sx={{ justifyContent: 'end', display: 'flex', flexDirection: 'row', alignItems: 'bottom' }}>
               <IconButton onClick={() => careerRemoveFields(index)}>
                 <ClearIcon />
               </IconButton>

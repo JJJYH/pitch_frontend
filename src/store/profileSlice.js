@@ -6,11 +6,12 @@ const profileSlice = createSlice({
   name: 'profile',
   initialState: [
     {
-      user_nm: '김철수',
-      user_phone: '010-1234-5678',
-      user_email: 'example@google.com',
-      position: 'ERP 개발자',
-      user_birth: '1996.05.05',
+      user_id: '',
+      user_nm: '',
+      user_phone: '',
+      user_email: '',
+      position: 'SI/SE',
+      user_birth: '',
       address: '',
       gender: ''
     }
@@ -26,6 +27,8 @@ const profileSlice = createSlice({
       const { index, name, value } = action.payload;
       if (name === 'user_nm') {
         state[index].user_nm = value;
+      } else if (name === 'user_id') {
+        state[index].user_id = value;
       } else if (name === 'user_phone') {
         state[index].user_phone = value;
       } else if (name === 'user_email') {

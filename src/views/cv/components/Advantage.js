@@ -8,6 +8,7 @@ import { Box } from '@mui/system';
 // import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 // import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import React from 'react';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAdvantage, removeAdvantage, updateAdvantage } from 'store/advantageSlice';
@@ -48,7 +49,9 @@ const Advantage = () => {
     병역: ['군필', '미필', '면제', '해당없음'],
     장애: ['중증', '경증', '1급', '2급', '3급', '4급', '5급', '6급']
   };
-
+  useEffect(() => {
+    set_checked_items(advantage_data);
+  }, []);
   //체크 여부
   const [checked_items, set_checked_items] = useState([]);
 
@@ -64,6 +67,8 @@ const Advantage = () => {
       dispatch(addAdvantage(event.target.value));
     }
   };
+
+  console.log('CHECK ADVANATGE: ' + checked_items);
 
   return (
     <>

@@ -34,7 +34,10 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
     if (scrollPosition > locationState[5] && scrollPosition < locationState[6]) {
       set_location_point('activity');
     }
-    if (scrollPosition > locationState[6]) {
+    if (scrollPosition > locationState[6] && scrollPosition < locationState[7]) {
+      set_location_point('docs');
+    }
+    if (scrollPosition > locationState[7]) {
       set_location_point('advantage');
     }
   };
@@ -113,11 +116,20 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
           sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
           textAlign={'center'}
           alignContent={'center'}
+          onClick={() => scrollToTab('docs')}
+        >
+          기타 문서
+        </Typography>
+        <Typography
+          variant="h4"
+          color={location_point === 'docs' ? 'primary' : 'default'}
+          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+          textAlign={'center'}
+          alignContent={'center'}
           onClick={() => scrollToTab('activity')}
         >
           대외 활동
         </Typography>
-
         <Typography
           variant="h4"
           color={location_point === 'advantage' ? 'primary' : 'default'}
