@@ -146,6 +146,9 @@ const cv = {
   },
   getInit: () => {
     return instance.get('/admin/main/cv/init-cv');
+  },
+  getCVNO: (data) => {
+    return instance.get('/admin/main/cv/get-cv-no', { params: { job_posting_no: data } });
   }
 };
 

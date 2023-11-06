@@ -14,6 +14,7 @@ import axios from 'axios';
 import { cv } from '../../api';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import preview_image from '../../preview_icon.png';
+import { useSelector } from 'react-redux';
 export default function TitlebarImageList() {
   const [img_src, set_img_src] = useState('');
   const file_input_ref = useRef(null);
@@ -24,6 +25,7 @@ export default function TitlebarImageList() {
       type: ''
     }
   ]);
+  const cv_no = useSelector((state) => state.cv_no);
 
   const img_upload = async (e) => {
     const file = e.target.files[0];
@@ -36,7 +38,7 @@ export default function TitlebarImageList() {
 
     const formData = new FormData();
     formData.append('image', file);
-
+    formData.append('cv_no', cv_no.cv_no);
     cv.postThumbnail(formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -44,8 +46,8 @@ export default function TitlebarImageList() {
     })
       .then((response) => {
         // 파일 업로드 성공 시
-        set_img_src('/images/' + response.data);
         console.log(response.data);
+        set_img_src('http://localhost:8888/images/' + response.data);
       })
       .catch((error) => {
         // 파일 업로드 실패 시

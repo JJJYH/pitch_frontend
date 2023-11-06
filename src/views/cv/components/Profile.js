@@ -61,6 +61,9 @@ const Profile = () => {
               <Grid item xs={2}>
                 <TextField
                   fullWidth
+                  required
+                  error={field.user_nm === ''}
+                  helperText={field.user_nm === '' ? 'This field is required' : ''}
                   label="성명"
                   color="primary"
                   type="text"
@@ -74,6 +77,9 @@ const Profile = () => {
               <Grid item xs={2}>
                 <TextField
                   fullWidth
+                  required
+                  error={field.user_phone === ''}
+                  helperText={field.user_phone === '' ? 'This field is required' : ''}
                   label="전화번호"
                   color="primary"
                   type="text"
@@ -87,6 +93,9 @@ const Profile = () => {
               <Grid item xs={3}>
                 <TextField
                   fullWidth
+                  required
+                  error={field.user_email === ''}
+                  helperText={field.user_email === '' ? 'This field is required' : ''}
                   label="E-mail"
                   color="primary"
                   type="text"
@@ -100,6 +109,9 @@ const Profile = () => {
               <Grid item xs={3}>
                 <TextField
                   fullWidth
+                  required
+                  error={field.position === ''}
+                  helperText={field.position === '' ? 'This field is required' : ''}
                   label="지원 직무"
                   color="primary"
                   type="text"
@@ -113,6 +125,9 @@ const Profile = () => {
               <Grid item xs={2}>
                 <TextField
                   fullWidth
+                  required
+                  error={field.user_birth === ''}
+                  helperText={field.user_birth === '' ? 'This field is required' : ''}
                   label="생년월일"
                   color="primary"
                   type="text"
@@ -131,6 +146,9 @@ const Profile = () => {
                 <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}>
                   <TextField
                     fullWidth
+                    required
+                    error={field.address === ''} // user_nm이 비어 있을 때 error를 true로 설정
+                    helperText={field.address === '' ? 'This field is required' : ''} // 에러 메시지
                     label="주소"
                     color="primary"
                     type="text"

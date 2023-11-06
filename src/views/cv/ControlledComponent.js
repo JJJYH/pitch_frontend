@@ -14,6 +14,7 @@ export default function ControlledComponent({ labelName, BeforeDay, StartDate, E
         sx={{ width: '100%' }}
         value={propState === '' || propState === null ? value : dayjs(propState)}
         name={name}
+        disableFuture
         onChange={(newValue) => {
           const event = {
             target: {

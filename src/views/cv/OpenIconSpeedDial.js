@@ -24,6 +24,7 @@ import { addLang } from 'store/langSlice';
 import { addActivity } from 'store/activitySlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import { flushSync } from 'react-dom';
+import { updateCVNO } from 'store/cvSlice';
 
 export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef }) {
   const cvProfile = useSelector((state) => state.profile);
@@ -36,18 +37,16 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
   const cvCertification = useSelector((state) => state.cert);
   const [isWritten, setIsWritten] = useState();
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   sendCVData(cvData);
-  // }, [isWritten]);
+  const cv_no = useSelector((state) => state.cv_no);
 
   // CV_LIST 쪽에서 받아와야 하는 cv_no 임시 설정
-  const proto_cv_no = 49;
-
+  let proto_cv_no = cv_no.cv_no;
+  const job_posting_no = 1;
   //CV 데이터 포집 기능
   const cvData = {
     cv: {
       cv_no: proto_cv_no,
+      job_posting_no: job_posting_no,
       user_id: cvProfile[0].user_id,
       user_nm: cvProfile[0].user_nm,
       ps_statement: null,
@@ -256,15 +255,20 @@ export default function OpenIconSpeedDial({ selectedFiles, endPath, componentRef
     // 기존에 작성한 이력서가 있는지 확인합니다.
     if (isUpdate === false) {
       // 새 이력서를 생성합니다.
-      const res = cv.postList(cvData);
-      // 응답을 출력합니다.
-      console.log('Response : ' + JSON.stringify(res));
+      //const res = cv.postList(cvData);
+      cv.postList(cvData).then((res) => {
+        // 응답을 출력합니다.
+        dispatch(updateCVNO(res.data));
+        console.log(res);
+        console.log('Response : ' + JSON.stringify(res));
+      });
     }
     if (isUpdate === true) {
       // 기존 이력서를 업데이트합니다.
-      const res = cv.putList(cvData);
-      // 응답을 출력합니다.
-      console.log('Response : ' + JSON.stringify(res));
+      cv.putList(cvData).then((res) => {
+        // 응답을 출력합니다.
+        console.log('Response : ' + JSON.stringify(res));
+      });
     }
 
     // 첨부 파일을 처리합니다.

@@ -30,10 +30,14 @@ import Ocr from './Ocr';
 import { updateProfile } from 'store/profileSlice';
 import { useEffect } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { updateCVNO } from 'store/cvSlice';
 
 const CV = () => {
   const dispatch = useDispatch();
   const profileInfo = useSelector((state) => state.profile);
+  const cv_no = useSelector((state) => state.cv_no);
+
+  const job_posting_no = 1;
 
   useEffect(() => {
     cv.getInit().then((res) => {
@@ -74,8 +78,11 @@ const CV = () => {
       );
       console.log('Init Profile Data : ' + JSON.stringify(profileInfo));
     });
+    cv.getCVNO(job_posting_no).then((res) => {
+      dispatch(updateCVNO(res.data));
+    });
   }, []);
-
+  console.log('CV_NO : ' + cv_no.cv_no);
   const [selectedFiles, setSelectedFiles] = useState({
     Portfolio: [], // 초기에 빈 배열로 설정
     Career: [], // 초기에 빈 배열로 설정
@@ -141,7 +148,6 @@ const CV = () => {
         top: targetScrollY,
         behavior: 'smooth'
       });
-
       set_current_tab(index);
     }
   };
@@ -296,7 +302,6 @@ const CV = () => {
       <Grid item xs={1}>
         <CVSide currentTab={current_tab} scrollToTab={scrollToTab} tabRef={tab_ref} />
       </Grid>
-
       <Grid item xs={1} />
     </Grid>
   );
