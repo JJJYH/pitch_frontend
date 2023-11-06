@@ -102,7 +102,7 @@ const ProfileSection = () => {
   }
 
   const handleLoginLocation = () => {
-    navigate('/pages/login/login3');
+    window.open('/pages/login/login3', '_blank', 'width=600,height=700');
   }
 
   const prevOpen = useRef(open);
@@ -174,7 +174,7 @@ const ProfileSection = () => {
             {
               name: 'offset',
               options: {
-                offset: [0, 14]
+                offset: [10, 14]
               }
             }
           ]
@@ -219,7 +219,7 @@ const ProfileSection = () => {
                           <ListItemButton
                             sx={{ borderRadius: `${customization.borderRadius}px` }}
                             selected={selectedIndex === 4}
-                            onClick={handleLoginLocation}
+                            onClick={(e) => { handleClose(e); handleLoginLocation(e); }}
                           >
                             <ListItemIcon sx={{ justifyContent: 'center' }}>
                               <VpnKeyOutlinedIcon />
@@ -275,7 +275,7 @@ const ProfileSection = () => {
                           <ListItemButton
                             sx={{ borderRadius: `${customization.borderRadius}px` }}
                             selected={selectedIndex === 4}
-                            onClick={handleLogout}
+                            onClick={(e) => { handleClose(e); handleLogout(); }}
                           >
                             <ListItemIcon>
                               <IconLogout stroke={1.5} size="1.3rem" />
@@ -290,7 +290,7 @@ const ProfileSection = () => {
             </Paper>
           </Transitions>
         )}
-      </Popper>
+      </Popper >
     </>
   );
 };

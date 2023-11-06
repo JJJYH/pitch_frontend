@@ -33,8 +33,9 @@ const JobReqPage = () => {
 
   const StyledBox = styled(Box)(() => ({
     margin: '10px',
-    borderRadius: '8px',
-    border: '3px solid #f0f0f0',
+    borderRadius: '4px',
+    // border: '3px solid #f0f0f0',
+    border: '1px solid #c0c0c0',
     height: 680,
     overflow: 'auto',
     scrollbarWidth: 'none',
@@ -84,26 +85,6 @@ const JobReqPage = () => {
       throw error;
     }
   };
-
-  // const handleChipClick = async (status) => {
-  //   const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
-
-  //   setSelectedChips(newSelectedChips);
-  //   //console.log(newSelectedChips);
-
-  //   dispatch(resetSelectedRow());
-
-  //   const statusData = {
-  //     selectedStatus: newSelectedChips
-  //   };
-
-  //   try {
-  //     const responseData = await postStatusData(statusData);
-  //     setRows(responseData);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const handleChipClick = async (status) => {
     const newSelectedChips = selectedChips.includes(status) ? selectedChips.filter((chip) => chip !== status) : [...selectedChips, status];
@@ -157,7 +138,7 @@ const JobReqPage = () => {
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
-        <Typography sx={{ color: '#757575', padding: '35px 0px 20px 20px' }} variant="h2">
+        <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px' }} variant="h2">
           <TaskOutlinedIcon /> 채용 요청 관리
         </Typography>
         <Box sx={{ padding: '0px 20px' }}>
@@ -165,7 +146,7 @@ const JobReqPage = () => {
             <Grid item>
               <Grid container spacing={1}>
                 {/* <Typography sx={{ marginTop: '20px', marginLeft: '20px' }}>신청일자</Typography> */}
-                <Grid item sx={{ marginLeft: '10px' }}>
+                <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker slotProps={{ textField: { size: 'small' } }} value={startDate} onChange={handleStartDateChange} />
                   </LocalizationProvider>
@@ -193,7 +174,7 @@ const JobReqPage = () => {
               </Grid>
             </Grid>
 
-            <Grid item sx={{ marginRight: '10px' }}>
+            <Grid item>
               <Stack direction="row" spacing={1}>
                 <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                   등록

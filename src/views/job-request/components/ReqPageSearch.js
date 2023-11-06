@@ -52,7 +52,14 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
         console.log(value);
         handleSearchInputChange(value);
       }}
-      renderInput={(params) => <TextField {...params} placeholder="검색" variant="outlined" name="search" />}
+      renderInput={(params) => <TextField {...params} placeholder="제목, 직무 검색" variant="outlined" name="search" />}
+      filterOptions={(options, params) => {
+        const filteredOptions = options.filter(
+          (option) => option.toLowerCase().includes(params.inputValue.toLowerCase()) && params.inputValue.length > 1
+        );
+
+        return filteredOptions;
+      }}
     />
   );
 };
