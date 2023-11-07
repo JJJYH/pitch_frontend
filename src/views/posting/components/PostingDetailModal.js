@@ -22,6 +22,7 @@ import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import dayjs from 'dayjs';
 import AddIcon from '@mui/icons-material/Add';
 import InterviewerListModal from 'views/posting/components/InterviewerListModal';
+import { useNavigate } from 'react-router';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -60,6 +61,7 @@ const PostingDetailModal = ({
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
+  const navigate = useNavigate();
 
   // const handleToggle = () => {
   //   setIsLiked((prev) => !prev); // 현재 상태를 토글
@@ -480,6 +482,9 @@ const PostingDetailModal = ({
                         height: '70px',
                         fontSize: '22px',
                         fontWeight: 'bold'
+                      }}
+                      onClick={() => {
+                        navigate(`/main/cv/${job_posting_no}`);
                       }}
                     >
                       지원서 작성

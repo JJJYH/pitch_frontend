@@ -4,7 +4,9 @@ import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 import { useEffect } from 'react';
 import { useState } from 'react';
-
+import CircleIcon from '@mui/icons-material/Circle';
+import { display } from '@mui/system';
+import { useSelector } from 'react-redux';
 const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
@@ -12,6 +14,33 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   for (const key in tabRef.current) {
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
+  const cvProfile = useSelector((state) => state.profile);
+  const cvEducation = useSelector((state) => state.education);
+  const cvActivity = useSelector((state) => state.activity);
+  const cvAdvantage = useSelector((state) => state.advantage);
+  const cvCareer = useSelector((state) => state.career);
+  const cvLanguage = useSelector((state) => state.lang);
+  const cvSkill = useSelector((state) => state.skill);
+  const cvCertification = useSelector((state) => state.cert);
+
+  //length와 비교해서 누락 값 찾기
+  const countEmptyValues = (arrayOfObjects) => {
+    return arrayOfObjects.reduce((count, obj) => {
+      // 객체의 속성을 반복하고 속성 값이 "" 인 경우 카운트를 증가합니다.
+      for (const key in obj) {
+        if (obj[key] === '') {
+          count++;
+        }
+      }
+      console.log(count);
+      return count;
+    }, 0);
+  };
+  console.log(cvEducation);
+  countEmptyValues(cvProfile);
+  countEmptyValues(cvProfile);
+  countEmptyValues(cvProfile);
+
   // 스크롤 이벤트 핸들러
   const handleScroll = () => {
     setScrollPosition(window.scrollY);
@@ -55,91 +84,112 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   return (
     <Box sx={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', position: 'sticky', top: 90, width: '150px' }}>
       <MainCard sx={{ width: '100%' }}>
-        <Typography
-          variant="h4"
-          color={location_point === 'education' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('education')} // 학력 탭으로 스크롤
-        >
-          학력
-        </Typography>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'education' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('education')} // 학력 탭으로 스크롤
+          >
+            학력
+          </Typography>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'skills' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('skills')} // 스킬 탭으로 스크롤
+          >
+            보유 스킬
+          </Typography>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'career' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('career')} // 경력 탭으로 스크롤
+          >
+            경력 사항
+          </Typography>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'cert' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('cert')}
+          >
+            자격증
+          </Typography>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'lang' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('lang')}
+          >
+            어학 성적
+          </Typography>
+        </div>
 
-        <Typography
-          variant="h4"
-          color={location_point === 'skills' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('skills')} // 스킬 탭으로 스크롤
-        >
-          보유 스킬
-        </Typography>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'activity' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('docs')}
+          >
+            기타 문서
+          </Typography>
+        </div>
 
-        <Typography
-          variant="h4"
-          color={location_point === 'career' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('career')} // 경력 탭으로 스크롤
-        >
-          경력 사항
-        </Typography>
-
-        <Typography
-          variant="h4"
-          color={location_point === 'cert' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('cert')}
-        >
-          자격증
-        </Typography>
-
-        <Typography
-          variant="h4"
-          color={location_point === 'lang' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('lang')}
-        >
-          어학 성적
-        </Typography>
-
-        <Typography
-          variant="h4"
-          color={location_point === 'activity' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('docs')}
-        >
-          기타 문서
-        </Typography>
-        <Typography
-          variant="h4"
-          color={location_point === 'docs' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('activity')}
-        >
-          대외 활동
-        </Typography>
-        <Typography
-          variant="h4"
-          color={location_point === 'advantage' ? 'primary' : 'default'}
-          sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
-          textAlign={'center'}
-          alignContent={'center'}
-          onClick={() => scrollToTab('advantage')}
-        >
-          우대 사항
-        </Typography>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'docs' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('activity')}
+          >
+            대외 활동
+          </Typography>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <Typography
+            variant="h4"
+            color={location_point === 'advantage' ? 'primary' : 'default'}
+            sx={{ mb: 2.5, '&:hover': { color: 'secondary.main' } }}
+            textAlign={'center'}
+            alignContent={'center'}
+            onClick={() => scrollToTab('advantage')}
+          >
+            우대 사항
+          </Typography>
+        </div>
       </MainCard>
     </Box>
   );

@@ -31,13 +31,16 @@ import { updateProfile } from 'store/profileSlice';
 import { useEffect } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { updateCVNO } from 'store/cvSlice';
+import { useParams } from 'react-router-dom';
 
 const CV = () => {
   const dispatch = useDispatch();
   const profileInfo = useSelector((state) => state.profile);
   const cv_no = useSelector((state) => state.cv_no);
-
-  const job_posting_no = 1;
+  const params = useParams().job_posting_no;
+  console.log(params);
+  let job_posting_no = params;
+  console.log(job_posting_no);
 
   useEffect(() => {
     cv.getInit().then((res) => {
@@ -78,10 +81,22 @@ const CV = () => {
       );
       console.log('Init Profile Data : ' + JSON.stringify(profileInfo));
     });
+
     cv.getCVNO(job_posting_no).then((res) => {
       dispatch(updateCVNO(res.data));
     });
+
+    cv.getPosition(job_posting_no).then((res) => {
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'position',
+          value: res.data
+        })
+      );
+    });
   }, []);
+
   console.log('CV_NO : ' + cv_no.cv_no);
   const [selectedFiles, setSelectedFiles] = useState({
     Portfolio: [], // 초기에 빈 배열로 설정
@@ -177,7 +192,6 @@ const CV = () => {
       <Grid item xs={9}>
         <MainCard>
           <CardHeader title={<Typography sx={{ fontSize: '25px', fontWeight: 'bold' }}>이력서 작성</Typography>} />
-          {/* <Divider /> */}
           <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <Grid item xs={12}>
               <MainCard ref={componentRef}>

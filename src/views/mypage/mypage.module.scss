@@ -1,0 +1,72 @@
+$glass: (
+  background: rgba(255, 255, 255, 0.2),
+  border-radius: 4px,
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1),
+  backdrop-filter: blur(5px),
+  -webkit-backdrop-filter: blur(5px),
+  border: 1px solid rgba(255, 255, 255, 0.3)
+);
+$profile-glass: (
+  background: rgba(70, 130, 180, 0.58),
+  border-radius: 4px,
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1),
+  backdrop-filter: blur(5px),
+  -webkit-backdrop-filter: blur(5px),
+  border: 1px solid rgba(70, 130, 180, 0.3)
+);
+$req-date-style: (
+  width: 65px,
+  padding: 10px,
+  color: #ffffff,
+  border: 1px solid #cccccc,
+  border-radius: 8px,
+  background: #4682b4,
+  display: flex,
+  justify-content: center,
+  align-items: center
+);
+
+@mixin req-date-style {
+  @each $property, $value in $req-date-style {
+    #{$property}: $value;
+  }
+}
+@mixin glass {
+  @each $property, $value in $glass {
+    #{$property}: $value;
+  }
+}
+@mixin profile-glass {
+  @each $property, $value in $profile-glass {
+    #{$property}: $value;
+  }
+}
+
+.reqDateStyle {
+  @include req-date-style;
+}
+
+.cardGlass {
+  @include glass;
+  &:hover {
+    box-shadow: 0 2px 14px 0 rgb(32 40 45 / 8%);
+  }
+}
+
+.profileGlass {
+  @include glass;
+  z-index: 1;
+  top: 20%;
+  left: 49%;
+  transform: translate(-50%, -50%);
+  &:hover {
+    box-shadow: 0 2px 14px 0 rgb(32 40 45 / 8%);
+  }
+}
+
+.avatarStyle {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  &:hover {
+    box-shadow: 0 2px 14px 0 rgb(32 40 45 / 8%);
+  }
+}

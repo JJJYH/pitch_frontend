@@ -10,7 +10,7 @@ const encodeIfNeeded = (value) => {
   }
 
   return value;
-}
+};
 
 // axios 인스턴스를 생성합니다.
 const instance = axios.create({
@@ -166,6 +166,9 @@ const cv = {
   },
   getCVNO: (data) => {
     return instance.get('/admin/main/cv/get-cv-no', { params: { job_posting_no: data } });
+  },
+  getPosition: (data) => {
+    return instance.get('/admin/main/cv/find-position', { params: { job_posting_no: data } });
   }
 };
 
