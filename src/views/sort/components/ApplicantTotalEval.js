@@ -1,9 +1,20 @@
 import { Box, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import AddchartIcon from '@mui/icons-material/Addchart';
+import ReactWordcloud from 'react-wordcloud';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { sort } from '../../../api.js';
 
 const ApplicantTotalEval = () => {
   const theme = useTheme();
+  const [cloud, setCloud] = useState([]);
+
+  useEffect(() => {
+    sort.wordCloud().then((res) => {
+      setCloud(res.data);
+    });
+  }, []);
 
   return (
     <Box sx={{ marginTop: '20px' }}>
@@ -117,9 +128,21 @@ const ApplicantTotalEval = () => {
             </Typography>
           </Stack>
         </Grid>
+        <Grid item>
+          <ReactWordcloud words={cloud} callbacks={callbacks} options={options} size={size} />
+        </Grid>
       </Grid>
     </Box>
   );
 };
+
+const callbacks = {
+  getWordColor: (word) => (word.value > 3 ? '#38678f' : '#90CAF9')
+};
+const options = {
+  rotations: 0,
+  rotationAngles: [-90, 0]
+};
+const size = [900, 400];
 
 export default ApplicantTotalEval;

@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import TuneIcon from '@mui/icons-material/Tune';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import CustomizedSlider from './Slider';
 import { Box, Divider } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ScrollingApplicantList from './ScrollingApplicantList';
@@ -83,7 +82,7 @@ const FilteringModal = () => {
         면접일등록
       </Button>
       <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'md'}>
-        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
+        {/* <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
           <FilterAltOutlinedIcon />
           <Typography variant="h4">지원자 필터링</Typography>
           <IconButton aria-label="setting" size="large"></IconButton>
@@ -142,7 +141,7 @@ const FilteringModal = () => {
               취소
             </Button>
           </Box>
-        </DialogActions>
+        </DialogActions> */}
       </BootstrapDialog>
     </div>
   );

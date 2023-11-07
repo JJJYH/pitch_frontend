@@ -6,10 +6,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { sort } from '../../../api.js';
 import { useEffect } from 'react';
+import { template } from 'lodash';
 
 /* custom components */
 
-const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList }) => {
+const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList, setIsSelected, setSelectedRows }) => {
   const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
 
   useEffect(() => {
@@ -22,6 +23,17 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList }) =>
     });
   }, [isBtnClicked]);
 
+  useEffect(() => {
+    if (rowSelectionModel.length > 0) {
+      setIsSelected(true);
+      const tempList = rowSelectionModel.map((index) => rows[index]);
+      setSelectedRows(tempList);
+    } else {
+      setIsSelected(false);
+      setSelectedRows([]);
+    }
+  }, [rowSelectionModel]);
+
   return (
     <Box sx={{ height: '620px', width: '1' }}>
       <DataGrid
@@ -30,6 +42,9 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList }) =>
         columns={columns}
         hideFooter
         checkboxSelection
+        isRowSelectable={(params) => {
+          return params.row.status_type != '최종합격';
+        }}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => {
           setRowSelectionModel(newRowSelectionModel);
