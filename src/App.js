@@ -18,15 +18,14 @@ import { useEffect } from 'react';
 import { logoutUser } from './store/userInfoSlice';
 import { useState } from 'react';
 
-
-
 // ==============================|| APP ||============================== //
 import { OpenCvProvider } from 'opencv-react';
 const App = () => {
-
   //=====================================//
   var sessionStorage_transfer = function (event) {
-    if (!event) { event = window.event; }
+    if (!event) {
+      event = window.event;
+    }
     if (!event.newValue) return;
     if (event.key == 'getSessionStorage') {
       localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
@@ -47,9 +46,9 @@ const App = () => {
   };
 
   if (window.addEventListener) {
-    window.addEventListener("storage", sessionStorage_transfer, false);
+    window.addEventListener('storage', sessionStorage_transfer, false);
   } else {
-    window.attachEvent("onstorage", sessionStorage_transfer);
+    window.attachEvent('onstorage', sessionStorage_transfer);
   }
 
   if (!sessionStorage.length) {
@@ -57,26 +56,22 @@ const App = () => {
     localStorage.removeItem('getSessionStorage', 'foobar');
   }
   //====================================================================//
-  const [accessToken, setAccessToken] = useState(sessionStorage.getItem('AccessToken'))
+  const [accessToken, setAccessToken] = useState(sessionStorage.getItem('AccessToken'));
   const customization = useSelector((state) => state.customization);
   const userInfo = useSelector((state) => state.userInfo);
   const dispatch = useDispatch();
-  console.log(accessToken);
   const loginHandler = (token) => {
     if (token) {
       principal.setToken(token);
       principal.getUser(token).then((res) => {
-        console.log(res.data);
         dispatch(setUser(res.data));
       });
     } else {
       dispatch(logoutUser());
     }
-  }
+  };
 
-  useEffect(() => {
-    console.log(userInfo);
-  }, [userInfo])
+  useEffect(() => {}, [userInfo]);
 
   useEffect(() => {
     loginHandler(accessToken);

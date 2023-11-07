@@ -3,34 +3,35 @@ import { Button, Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import classNames from '../sort.module.scss';
 import { getFormattedDate } from '../sorts';
+import styled from 'styled-components';
 
 const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
   return (
-    <Grid container direction={'column'} ref={ref}>
-      <Box className={classNames.cvRoot}>
+    <Grid container direction={'column'} ref={ref} className={classNames.cvRoot}>
+      <Box sx={{ padding: '50px', border: '1px solid black' }}>
         <Grid item className={classNames.title}>
-          <Typography variant="h2">이력서</Typography>
+          <Typography variant="h2">입사지원서</Typography>
         </Grid>
-        <Grid item container className={classNames.row}>
-          <Grid item xs={2} sx={{ background: 'black', minHeight: '230px' }}>
+        <Grid item container className={classNames.row} sx={{ border: '1px solid black' }}>
+          <Grid item xs={2} sx={{ minHeight: '230px', borderRight: '1px solid black' }}>
             사진
           </Grid>
           <Grid item container xs={10}>
-            <Grid item xs={1} className={classNames.subTitleGrid}>
+            <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
               <Typography variant="h4" className={classNames.subTitle}>
                 인적사항
               </Typography>
             </Grid>
             <Grid item xs={11}>
               <Grid item container direction={'column'}>
-                <Grid item container>
+                <Grid item container sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={2} container direction={'column'}>
-                    <Grid item className={classNames.typeGrid}>
+                    <Grid item className={classNames.typeGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.type}>
                         성 명
                       </Typography>
                     </Grid>
-                    <Grid item className={classNames.typeGrid}>
+                    <Grid item className={classNames.typeGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.type}>
                         생년월일
                       </Typography>
@@ -42,12 +43,12 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                     </Grid>
                   </Grid>
                   <Grid item xs={4} container direction={'column'}>
-                    <Grid item className={classNames.contentGrid}>
+                    <Grid item className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.contentCenter}>
                         {applicantInfo['cv']?.['user_nm']}
                       </Typography>
                     </Grid>
-                    <Grid item className={classNames.contentGrid}>
+                    <Grid item className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.contentCenter}>
                         {applicantInfo['cv']?.['user_birth']}
                       </Typography>
@@ -59,29 +60,29 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                     </Grid>
                   </Grid>
                   <Grid item xs={2} container direction={'column'}>
-                    <Grid item className={classNames.typeGrid}>
+                    <Grid item className={classNames.typeGrid} sx={{ borderBottom: '1px solid black', borderLeft: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.type}>
                         지원회사
                       </Typography>
                     </Grid>
-                    <Grid item className={classNames.typeGrid}>
+                    <Grid item className={classNames.typeGrid} sx={{ borderLeft: '1px solid black', borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.type}>
                         지원분야
                       </Typography>
                     </Grid>
-                    <Grid item className={classNames.typeGrid}>
+                    <Grid item className={classNames.typeGrid} sx={{ borderLeft: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.type}>
                         e-mail
                       </Typography>
                     </Grid>
                   </Grid>
                   <Grid item xs={4} container direction={'column'}>
-                    <Grid item className={classNames.contentGrid}>
+                    <Grid item className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.contentCenter}>
                         더존비즈온
                       </Typography>
                     </Grid>
-                    <Grid item className={classNames.contentGrid}>
+                    <Grid item className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                       <Typography variant="h4" className={classNames.contentCenter}>
                         ERP 개발
                       </Typography>
@@ -93,7 +94,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item container>
+                <Grid item container sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={2} className={classNames.typeGrid}>
                     <Typography variant="h4" className={classNames.type}>
                       주 소
@@ -106,19 +107,24 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                   </Grid>
                 </Grid>
                 <Grid item container>
-                  <Grid item xs={2} className={classNames.typeGrid} sx={{ height: '70px' }}>
+                  <Grid item xs={2} className={classNames.typeGrid} sx={{ height: '80px', borderRight: '1px solid black' }}>
                     <Typography variant="h4" className={classNames.type}>
                       우대사항
                     </Typography>
                   </Grid>
                   <Grid item container xs={10} direction={'column'}>
-                    <Grid item container sx={{ height: '35px' }}>
-                      <Grid item xs={3} className={classNames.typeGrid}>
+                    <Grid item container sx={{ height: '40px' }}>
+                      <Grid item xs={3} className={classNames.typeGrid} sx={{ borderBottom: '1px solid black' }}>
                         <Typography variant="h4" className={classNames.type}>
                           병역여부
                         </Typography>
                       </Grid>
-                      <Grid item xs={3} className={classNames.contentGrid}>
+                      <Grid
+                        item
+                        xs={3}
+                        className={classNames.contentGrid}
+                        sx={{ borderBottom: '1px solid black', borderRight: '1px solid black' }}
+                      >
                         <Typography variant="h4" className={classNames.contentCenter}>
                           {applicantInfo['cv']?.['gender'] == '여'
                             ? '해당없음'
@@ -129,12 +135,12 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                               })}
                         </Typography>
                       </Grid>
-                      <Grid item xs={3} className={classNames.typeGrid}>
+                      <Grid item xs={3} className={classNames.typeGrid} sx={{ borderBottom: '1px solid black' }}>
                         <Typography variant="h4" className={classNames.type}>
                           보훈여부
                         </Typography>
                       </Grid>
-                      <Grid item xs={3} className={classNames.contentGrid}>
+                      <Grid item xs={3} className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                         <Typography variant="h4" className={classNames.contentCenter}>
                           {applicantInfo['cv']?.['advantages'].map((advantage) => {
                             if (advantage['advantage_type'] == '보훈 대상') {
@@ -144,13 +150,13 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                         </Typography>
                       </Grid>
                     </Grid>
-                    <Grid item container sx={{ height: '35px' }}>
+                    <Grid item container sx={{ height: '40px' }}>
                       <Grid item xs={3} className={classNames.typeGrid}>
                         <Typography variant="h4" className={classNames.type}>
                           장애여부
                         </Typography>
                       </Grid>
-                      <Grid item xs={3} className={classNames.contentGrid}>
+                      <Grid item xs={3} className={classNames.contentGrid} sx={{ borderRight: '1px solid black' }}>
                         <Typography variant="h4" className={classNames.contentCenter}>
                           {applicantInfo['cv']?.['advantages'].some((advantage) => advantage['advantage_type'] == '장애 대상')
                             ? applicantInfo['cv']?.['advantages']
@@ -180,35 +186,35 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item container className={classNames.row}>
-          <Grid item xs={1} className={classNames.subTitleGrid}>
+        <Grid item container className={classNames.row} sx={{ border: '1px solid black', borderTop: 0 }}>
+          <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
             <Typography variant="h4" className={classNames.subTitle}>
               학력
             </Typography>
           </Grid>
           <Grid item xs={11} container direction={'column'}>
-            <Grid item container>
-              <Grid item xs={3} className={classNames.typeGrid}>
+            <Grid item container sx={{ borderBottom: '1px solid black' }}>
+              <Grid item xs={3} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   학교명
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   입학일자
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   졸업일자
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   학과/전공
                 </Typography>
               </Grid>
-              <Grid item xs={1} className={classNames.typeGrid}>
+              <Grid item xs={1} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   졸업여부
                 </Typography>
@@ -221,7 +227,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
             {applicantInfo['cv']?.['educations'].map((edu, index) => {
               return (
-                <Grid item container key={index}>
+                <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={3}>
                     <Typography variant="h4">{edu['edu_type']}</Typography>
                   </Grid>
@@ -245,30 +251,30 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             })}
           </Grid>
         </Grid>
-        <Grid item container className={classNames.row}>
-          <Grid item xs={1} className={classNames.subTitleGrid}>
+        <Grid item container className={classNames.row} sx={{ border: '1px solid black', borderTop: 0 }}>
+          <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
             <Typography variant="h4" className={classNames.subTitle}>
               경력사항
             </Typography>
           </Grid>
           <Grid item xs={11} container direction={'column'}>
-            <Grid item container>
-              <Grid item xs={3} className={classNames.typeGrid}>
+            <Grid item container sx={{ borderBottom: '1px solid black' }}>
+              <Grid item xs={3} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   근무회사
                 </Typography>
               </Grid>
-              <Grid item xs={3} className={classNames.typeGrid}>
+              <Grid item xs={3} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   근무기간
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   최종직급
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   담당업무
                 </Typography>
@@ -281,7 +287,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
             {applicantInfo['cv']?.['careers'].map((career, index) => {
               return (
-                <Grid item container key={index}>
+                <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={3}>
                     <Typography variant="h4">{career['company_name']}</Typography>
                   </Grid>
@@ -305,20 +311,20 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             })}
           </Grid>
         </Grid>
-        <Grid item container className={classNames.row}>
-          <Grid item xs={1} className={classNames.subTitleGrid}>
+        <Grid item container className={classNames.row} sx={{ border: '1px solid black', borderTop: 0 }}>
+          <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
             <Typography variant="h4" className={classNames.subTitle}>
               자격/면허
             </Typography>
           </Grid>
           <Grid item xs={6} container direction={'column'}>
-            <Grid item container>
-              <Grid item xs={5} className={classNames.typeGrid}>
+            <Grid item container sx={{ borderBottom: '1px solid black' }}>
+              <Grid item xs={5} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   자격/면허사항
                 </Typography>
               </Grid>
-              <Grid item xs={4} className={classNames.typeGrid}>
+              <Grid item xs={4} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   취득일
                 </Typography>
@@ -331,7 +337,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
             {applicantInfo['cv']?.['certifications'].map((cert, index) => {
               return (
-                <Grid item container key={index}>
+                <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={5}>
                     <Typography variant="h4">{cert['cert_name']}</Typography>
                   </Grid>
@@ -345,19 +351,19 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
               );
             })}
           </Grid>
-          <Grid item xs={1} className={classNames.subTitleGrid}>
+          <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black', borderLeft: '1px solid black' }}>
             <Typography variant="h4" className={classNames.subTitle}>
               외국어
             </Typography>
           </Grid>
           <Grid item xs={4} container direction={'column'}>
-            <Grid item container>
-              <Grid item xs={5} className={classNames.typeGrid}>
+            <Grid item container sx={{ borderBottom: '1px solid black' }}>
+              <Grid item xs={5} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   시험명
                 </Typography>
               </Grid>
-              <Grid item xs={4} className={classNames.typeGrid}>
+              <Grid item xs={4} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   외국어
                 </Typography>
@@ -370,7 +376,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
             {applicantInfo['cv']?.['languages'].map((lang, index) => {
               return (
-                <Grid item container key={index}>
+                <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={5}>
                     <Typography variant="h4">{lang['exam_type']}</Typography>
                   </Grid>
@@ -385,25 +391,25 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             })}
           </Grid>
         </Grid>
-        <Grid item container className={classNames.row}>
-          <Grid item xs={1} className={classNames.subTitleGrid}>
+        <Grid item container className={classNames.row} sx={{ border: '1px solid black', borderTop: 0 }}>
+          <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
             <Typography variant="h4" className={classNames.subTitle}>
               대외활동
             </Typography>
           </Grid>
           <Grid item xs={11} container direction={'column'}>
-            <Grid item container>
-              <Grid item xs={2} className={classNames.typeGrid}>
+            <Grid item container sx={{ borderBottom: '1px solid black' }}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   활동 구분
                 </Typography>
               </Grid>
-              <Grid item xs={2} className={classNames.typeGrid}>
+              <Grid item xs={2} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   기관명
                 </Typography>
               </Grid>
-              <Grid item xs={3} className={classNames.typeGrid}>
+              <Grid item xs={3} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   기간
                 </Typography>
@@ -416,7 +422,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             </Grid>
             {applicantInfo['cv']?.['activities'].map((ac, index) => {
               return (
-                <Grid item container key={index}>
+                <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={2}>
                     <Typography variant="h4">{ac['activity_type']}</Typography>
                   </Grid>
@@ -437,8 +443,15 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
           </Grid>
         </Grid>
       </Box>
+      <PageBreakWrapper>&nbsp;</PageBreakWrapper>
     </Grid>
   );
 });
+
+const PageBreakWrapper = styled.div`
+  && {
+    page-break-after: always;
+  }
+`;
 
 export default ApplicantCV;

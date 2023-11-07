@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 
 /* mui components */
-import { Chip } from '@mui/material';
+import { Chip, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,18 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import Button from '@mui/material/Button';
-import {
-  Box,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  OutlinedInput,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  TextareaAutosize
-} from '@mui/material';
+import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup, Select, TextField } from '@mui/material';
 import { sort } from 'api';
 
 /* custom components */
@@ -37,6 +25,11 @@ const NoticeModal = ({ postingNo, title }) => {
   const [noticeArea, setNoticeArea] = React.useState();
   const [cursorPos, setCursorPos] = React.useState(0);
   const noticeAreaRef = useRef(null);
+  const [alignment, setAlignment] = React.useState('pass');
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
 
   const handleChangeSelect = (event) => {
     setProcessType(event.target.value);
@@ -143,7 +136,19 @@ const NoticeModal = ({ postingNo, title }) => {
                 >
                   <MyRadio value="pass" control={<Radio />} label="합격" />
                   <MyRadio value="fail" control={<Radio />} label="불합격" />
+                  <MyRadio value="all" control={<Radio />} label="자동" />
                 </RadioGroup>
+                {/* <ToggleButtonGroup size="large" value={alignment} onChange={handleChange} exclusive={true} aria-label="Large sizes">
+                  <ToggleButton value="pass" key="pass">
+                    합격발표
+                  </ToggleButton>
+                  <ToggleButton value="fail" key="fail">
+                    불합격발표
+                  </ToggleButton>
+                  <ToggleButton value="all" key="all">
+                    자동발표
+                  </ToggleButton>
+                </ToggleButtonGroup> */}
               </Grid>
             </Grid>
             <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
@@ -233,10 +238,10 @@ const NoticeModal = ({ postingNo, title }) => {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button autoFocus onClick={handleClose}>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {/* <Button autoFocus onClick={handleClose}>
             미리보기
-          </Button>
+          </Button> */}
           <Box>
             <Button autoFocus onClick={onClickNotice}>
               발표 등록
@@ -410,6 +415,10 @@ const noticeText = {
     %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
     기쁘게도 %이름% 님께 좋은 소식을 전해 드릴 수 있게 되었습니다.
     이후의 일정은 추후 별도로 안내드릴 예정입니다.
+    <a href="https://example.com/perform-action">
+    <img src="https://example.com/button-image.png" alt="버튼 이미지">
+  </a>
+
     감사합니다.\n
     %회사명% 드림`,
     최종합격: `

@@ -6,7 +6,6 @@ const instance = axios.create({
 });
 // AccessToken 검증 로직
 instance.interceptors.request.use((config) => {
-  console.log(config.headers);
   if (!config.headers) return config;
 
   let accessToken = sessionStorage.getItem('AccessToken');
@@ -20,13 +19,10 @@ instance.interceptors.request.use((config) => {
 //accessToken 재발급 로직
 instance.interceptors.response.use(
   (response) => {
-    console.log('get response', response);
     const accessToken = response.headers.accesstoken;
-    console.log('1. ' + accessToken);
     if (accessToken) {
       sessionStorage.setItem('AccessToken', accessToken);
       principal.setToken(accessToken);
-      console.log('accesstoken set storage');
     }
     return response;
   }, //accessToken 에러로직(진행중)
@@ -35,8 +31,6 @@ instance.interceptors.response.use(
     const msg = error.response.data.message;
     const status = error.response.status;
 
-    console.log(error);
-    console.log(msg);
     //AccessToken 값이 유효하지 않으면 없으면 자동 로그아웃
     if (msg === 'AccessToken is not valid') {
       sessionStorage.removeItem('AccessToken');
@@ -124,6 +118,14 @@ const sort = {
   //지원자 면접 평가 api
   applicantEval: (data) => {
     return instance.post(`/admin/${data.apply_no}/evaluation`, data);
+  },
+  //자소서 워드클라우드 api
+  wordCloud: () => {
+    return instance.get(`/admin/test-word`);
+  },
+  //지원자 선별 목록 요청 api
+  applicantSortList: (postingNo) => {
+    return instance.get(`/admin/${postingNo}/filter`);
   }
 };
 

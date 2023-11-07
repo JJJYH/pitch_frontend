@@ -1,40 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import styled from 'styled-components';
-import { useParams } from 'react-router';
 import { sort } from '../../api.js';
 import { getFormattedDate, getAge } from './sorts.js';
 import { evalSub } from './sorts';
 import { useReactToPrint } from 'react-to-print';
+
 /* mui components */
 import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
-import DownloadIcon from '@mui/icons-material/Download';
 import PrintIcon from '@mui/icons-material/Print';
-import {
-  AvatarGroup,
-  Button,
-  ButtonGroup,
-  Card,
-  CardContent,
-  Chip,
-  Divider,
-  Paper,
-  Rating,
-  Stack,
-  Tab,
-  Tabs,
-  Typography
-} from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { AvatarGroup, Button, Card, CardContent, Chip, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
+import PersonIcon from '@mui/icons-material/Person';
 
 /* custom components */
 import ApplicantTotalEval from './components/ApplicantTotalEval';
 import ApplicantExam from './components/ApplicantExam';
-import ScrollingApplicantList from './components/ScrollingApplicantList';
 import ApplicantCV from './components/ApplicantCV.js';
 
 /*
@@ -43,81 +31,99 @@ import ApplicantCV from './components/ApplicantCV.js';
  * url : manage/:job_posting_no/sort/:apply_no/detail
  *
  */
-const ApplicantDetailPage = () => {
-  const { apply_no, job_posting_no } = useParams();
-
+const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
+  const [open, setOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const [clickedBtn, setClickedBtn] = useState(null);
   const [applicantInfo, setApplicantInfo] = useState({});
   const componentRef = useRef();
+  const [rating, setRating] = useState({
+    total: 0,
+    sub1: 0,
+    sub2: 0,
+    sub3: 0,
+    sub4: 0,
+    sub5: 0
+  });
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current
   });
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     sort.applicantDetail(apply_no).then((res) => {
       setApplicantInfo({ ...res.data });
-      console.log(res.data);
+      let total = 0,
+        sub1 = 0,
+        sub2 = 0,
+        sub3 = 0,
+        sub4 = 0,
+        sub5 = 0;
+
+      res.data.evals?.map((e, i) => {
+        sub1 += e.sub1_score;
+        sub2 += e.sub2_score;
+        sub3 += e.sub3_score;
+        sub4 += e.sub4_score;
+        sub5 += e.sub5_score;
+      });
+
+      total = (sub1 + sub2 + sub3 + sub4 + sub5) / res.data.evals?.length / 5;
+      sub1 = sub1 / res.data.evals?.length;
+      sub2 = sub2 / res.data.evals?.length;
+      sub3 = sub3 / res.data.evals?.length;
+      sub4 = sub4 / res.data.evals?.length;
+      sub5 = sub5 / res.data.evals?.length;
+
+      setRating({
+        total,
+        sub1,
+        sub2,
+        sub3,
+        sub4,
+        sub5
+      });
     });
   }, [apply_no]);
 
   return (
-    <Paper sx={{ background: 'transparent', height: 1 }}>
-      <Grid container xs="12" spacing={'1'} sx={{ height: 1 }}>
-        <Grid item xs="3" container direction={'column'}>
-          <Paper sx={{ height: 1 }}>
-            {/* <applicant list> */}
-            <Grid item xs={'3'}>
-              <Box
-                sx={{
-                  width: '390px',
-                  justifyContent: 'center',
-                  display: 'flex',
-                  marginTop: '15px',
-                  marginBottom: '10px'
-                }}
-              >
-                <ButtonGroup size="large" variant="outlined" aria-label="large button group">
-                  <Button
-                    value={'-'}
-                    onClick={(event) => {
-                      setClickedBtn(event.target.value);
-                    }}
-                  >
-                    <ChevronLeftIcon />
-                  </Button>
-                  <Button>합격안내</Button>
-                  <Button
-                    value={'+'}
-                    onClick={(event) => {
-                      setClickedBtn(event.target.value);
-                    }}
-                  >
-                    <ChevronRightIcon />
-                  </Button>
-                </ButtonGroup>
-              </Box>
-            </Grid>
-            <Divider variant="middle" />
-            <Grid item xs={'9'}>
-              <ScrollingApplicantList
-                height={770}
-                width={390}
-                itemSize={90}
-                postingNo={job_posting_no}
-                applyNo={apply_no}
-                clickedBtn={clickedBtn}
-              />
-            </Grid>
-          </Paper>
-        </Grid>
-        {/* </applicant list> */}
-        <Grid item xs="9">
+    <Box>
+      <Button onClick={handleOpen}>{text}</Button>
+      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'xl'}>
+        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
+          <PersonIcon />
+          <Typography variant="h4">지원자 상세정보</Typography>
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent
+          dividers
+          sx={{
+            minWidth: '1200px',
+            minHeight: '800px',
+            overflow: 'hidden'
+          }}
+        >
           <ScrollingPaper
             sx={{
               height: 1,
+              minHeight: '800px',
               maxHeight: '844px',
               overflow: 'auto'
             }}
@@ -182,16 +188,16 @@ const ApplicantDetailPage = () => {
                 <ApplicantTotalEval />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={1}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', pr: '10px' }}>
                   <Button onClick={handlePrint}>
                     <PrintIcon />
-                    인쇄
+                    인쇄하기
                   </Button>
-                  <Typography>|</Typography>
+                  {/* <Typography>|</Typography>
                   <Button onClick={handlePrint}>
                     <DownloadIcon />
                     저장
-                  </Button>
+                  </Button> */}
                 </Box>
                 <ApplicantCV applicantInfo={applicantInfo} ref={componentRef} />
               </CustomTabPanel>
@@ -204,30 +210,25 @@ const ApplicantDetailPage = () => {
                     <Grid item xs={11} sx={{ ml: '30px', mr: '30px' }}>
                       <Stack direction={'row'}>
                         <AddchartIcon />
-                        <Typography variant="h4" sx={{ mb: '10px', ml: '4px' }}>
+                        <Typography variant="h3" sx={{ mb: '20px', ml: '4px' }}>
                           면접 종합 평가
                         </Typography>
                       </Stack>
-                      <Card variant="outlined">
+                      <Card variant="outlined" sx={{ mb: '30px' }}>
                         <CardContent>
                           <Box sx={{ mb: '20px', display: 'flex', justifyContent: 'space-between' }}>
                             <Box>
-                              <Typography variant="h4" sx={{ mb: '10px' }}>
-                                평균 점수
-                              </Typography>
                               <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                                 <Typography variant="h2" sx={{ mr: '3px', ml: '3px' }}>
-                                  4.0
+                                  {rating.total}
                                 </Typography>
-                                <Rating size="large" value={4} readOnly />
+                                <Rating size="large" value={4} readOnly precision={0.1} />
                               </Box>
                             </Box>
                             <AvatarGroup max={3}>
-                              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-                              <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-                              <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-                              <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
+                              {applicantInfo.evals?.map((p, i) => {
+                                return <Avatar key={i} alt={p.user_nm} src="/static/images/avatar/1.jpg" />;
+                              })}
                             </AvatarGroup>
                           </Box>
                           <Box>
@@ -243,7 +244,7 @@ const ApplicantDetailPage = () => {
                                     </Typography>
 
                                     <Rating value={3} readOnly max={1} sx={{ mr: '3px' }} />
-                                    <Typography variant="h5">3.0</Typography>
+                                    <Typography variant="h5">{rating[`sub${i + 1}`]}</Typography>
                                   </Box>
                                 );
                               })}
@@ -255,33 +256,31 @@ const ApplicantDetailPage = () => {
                     <Grid item xs={11} sx={{ ml: '30px', mr: '30px', mt: '40px' }}>
                       <Stack direction={'row'}>
                         <AddchartIcon />
-                        <Typography variant="h4" sx={{ mb: '10px', ml: '4px' }}>
+                        <Typography variant="h3" sx={{ mb: '20px', ml: '4px' }}>
                           면접 평가 상세
                         </Typography>
                       </Stack>
                     </Grid>
                     {applicantInfo.evals.map((e, index) => {
+                      let total = (e.sub1_score + e.sub2_score + e.sub3_score + e.sub4_score + e.sub5_score) / 5;
                       return (
                         <Grid key={index} item xs={11} sx={{ ml: '30px', mr: '30px', mb: '30px' }}>
                           <Card variant="outlined">
                             <CardContent>
                               <Box sx={{ mb: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <Box>
-                                  <Typography variant="h4" sx={{ mb: '10px' }}>
-                                    평균 점수
-                                  </Typography>
                                   <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                                     <Typography variant="h2" sx={{ mr: '3px', ml: '3px' }}>
-                                      4.0
+                                      {total}
                                     </Typography>
-                                    <Rating size="large" value={4} readOnly />
+                                    <Rating size="large" value={total} readOnly precision={0.1} />
                                   </Box>
                                 </Box>
 
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                                  <Avatar alt={e.user_nm} src="/static/images/avatar/1.jpg" />
                                   <Typography variant="h5" sx={{ ml: '3px' }}>
-                                    서창훈
+                                    {e.user_nm}
                                   </Typography>
                                 </Box>
                               </Box>
@@ -289,16 +288,15 @@ const ApplicantDetailPage = () => {
                                 <Typography variant="h4" sx={{ mb: '10px' }}>
                                   항목별 점수
                                 </Typography>
-                                <Box sx={{ display: 'flex', '& .score': { mr: '60px' } }}>
-                                  {evalSub.map((e, i) => {
+                                <Box sx={{ display: 'flex', '& .score': { mr: '60px', mb: '15px' } }}>
+                                  {evalSub.map((ev, i) => {
                                     return (
                                       <Box key={i} className={'score'} sx={{ display: 'flex', alignItems: 'center' }}>
                                         <Typography component="legend" sx={{ mr: '5px' }}>
-                                          {e.sub}
+                                          {ev.sub}
                                         </Typography>
-
                                         <Rating value={3} readOnly max={1} sx={{ mr: '3px' }} />
-                                        <Typography variant="h5">3.0</Typography>
+                                        <Typography variant="h5">{e[`sub${i + 1}_score`]}</Typography>
                                       </Box>
                                     );
                                   })}
@@ -308,7 +306,7 @@ const ApplicantDetailPage = () => {
                                 <Typography variant="h4" sx={{ mb: '10px' }}>
                                   비고
                                 </Typography>
-                                <Typography>이 지원자는 어쩌구 저쩌구 해서 합격시키십쇼</Typography>
+                                <Typography>{e.note}</Typography>
                               </Box>
                             </CardContent>
                           </Card>
@@ -321,9 +319,9 @@ const ApplicantDetailPage = () => {
             </Box>
             {/* </applicant detail content> */}
           </ScrollingPaper>
-        </Grid>
-      </Grid>
-    </Paper>
+        </DialogContent>
+      </Dialog>
+    </Box>
   );
 };
 
@@ -360,7 +358,5 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
-
-const changeSelectedAppl = (e) => {};
 
 export default ApplicantDetailPage;
