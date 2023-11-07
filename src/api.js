@@ -107,6 +107,17 @@ const principal = {
   }
 };
 
+const admin = {
+  //유저 리스트 조회
+  userList: () => {
+    return instance.get('/admin/user-list');
+  },
+  //인사당담자 리스트 조회
+  hrList: () => {
+    return instance.get('/admin/hr-list');
+  }
+}
+
 const sort = {
   //공고 정보 api
   postingInfo: (postingNo) => {
@@ -170,4 +181,4 @@ const cv = {
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
 
-export { get, post, principal, sort, cv };
+export { get, post, principal, sort, cv, admin };
