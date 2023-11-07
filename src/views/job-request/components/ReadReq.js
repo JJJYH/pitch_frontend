@@ -57,22 +57,24 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
+  const userId = useSelector((state) => state.userInfo.user_id);
 
   const [formData, setFormData] = useState({
     job_req_no: '',
-    users: { user_id: 'hr' },
+    users: { user_id: userId },
     req_title: '',
     job_req_date: new Date(),
+    job_group: '',
     job_role: '',
     location: '',
     hire_num: '',
     education: '',
-    job_type: '',
+    job_type: '신입',
     job_year: '',
-    posting_type: '',
+    posting_type: '수시채용',
     posting_period: '',
-    posting_start: new Date(),
-    posting_end: new Date(),
+    posting_start: '',
+    posting_end: '',
     qualification: '',
     preferred: '',
     job_duties: '',
@@ -108,7 +110,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
       job_role: selectedJobRole.label,
       qualification: selectedJobRole.qual,
       preferred: selectedJobRole.prefer,
-      job_duties: selectedJobRole.duties
+      job_duties: selectedJobRole.duties,
+      job_group: selectedJobRole.group
     }));
   };
 
@@ -146,7 +149,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const handlePostingType = (event) => {
     setFormData((prevData) => ({
       ...prevData,
-      posting_type: event.target.value
+      posting_type: event.target.value,
+      posting_end: event.target.value === '상시채용' ? '9999-01-01' : prevData.posting_end
     }));
   };
 
@@ -210,19 +214,20 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     } else {
       setFormData({
         job_req_no: '',
-        users: { user_id: 'hr' },
+        users: { user_id: userId },
         req_title: '',
         job_req_date: new Date(),
+        job_group: '',
         job_role: '',
         location: '',
         hire_num: '',
         education: '',
-        job_type: '',
+        job_type: '신입',
         job_year: '',
-        posting_type: '',
+        posting_type: '수시채용',
         posting_period: '',
-        posting_start: new Date(),
-        posting_end: new Date(),
+        posting_start: '',
+        posting_end: '',
         qualification: '',
         preferred: '',
         job_duties: '',
@@ -313,6 +318,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
           <TextField value={formData.job_req_no} style={{ display: 'none' }} />
           <TextField value={formData.users.user_id} style={{ display: 'none' }} />
+          <TextField value={formData.job_group} style={{ display: 'none' }} />
           {/* <TextField value={formData.posting_start} style={{ display: 'none' }} />
           <TextField value={formData.posting_end} style={{ display: 'none' }} /> */}
 
@@ -412,13 +418,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 <RadioGroup row onChange={handleJobType}>
                   <FormControlLabel
                     value="신입"
-                    control={
-                      <Radio
-                        size="small"
-                        checked={formData.job_type === '신입' || !formData.job_type}
-                        disabled={formData.req_status !== '작성중'}
-                      />
-                    }
+                    control={<Radio size="small" checked={formData.job_type === '신입'} disabled={formData.req_status !== '작성중'} />}
                     label="신입"
                   />
                   <Box sx={{ width: 60 }} />
@@ -454,11 +454,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                   <FormControlLabel
                     value="수시채용"
                     control={
-                      <Radio
-                        size="small"
-                        checked={formData.posting_type === '수시채용' || !formData.posting_type}
-                        disabled={formData.req_status !== '작성중'}
-                      />
+                      <Radio size="small" checked={formData.posting_type === '수시채용'} disabled={formData.req_status !== '작성중'} />
                     }
                     label="수시"
                   />

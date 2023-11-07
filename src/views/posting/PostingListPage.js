@@ -1,20 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Card, CardContent, Divider, Grid, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { Button, Card, CardContent, Divider, Grid, IconButton, MenuItem, Paper, Select, Typography } from '@mui/material';
 import PostingDetailModal from './components/PostingDetailModal';
 import { Box } from '@mui/system';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(2);
   const [jobPostings, setJobPostings] = useState([]);
   const [selectedJobPosting, setSelectedJobPosting] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
+  const userId = useSelector((state) => state.userInfo.user_id);
 
   useEffect(() => {
     axios
@@ -23,9 +24,29 @@ const PostingListPage = () => {
         setJobPostings(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching job postings:', error);
+        console.error(error);
       });
-  }, []);
+
+    axios
+      .get('http://localhost:8888/admin/hire/liked')
+      .then((response) => {
+        const likedJobPostings = response.data;
+        console.log(likedJobPostings);
+        setJobPostings((prevJobPostings) =>
+          prevJobPostings.map((jobPosting) => {
+            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
+            return {
+              ...jobPosting,
+              isLiked: isLiked
+            };
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [userId]);
+  // }, []);
 
   const handleJobPostingClick = (jobPosting) => {
     setSelectedJobPosting(jobPosting);
@@ -37,8 +58,138 @@ const PostingListPage = () => {
     setOpen(false);
   };
 
-  const handleToggle = () => {
-    setIsLiked((prev) => !prev); // 현재 상태를 토글
+  const handleToggle = (e, jobPostingNo) => {
+    e.stopPropagation();
+    setJobPostings((prevJobPostings) => {
+      return prevJobPostings.map((jobPosting) => {
+        if (jobPosting.job_posting_no === jobPostingNo) {
+          const updatedJobPosting = {
+            ...jobPosting,
+            isLiked: !jobPosting.isLiked
+          };
+
+          if (updatedJobPosting.isLiked) {
+            axios.post('http://localhost:8888/admin/hire/liked', { job_posting_no: jobPostingNo });
+          } else {
+            axios.delete('http://localhost:8888/admin/hire/liked', { data: { job_posting_no: jobPostingNo } });
+          }
+          return updatedJobPosting;
+        }
+        return jobPosting;
+      });
+    });
+  };
+
+  // const handleSortByLatest = () => {
+  //   axios
+  //     .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=latest')
+  //     .then((response) => {
+  //       setJobPostings(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+
+  // const handleSortByDeadline = () => {
+  //   axios
+  //     .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=deadline')
+  //     .then((response) => {
+  //       setJobPostings(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+
+  const handleSortByLatest = () => {
+    axios
+      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=latest')
+      .then((response) => {
+        setJobPostings(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axios
+      .get('http://localhost:8888/admin/hire/liked')
+      .then((response) => {
+        const likedJobPostings = response.data;
+        console.log(likedJobPostings);
+        setJobPostings((prevJobPostings) =>
+          prevJobPostings.map((jobPosting) => {
+            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
+            return {
+              ...jobPosting,
+              isLiked: isLiked
+            };
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleSortByDeadline = () => {
+    axios
+      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=deadline')
+      .then((response) => {
+        setJobPostings(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axios
+      .get('http://localhost:8888/admin/hire/liked')
+      .then((response) => {
+        const likedJobPostings = response.data;
+        console.log(likedJobPostings);
+        setJobPostings((prevJobPostings) =>
+          prevJobPostings.map((jobPosting) => {
+            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
+            return {
+              ...jobPosting,
+              isLiked: isLiked
+            };
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleSortByMostLiked = () => {
+    axios
+      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=mostLiked')
+      .then((response) => {
+        setJobPostings(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axios
+      .get('http://localhost:8888/admin/hire/liked')
+      .then((response) => {
+        const likedJobPostings = response.data;
+        console.log(likedJobPostings);
+        setJobPostings((prevJobPostings) =>
+          prevJobPostings.map((jobPosting) => {
+            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
+            return {
+              ...jobPosting,
+              isLiked: isLiked
+            };
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -59,33 +210,54 @@ const PostingListPage = () => {
                   <Grid item>
                     <Grid container spacing={1}>
                       <Grid item>
-                        <Select>
-                          <MenuItem value={1}>Option 1</MenuItem>
-                          <MenuItem value={2}>Option 2</MenuItem>
-                          <MenuItem value={3}>Option 3</MenuItem>
+                        <Select size="small" value="defaultType">
+                          <MenuItem value="defaultType" disabled style={{ display: 'none' }}>
+                            인재유형
+                          </MenuItem>
+                          <MenuItem value="전체">전체</MenuItem>
+                          <MenuItem value="신입">신입</MenuItem>
+                          <MenuItem value="경력">경력</MenuItem>
                         </Select>
                       </Grid>
                       <Grid item>
-                        <Select>
-                          <MenuItem value={1}>Option 1</MenuItem>
-                          <MenuItem value={2}>Option 2</MenuItem>
-                          <MenuItem value={3}>Option 3</MenuItem>
+                        <Select size="small" value="defaultGroup">
+                          <MenuItem value="defaultGroup" disabled style={{ display: 'none' }}>
+                            분야
+                          </MenuItem>
+                          <MenuItem value="전체">전체</MenuItem>
+                          <MenuItem value="직군1">직군1</MenuItem>
+                          <MenuItem value="직군2">직군2</MenuItem>
                         </Select>
                       </Grid>
                       <Grid item>
-                        <Select>
-                          <MenuItem value={1}>Option 1</MenuItem>
-                          <MenuItem value={2}>Option 2</MenuItem>
-                          <MenuItem value={3}>Option 3</MenuItem>
+                        <Select size="small" value="defaultLoc">
+                          <MenuItem value="defaultLoc" disabled style={{ display: 'none' }}>
+                            근무지
+                          </MenuItem>
+                          <MenuItem value="전체">전체</MenuItem>
+                          <MenuItem value="근무지1">근무지1</MenuItem>
+                          <MenuItem value="근무지2">근무지2</MenuItem>
                         </Select>
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item>
                     <Grid container spacing={1}>
-                      <Grid item>최신순</Grid>
-                      <Grid item>마감순</Grid>
-                      <Grid item>좋아요순</Grid>
+                      <Grid item>
+                        <Button variant="outlined" onClick={handleSortByLatest}>
+                          최신순
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button variant="outlined" onClick={handleSortByDeadline}>
+                          마감순
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button variant="outlined" onClick={handleSortByMostLiked}>
+                          관심공고순
+                        </Button>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -105,25 +277,42 @@ const PostingListPage = () => {
                         <Grid item xs={4} key={jobPosting.job_posting_no}>
                           <Card sx={{ border: '1px solid', cursor: 'pointer' }} onClick={() => handleJobPostingClick(jobPosting)}>
                             <CardContent>
-                              <Grid container sx={{ display: 'flex', justifyContent: 'flex-end' }} spacing={2}>
-                                <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                                  {isLiked ? (
-                                    <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} onClick={handleToggle} />
-                                  ) : (
-                                    <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} onClick={handleToggle} />
-                                  )}
+                              <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
+                                <Grid item>
+                                  <IconButton
+                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                    sx={{ display: jobPosting.isLiked ? 'block' : 'none', p: 0 }}
+                                  >
+                                    <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                    sx={{
+                                      display: !jobPosting.isLiked ? 'block' : 'none',
+                                      p: 0
+                                    }}
+                                  >
+                                    <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} />
+                                  </IconButton>
                                 </Grid>
-                                <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <ShareRoundedIcon style={{ fontSize: 18 }} />
+                                <Grid item>
+                                  <IconButton sx={{ p: 0 }}>
+                                    <ShareRoundedIcon style={{ fontSize: 20 }} />
+                                  </IconButton>
                                 </Grid>
                               </Grid>
+
                               <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
                               <Grid container mt={1}>
                                 <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
                                 <Typography mr={1}>|</Typography>
                                 <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_start).format('YYYY-MM-DD')}</Typography>
                                 <Typography mr={1}>~</Typography>
-                                <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
+                                {jobPosting.jobReq.posting_type === '수시채용' ? (
+                                  <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
+                                ) : (
+                                  <Typography mr={1}> 채용시</Typography>
+                                )}
                               </Grid>
                               <Grid container mt={4}>
                                 <Grid item>d</Grid>
@@ -145,9 +334,9 @@ const PostingListPage = () => {
                     formData={selectedJobPosting.jobReq}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
-                    isLiked={isLiked}
-                    handleToggle={handleToggle}
+                    handleToggle={(e) => handleToggle(e, selectedJobPosting.job_posting_no)}
                     job_posting_no={selectedJobPosting.job_posting_no}
+                    jobPosting={selectedJobPosting}
                   />
                 )}
               </Box>

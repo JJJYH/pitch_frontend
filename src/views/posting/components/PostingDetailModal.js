@@ -48,22 +48,17 @@ const PostingDetailModal = ({
   setCurrentPage,
   formData,
   setFormData,
-  isLiked,
   handleToggle,
-  job_posting_no
+  job_posting_no,
+  jobPosting
 }) => {
   const [isSticky, setIsSticky] = useState(false);
-  //const [isLiked, setIsLiked] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
   const [interviewers, setInterviewers] = useState([]);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
-
-  // const handleToggle = () => {
-  //   setIsLiked((prev) => !prev); // 현재 상태를 토글
-  // };
 
   const handleScroll = (e) => {
     const scrollY = e.target.scrollTop;
@@ -213,7 +208,7 @@ const PostingDetailModal = ({
                 </Grid>
                 <Grid item>
                   <Typography>공고종료</Typography>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       value={dayjs(formData.posting_end)}
                       onChange={(data) => {
@@ -222,7 +217,21 @@ const PostingDetailModal = ({
                       }}
                       slotProps={{ textField: { size: 'small' } }}
                     />
-                  </LocalizationProvider>
+                  </LocalizationProvider> */}
+                  {formData.posting_type === '수시채용' ? (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        value={dayjs(formData.posting_end)}
+                        onChange={(data) => {
+                          console.log(data);
+                          setFormData({ ...formData, posting_end: data.$d });
+                        }}
+                        slotProps={{ textField: { size: 'small' } }}
+                      />
+                    </LocalizationProvider>
+                  ) : (
+                    <TextField fullWidth variant="outlined" size="small" disabled value="상시채용 선택 시 종료일을 입력할 수 없습니다." />
+                  )}
                 </Grid>
               </Grid>
               <Grid item container xs={12}>
@@ -262,12 +271,19 @@ const PostingDetailModal = ({
                 >
                   <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} spacing={2}>
                     <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                      {isLiked ? (
-                        <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} onClick={handleToggle} />
+                      {jobPosting && jobPosting.isLiked ? (
+                        <FavoriteIcon
+                          style={{ fontSize: 30, color: '#FF6F6F' }}
+                          onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                        />
                       ) : (
-                        <FavoriteBorderIcon style={{ fontSize: 30, color: ' #666666' }} onClick={handleToggle} />
+                        <FavoriteBorderIcon
+                          style={{ fontSize: 30, color: ' #666666' }}
+                          onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                        />
                       )}
-                      <Typography ml={1}>관심공고</Typography>
+
+                      <Typography ml={2}>관심공고</Typography>
                     </Grid>
                     <Grid item sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
                       <ShareRoundedIcon />
@@ -287,7 +303,6 @@ const PostingDetailModal = ({
                     justifyContent: 'center'
                   }}
                 >
-                  <Typography>{job_posting_no}</Typography>
                   <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
                   <Typography sx={{ fontSize: '16px', mt: 2 }}>{formData.job_type}</Typography>
                 </Box>
@@ -313,11 +328,15 @@ const PostingDetailModal = ({
                     }}
                   >
                     <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>공고마감</Typography>
-                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f', mr: 1 }}>D-{daysRemaining}</Typography>
-                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>확인해주세요!</Typography>
-                      </Grid>
+                      {formData.posting_type === '수시채용' ? (
+                        <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>공고마감</Typography>
+                          <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f', mr: 1 }}>D-{daysRemaining}</Typography>
+                          <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>확인해주세요!</Typography>
+                        </Grid>
+                      ) : (
+                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>채용시 마감되는 공고입니다.</Typography>
+                      )}
                       <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
                           <Typography sx={{ fontSize: '16px' }}>게시</Typography>
@@ -332,9 +351,15 @@ const PostingDetailModal = ({
                           <Typography ml={2} sx={{ fontSize: '16px' }}>
                             마감
                           </Typography>
-                          <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            {dayjs(formData.posting_end).format('YYYY-MM-DD')}
-                          </Typography>
+                          {formData.posting_type === '수시채용' ? (
+                            <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
+                              {dayjs(formData.posting_end).format('YYYY-MM-DD')}
+                            </Typography>
+                          ) : (
+                            <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
+                              채용시
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>
