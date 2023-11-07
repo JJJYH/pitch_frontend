@@ -10,7 +10,7 @@ const profileSlice = createSlice({
       user_nm: '',
       user_phone: '',
       user_email: '',
-      position: 'SI/SE',
+      position: '',
       user_birth: '',
       address: '',
       gender: ''

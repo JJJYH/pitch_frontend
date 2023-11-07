@@ -21,7 +21,7 @@ const PostingListPage = Loadable(lazy(() => import('views/posting/PostingListPag
 
 //test page routing
 const CVPage = Loadable(lazy(() => import('views/cv/Page')));
-
+const MyPage = Loadable(lazy(() => import('views/mypage/Mypage')));
 //applicant sorting page routing
 const ApplicantSortingPage = Loadable(lazy(() => import('views/sort')));
 const ApplicantDetailPage = Loadable(lazy(() => import('views/sort/ApplicantDetailPage')));
@@ -35,12 +35,16 @@ const MainRoutes = {
       path: 'main',
       children: [
         {
-          path: 'cv2',
+          path: 'careers',
+          element: <PostingListPage />
+        },
+        {
+          path: 'cv/:job_posting_no',
           element: <CVPage />
         },
         {
-          path: 'careers',
-          element: <PostingListPage />
+          path: 'mypage',
+          element: <MyPage />
         }
       ]
     },
