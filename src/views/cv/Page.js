@@ -34,13 +34,45 @@ import { updateCVNO } from 'store/cvSlice';
 import { useParams } from 'react-router-dom';
 
 const CV = () => {
-  const dispatch = useDispatch();
   const profileInfo = useSelector((state) => state.profile);
-  const cv_no = useSelector((state) => state.cv_no);
   const params = useParams().job_posting_no;
   console.log(params);
   let job_posting_no = params;
   console.log(job_posting_no);
+
+  const cv_no = useSelector((state) => state.cv_no);
+  const cvProfile = useSelector((state) => state.profile);
+  const cvEducation = useSelector((state) => state.education);
+  const cvActivity = useSelector((state) => state.activity);
+  const cvAdvantage = useSelector((state) => state.advantage);
+  const cvCareer = useSelector((state) => state.career);
+  const cvLanguage = useSelector((state) => state.lang);
+  const cvSkill = useSelector((state) => state.skill);
+  const cvCertification = useSelector((state) => state.cert);
+  const dispatch = useDispatch();
+
+  // CV_LIST 쪽에서 받아와야 하는 cv_no 임시 설정
+  let proto_cv_no = cv_no.cv_no;
+
+  //CV 데이터 포집 기능
+  const cvData = {
+    cv: {
+      cv_no: proto_cv_no,
+      job_posting_no: job_posting_no,
+      user_id: cvProfile[0].user_id,
+      user_nm: cvProfile[0].user_nm,
+      gender: cvProfile[0].gender,
+      position: cvProfile[0].position,
+      address: cvProfile[0].address,
+      activities: cvActivity,
+      advantages: cvAdvantage,
+      careers: cvCareer,
+      certifications: cvCertification,
+      educations: cvEducation,
+      languages: cvLanguage,
+      skills: cvSkill
+    }
+  };
 
   useEffect(() => {
     cv.getInit().then((res) => {
@@ -187,7 +219,7 @@ const CV = () => {
 
   return (
     <Grid container spacing={2.5}>
-      <OpenIconSpeedDial selectedFiles={selectedFiles} componentRef={componentRef} />
+      <OpenIconSpeedDial cvData={cvData} selectedFiles={selectedFiles} componentRef={componentRef} />
       <Grid item xs={1} />
       <Grid item xs={9}>
         <MainCard>

@@ -147,10 +147,10 @@ const sort = {
 const cv = {
   //이력서 api
   postThumbnail: (data) => {
-    return instance.post('/admin/main/cv/imageUpload', data);
+    return instance.post('/admin/main/cv/image-upload', data);
   },
   postMultiFile: (data) => {
-    return instance.post('/admin/main/cv/cvFileUpload', data);
+    return instance.post('/admin/main/cv/cv-file-upload', data);
   },
   getList: (data) => {
     return instance.get('/admin/main/cv/list', { params: { cv_no: data } });
@@ -169,6 +169,9 @@ const cv = {
   },
   getPosition: (data) => {
     return instance.get('/admin/main/cv/find-position', { params: { job_posting_no: data } });
+  },
+  postApply: (data) => {
+    return instance.post('/admin/main/cv/send-apply', data);
   }
 };
 

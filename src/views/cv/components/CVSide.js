@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 import { useEffect } from 'react';
@@ -7,6 +7,9 @@ import { useState } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { display } from '@mui/system';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
+import { cv } from 'api';
+
 const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
@@ -22,24 +25,51 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   const cvLanguage = useSelector((state) => state.lang);
   const cvSkill = useSelector((state) => state.skill);
   const cvCertification = useSelector((state) => state.cert);
+  const cv_no = useSelector((state) => state.cv_no);
+  const params = useParams().job_posting_no;
+  //CV 데이터 포집 기능
+  const cvData = {
+    cv: {
+      cv_no: cv_no.cv_no,
+      job_posting_no: params,
+      user_id: cvProfile[0].user_id,
+      user_nm: cvProfile[0].user_nm,
+      gender: cvProfile[0].gender,
+      position: cvProfile[0].position,
+      address: cvProfile[0].address,
+      activities: cvActivity,
+      advantages: cvAdvantage,
+      careers: cvCareer,
+      certifications: cvCertification,
+      educations: cvEducation,
+      languages: cvLanguage,
+      skills: cvSkill
+    }
+  };
+
+  const sendApply = () => {
+    cv.postApply(cvData).then((res) => {
+      console.log(res.data);
+    });
+  };
 
   //length와 비교해서 누락 값 찾기
-  const countEmptyValues = (arrayOfObjects) => {
-    return arrayOfObjects.reduce((count, obj) => {
-      // 객체의 속성을 반복하고 속성 값이 "" 인 경우 카운트를 증가합니다.
-      for (const key in obj) {
-        if (obj[key] === '') {
-          count++;
-        }
-      }
-      console.log(count);
-      return count;
-    }, 0);
-  };
-  console.log(cvEducation);
-  countEmptyValues(cvProfile);
-  countEmptyValues(cvProfile);
-  countEmptyValues(cvProfile);
+  // const countEmptyValues = (arrayOfObjects) => {
+  //   return arrayOfObjects.reduce((count, obj) => {
+  //     // 객체의 속성을 반복하고 속성 값이 "" 인 경우 카운트를 증가합니다.
+  //     for (const key in obj) {
+  //       if (obj[key] === '') {
+  //         count++;
+  //       }
+  //     }
+  //     console.log(count);
+  //     return count;
+  //   }, 0);
+  // };
+  // console.log(cvEducation);
+  // countEmptyValues(cvProfile);
+  // countEmptyValues(cvProfile);
+  // countEmptyValues(cvProfile);
 
   // 스크롤 이벤트 핸들러
   const handleScroll = () => {
@@ -191,6 +221,26 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
           </Typography>
         </div>
       </MainCard>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <Button
+          onClick={() => {
+            sendApply();
+          }}
+          sx={{
+            width: '100%',
+            fontSize: '16px',
+            backgroundColor: '#4682b4',
+            color: 'white',
+            '&:hover': {
+              color: '#4682b4',
+              backgroundColor: 'white',
+              border: '1px solid #4682b4'
+            }
+          }}
+        >
+          지원하기
+        </Button>
+      </div>
     </Box>
   );
 };
