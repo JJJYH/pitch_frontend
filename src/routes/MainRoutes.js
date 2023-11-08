@@ -25,6 +25,9 @@ const MyPage = Loadable(lazy(() => import('views/mypage/Mypage')));
 //applicant sorting page routing
 const ApplicantSortingPage = Loadable(lazy(() => import('views/sort')));
 const ApplicantDetailPage = Loadable(lazy(() => import('views/sort/ApplicantDetailPage')));
+
+//admin page routing
+const AdminManagePage = Loadable(lazy(() => import('views/admin/AdminManagePage')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -62,6 +65,10 @@ const MainRoutes = {
         {
           path: 'cv-page',
           element: <CVPage />
+        },
+        {
+          path: 'admin',
+          element: <AdminManagePage />
         },
         {
           path: ':job_posting_no/sort',
