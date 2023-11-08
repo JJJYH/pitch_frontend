@@ -153,18 +153,3 @@ const cv = {
 // api.get.userList().then() ~~~
 
 export { get, post, principal, sort, cv };
-
-const languages = {
-  영어: {
-    grade1: [{ toeic: 900 }, { opic: 'al' }],
-    grade2: [{ toeic: 800 }, { opic: 'ih' }],
-    grade3: [{ toeic: 700 }, { opic: 'im1' }],
-    grade4: [{ toeic: 600 }, { opic: 'il' }]
-  },
-  제2외국어: {
-    grade1: [{ jpt: 880 }, { hsk: 6 }],
-    grade2: [{ jpt: 750 }, { hsk: 5 }],
-    grade3: [{ jpt: 700 }, { hsk: 4 }],
-    grade4: [{ jpt: 650 }, { hsk: 5 }]
-  }
-};
