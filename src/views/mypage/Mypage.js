@@ -65,11 +65,24 @@ const Mypage = () => {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-                <Typography onClick={(e) => setReqBtn(true)} fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
+                <Typography
+                  onClick={(e) => setReqBtn('CVWrite')}
+                  fontWeight={'bold'}
+                  fontSize={'20px'}
+                  sx={{ '&:hover': { color: '#4682b4' } }}
+                >
+                  이력서 관리
+                </Typography>
+                <Typography
+                  onClick={(e) => setReqBtn('reqList')}
+                  fontWeight={'bold'}
+                  fontSize={'20px'}
+                  sx={{ '&:hover': { color: '#4682b4' } }}
+                >
                   지원 공고
                 </Typography>
                 <Typography
-                  onClick={(e) => setReqBtn(false)}
+                  onClick={(e) => setReqBtn('recommend')}
                   fontWeight={'bold'}
                   fontSize={'20px'}
                   sx={{ '&:hover': { color: '#4682b4' } }}
@@ -92,121 +105,143 @@ const Mypage = () => {
                 gap: '24px'
               }}
             >
-              <Grid item xs={6} sx={{ width: '100%', padding: '20px' }} className={styles.avatarStyle}>
-                {reqBtn ? (
-                  <>
+              {reqBtn !== 'CVWrite' && (
+                <>
+                  <Grid item xs={6} sx={{ width: '100%', padding: '20px' }} className={styles.avatarStyle}>
+                    {reqBtn === 'reqList' && (
+                      <>
+                        <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
+                          지원자 평균 스펙
+                        </Typography>
+                        <RadarChart />
+                      </>
+                    )}
+                    {reqBtn === 'recommend' && (
+                      <>
+                        <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
+                          추천 공고 목록
+                        </Typography>
+
+                        <Card sx={{ border: '1px solid #cccccc', padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                          <CardHeader sx={{ padding: '10px' }} title={<Typography fontSize={'16px'}>Title</Typography>} />
+                          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <CardContent sx={{ padding: '10px' }}>Content</CardContent>
+                            <div className={styles.reqDateStyle}>D-7</div>
+                          </div>
+                        </Card>
+                      </>
+                    )}
+                  </Grid>
+                  <Grid item xs={6} sx={{ width: '100%', padding: '20px' }} className={styles.avatarStyle}>
                     <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                      지원자 평균 스펙
+                      지원하신 공고
                     </Typography>
-                    <RadarChart />
-                  </>
-                ) : (
-                  <>
-                    <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                      추천 공고 목록
-                    </Typography>
+                    <div style={{ overflow: 'auto', maxHeight: '500px' }}>
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
+                            합격
+                          </div>
+                        </div>
+                      </Card>
 
-                    <Card sx={{ border: '1px solid #cccccc', padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                      <CardHeader sx={{ padding: '10px' }} title={<Typography fontSize={'16px'}>Title</Typography>} />
-                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <CardContent sx={{ padding: '10px' }}>Content</CardContent>
-                        <div className={styles.reqDateStyle}>D-7</div>
-                      </div>
-                    </Card>
-                  </>
-                )}
-              </Grid>
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
+                            합격
+                          </div>
+                        </div>
+                      </Card>
 
-              <Grid item xs={6} sx={{ width: '100%', padding: '20px', overflow: 'auto' }} className={styles.avatarStyle}>
-                <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                  지원하신 공고
-                </Typography>
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
+                            대기
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                  <CardHeader
-                    sx={{ padding: '10px' }}
-                    title={
-                      <Typography fontSize={'16px'} fontWeight={'bold'}>
-                        Title
-                      </Typography>
-                    }
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                    <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
-                      합격
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
+                            대기
+                          </div>
+                        </div>
+                      </Card>
+
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: red[500] }}>
+                            불합격
+                          </div>
+                        </div>
+                      </Card>
+
+                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                        <CardHeader
+                          sx={{ padding: '10px' }}
+                          title={
+                            <Typography fontSize={'16px'} fontWeight={'bold'}>
+                              Title
+                            </Typography>
+                          }
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
+                          <div className={styles.reqDateStyle} style={{ backgroundColor: red[500] }}>
+                            불합격
+                          </div>
+                        </div>
+                      </Card>
                     </div>
-                  </div>
-                </Card>
-
-                <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                  <CardHeader
-                    sx={{ padding: '10px' }}
-                    title={
-                      <Typography fontSize={'16px'} fontWeight={'bold'}>
-                        Title
-                      </Typography>
-                    }
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                    <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
-                      합격
-                    </div>
-                  </div>
-                </Card>
-
-                <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                  <CardHeader
-                    sx={{ padding: '10px' }}
-                    title={
-                      <Typography fontSize={'16px'} fontWeight={'bold'}>
-                        Title
-                      </Typography>
-                    }
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                    <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
-                      대기
-                    </div>
-                  </div>
-                </Card>
-
-                <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                  <CardHeader
-                    sx={{ padding: '10px' }}
-                    title={
-                      <Typography fontSize={'16px'} fontWeight={'bold'}>
-                        Title
-                      </Typography>
-                    }
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                    <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
-                      대기
-                    </div>
-                  </div>
-                </Card>
-
-                <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                  <CardHeader
-                    sx={{ padding: '10px' }}
-                    title={
-                      <Typography fontSize={'16px'} fontWeight={'bold'}>
-                        Title
-                      </Typography>
-                    }
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                    <div className={styles.reqDateStyle} style={{ backgroundColor: red[500] }}>
-                      불합격
-                    </div>
-                  </div>
-                </Card>
-              </Grid>
+                  </Grid>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
