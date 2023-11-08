@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { styled as muiStyled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { sort } from 'api.js';
 import styled from 'styled-components';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getAge, getFormattedDate, getDday } from './sorts.js';
 import { useDispatch, useSelector } from 'react-redux';
+import { useReactToPrint } from 'react-to-print';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -16,6 +17,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Button, Paper, Rating, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
+import PrintIcon from '@mui/icons-material/Print';
 
 /* custom components */
 import ApplicantDataGrid from './components/ApplicantDataGrid';
@@ -26,6 +28,8 @@ import InterviewEvalModal from './components/InterviewEvalModal';
 import MenuBtn from './components/MenuBtn';
 import classNames from './sort.module.scss';
 import { setPosting } from 'store/postingSlice.js';
+import CVToPrint from './components/CVToPrint.js';
+import ApplicantDetailPage from './ApplicantDetailPage.js';
 
 /*
  *
@@ -36,8 +40,11 @@ import { setPosting } from 'store/postingSlice.js';
 const SortingPage = () => {
   const { job_posting_no } = useParams();
   const dispatch = useDispatch();
+  const componentRef = useRef();
   const [value, setValue] = useState('F');
   const [rows, setRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isSelected, setIsSelected] = useState(false);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
   const [btnType, setBtnType] = useState('');
   const [info, setInfo] = useState({
@@ -63,6 +70,12 @@ const SortingPage = () => {
     setIsBtnClicked(!isBtnClicked);
     setBtnType(value);
   };
+
+  const handlePrint = useReactToPrint({
+    content: () => {
+      return componentRef.current;
+    }
+  });
 
   const setList = () => {
     sort.applicantList(job_posting_no, value).then((res) => {
@@ -148,54 +161,100 @@ const SortingPage = () => {
             }}
           >
             <Box sx={{ ml: '24px' }}>
-              <Button
-                variant="contained"
-                size="medium"
-                sx={{
-                  borderColor: '#38678f',
-                  background: '#38678f',
-                  mr: '5px'
-                }}
-                onClick={(event) => handleBtnClick(event, 'pass')}
-              >
-                합격
-              </Button>
-              <Button
-                variant="outlined"
-                size="medium"
-                sx={{
-                  borderColor: '#38678f',
-                  color: '#38678f',
-                  mr: '5px'
-                }}
-                onClick={(event) => handleBtnClick(event, 'fail')}
-              >
-                불합격
-              </Button>
+              {isSelected && (
+                <>
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    sx={{
+                      borderColor: '#38678f',
+                      background: '#38678f',
+                      mr: '5px'
+                    }}
+                    onClick={(event) => handleBtnClick(event, 'pass')}
+                  >
+                    합격대기
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="medium"
+                    sx={{
+                      borderColor: '#38678f',
+                      color: '#38678f',
+                      mr: '5px'
+                    }}
+                    onClick={(event) => handleBtnClick(event, 'fail')}
+                  >
+                    불합격대기
+                  </Button>
+                </>
+              )}
             </Box>
+
             <Box sx={{ display: 'flex' }}>
-              {value === 'F' && <FilteringModal />}
-              {value === 'S' && <InterviewDateModal />}
-              {/* {value === 'FL' && <InterviewEvalModal />} */}
-              <NoticeModal postingNo={job_posting_no} title={info.req_title} />
+              {isSelected ? (
+                <Button onClick={handlePrint} variant="outlined" size="medium" sx={{ borderColor: '#38678f', color: '#38678f' }}>
+                  <PrintIcon />
+                  인쇄하기
+                </Button>
+              ) : (
+                <>
+                  {value == 'F' && <FilteringModal />}
+                  {value == 'S' && <InterviewDateModal />}
+                  <NoticeModal postingNo={job_posting_no} title={info.req_title} />
+                </>
+              )}
             </Box>
           </Box>
           <Box>
             <MyTabPanel value="F">
-              <ApplicantDataGrid columns={fColumns} rows={rows} btnType={btnType} isBtnClicked={isBtnClicked} setList={setList} />
+              <ApplicantDataGrid
+                columns={fColumns}
+                rows={rows}
+                btnType={btnType}
+                isBtnClicked={isBtnClicked}
+                setList={setList}
+                setIsSelected={setIsSelected}
+                setSelectedRows={setSelectedRows}
+              />
             </MyTabPanel>
             <MyTabPanel value="S">
-              <ApplicantDataGrid columns={sColumns} rows={rows} btnType={btnType} isBtnClicked={isBtnClicked} setList={setList} />
+              <ApplicantDataGrid
+                columns={sColumns}
+                rows={rows}
+                btnType={btnType}
+                isBtnClicked={isBtnClicked}
+                setList={setList}
+                setIsSelected={setIsSelected}
+                setSelectedRows={setSelectedRows}
+              />
             </MyTabPanel>
             <MyTabPanel value="FL">
-              <ApplicantDataGrid columns={flColumns} rows={rows} btnType={btnType} isBtnClicked={isBtnClicked} setList={setList} />
+              <ApplicantDataGrid
+                columns={flColumns}
+                rows={rows}
+                btnType={btnType}
+                isBtnClicked={isBtnClicked}
+                setList={setList}
+                setIsSelected={setIsSelected}
+                setSelectedRows={setSelectedRows}
+              />
             </MyTabPanel>
             <MyTabPanel value="FH">
-              <ApplicantDataGrid columns={fhColumns} rows={rows} btnType={btnType} isBtnClicked={isBtnClicked} setList={setList} />
+              <ApplicantDataGrid
+                columns={fhColumns}
+                rows={rows}
+                btnType={btnType}
+                setIsSelected={setIsSelected}
+                isBtnClicked={isBtnClicked}
+                setList={setList}
+                setSelectedRows={setSelectedRows}
+              />
             </MyTabPanel>
           </Box>
         </TabContext>
       </Box>
+      <CVToPrint ref={componentRef} rows={selectedRows} />
     </Paper>
   );
 };
@@ -278,13 +337,13 @@ const RenderStar = (evals, apply_no) => {
 };
 
 const RenderName = (data) => {
+  const postingInfo = useSelector((state) => state.posting);
   return (
-    <Link
-      to={`${data.row.apply_no}/detail`}
-      sx={{
-        color: 'black'
-      }}
-    >{`${data.row.user_nm} (${data.row.gender})`}</Link>
+    <ApplicantDetailPage
+      apply_no={data.row.apply_no}
+      text={`${data.row.user_nm} (${data.row.gender})`}
+      job_posting_no={postingInfo.postingNo}
+    />
   );
 };
 
@@ -509,19 +568,19 @@ const flColumns = [
     valueGetter: (params) => `${getFormattedDate(params.row.apply_date)}`
   },
   {
-    field: 'status_type',
-    headerName: '상태',
-    width: 140,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
     field: 'score',
     headerName: '면접 평가',
     width: 160,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => RenderStar(params.row.evals, params.row.apply_no)
+  },
+  {
+    field: 'status_type',
+    headerName: '상태',
+    width: 140,
+    align: 'center',
+    headerAlign: 'center'
   },
   {
     field: 'note',

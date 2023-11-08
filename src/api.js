@@ -11,7 +11,6 @@ const encodeIfNeeded = (value) => {
 
   return value;
 };
-
 // axios 인스턴스를 생성합니다.
 const instance = axios.create({
   baseURL: 'http://localhost:8888'
@@ -20,6 +19,7 @@ const instance = axios.create({
 instance.interceptors.request.use((config) => {
   console.log(config);
   if (!config.headers) return config;
+
   let accessToken = sessionStorage.getItem('AccessToken');
 
   if (accessToken !== null) {
@@ -107,6 +107,17 @@ const principal = {
   }
 };
 
+const admin = {
+  //유저 리스트 조회
+  userList: () => {
+    return instance.get('/admin/user-list');
+  },
+  //인사당담자 리스트 조회
+  hrList: () => {
+    return instance.get('/admin/hr-list');
+  }
+}
+
 const sort = {
   //공고 정보 api
   postingInfo: (postingNo) => {
@@ -141,6 +152,14 @@ const sort = {
   //지원자 면접 평가 api
   applicantEval: (data) => {
     return instance.post(`/admin/${data.apply_no}/evaluation`, data);
+  },
+  //자소서 워드클라우드 api
+  wordCloud: () => {
+    return instance.get(`/admin/test-word`);
+  },
+  //지원자 선별 목록 요청 api
+  applicantSortList: (postingNo, data) => {
+    return instance.post(`/admin/${postingNo}/filter`, data);
   }
 };
 
@@ -179,4 +198,19 @@ const cv = {
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
 
-export { get, post, principal, sort, cv };
+
+const languages = {
+  영어: {
+    grade1: [{ toeic: 900 }, { opic: 'al' }],
+    grade2: [{ toeic: 800 }, { opic: 'ih' }],
+    grade3: [{ toeic: 700 }, { opic: 'im1' }],
+    grade4: [{ toeic: 600 }, { opic: 'il' }]
+  },
+  제2외국어: {
+    grade1: [{ jpt: 880 }, { hsk: 6 }],
+    grade2: [{ jpt: 750 }, { hsk: 5 }],
+    grade3: [{ jpt: 700 }, { hsk: 4 }],
+    grade4: [{ jpt: 650 }, { hsk: 5 }]
+  }
+};
+export { get, post, principal, sort, cv, admin };
