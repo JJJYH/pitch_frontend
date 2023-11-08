@@ -109,8 +109,9 @@ const AMDataGrid = forwardRef((props, ref) => {
 
     const columns = [
         {
-            field: 'user_id', headerName: 'ID', width: 180, editable: { return: false } // 새 행일 때만 편집 허용
-
+            field: 'user_id', headerName: 'ID', width: 180, editable: (params) => {
+                return params.row?.isNew || true; // 새 행일 때만 편집 허용
+            }
         },
         { field: 'user_email', headerName: 'Email', width: 290, editable: true },
         { field: 'user_nm', headerName: '이름', width: 150, editable: true },
