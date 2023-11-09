@@ -5,20 +5,19 @@ import { sort } from '../../api.js';
 import { getFormattedDate, getAge } from './sorts.js';
 import { evalSub } from './sorts';
 import { useReactToPrint } from 'react-to-print';
+import { useParams } from 'react-router';
+import { useSelector } from 'react-redux';
 
 /* mui components */
-import Box from '@mui/material/Box';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
+import { Box, Grid, InputAdornment, Rating, TextField, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
 import PrintIcon from '@mui/icons-material/Print';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import { AvatarGroup, Button, Card, CardContent, Chip, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from '@mui/material';
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
+
+import { AvatarGroup, Button, Card, ButtonGroup, CardContent, Chip, Divider, Paper, Stack, Tab, Tabs, Typography } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
-import PersonIcon from '@mui/icons-material/Person';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 /* custom components */
 import ApplicantTotalEval from './components/ApplicantTotalEval';
@@ -28,11 +27,13 @@ import ApplicantCV from './components/ApplicantCV.js';
 /*
  *
  * 지원자 상세 페이지
- * url : manage/:job_posting_no/sort/:apply_no/detail
+ * url : manage/posts/:job_posting_no/sort/:apply_no/
  *
  */
-const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
-  const [open, setOpen] = useState(false);
+const ApplicantDetailPage = ({ text }) => {
+  const userInfo = useSelector((state) => state.userInfo);
+
+  const { apply_no, job_posting_no } = useParams();
   const [tabValue, setTabValue] = useState(0);
   const [applicantInfo, setApplicantInfo] = useState({});
   const componentRef = useRef();
@@ -44,18 +45,33 @@ const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
     sub4: 0,
     sub5: 0
   });
+  const [noteArea, setNoteArea] = useState('');
+  const [evalScore, setEvalScore] = useState({
+    sub1: 0,
+    sub2: 0,
+    sub3: 0,
+    sub4: 0,
+    sub5: 0
+  });
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current
   });
-  const handleOpen = () => {
-    setOpen(true);
+  const onClickEval = () => {
+    const data = {
+      user_id: userInfo.user_id,
+      note: noteArea,
+      apply_no: apply_no,
+      job_req_no: posting.reqNo,
+      sub1_score: evalScore.sub1,
+      sub2_score: evalScore.sub2,
+      sub3_score: evalScore.sub3,
+      sub4_score: evalScore.sub4,
+      sub5_score: evalScore.sub5
+    };
+    sort.applicantEval(data).then((res) => {});
   };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
     sort.applicantDetail(apply_no).then((res) => {
       setApplicantInfo({ ...res.data });
@@ -93,33 +109,9 @@ const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
   }, [apply_no]);
 
   return (
-    <Box>
-      <Button onClick={handleOpen}>{text}</Button>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} maxWidth={'xl'}>
-        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
-          <PersonIcon />
-          <Typography variant="h4">지원자 상세정보</Typography>
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500]
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers
-          sx={{
-            minWidth: '1200px',
-            minHeight: '800px',
-            overflow: 'hidden'
-          }}
-        >
+    <Paper sx={{ background: 'transparent', height: 1 }}>
+      <Grid container xs="12" spacing={'1'} sx={{ height: 1 }}>
+        <Grid item xs="9">
           <ScrollingPaper
             sx={{
               height: 1,
@@ -152,7 +144,9 @@ const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
                 </Grid>
                 <Grid item xs={3} container direction="column">
                   <Grid item xs>
-                    <Typography variant="h2">{`${applicantInfo['cv']?.['user_nm']} (${applicantInfo['cv']?.['gender']})`}</Typography>
+                    <Typography variant="h2">{`${applicantInfo['cv']?.['user_nm']} (${applicantInfo['cv']?.['gender']
+                      .toString()
+                      .charAt(0)})`}</Typography>
                   </Grid>
                   <Grid item xs>
                     <Typography variant="subtitle1">{`만 ${getAge(applicantInfo['cv']?.['user_birth'])}세 (${getFormattedDate(
@@ -319,9 +313,140 @@ const ApplicantDetailPage = ({ apply_no, job_posting_no, text }) => {
             </Box>
             {/* </applicant detail content> */}
           </ScrollingPaper>
-        </DialogContent>
-      </Dialog>
-    </Box>
+        </Grid>
+        <Grid item xs="3" container direction={'column'}>
+          <Paper sx={{ height: 1 }}>
+            {/* <applicant list> */}
+            <Grid item xs={'3'}>
+              <Box
+                sx={{
+                  width: '390px',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  marginTop: '15px',
+                  marginBottom: '10px'
+                }}
+              >
+                <ButtonGroup size="large" variant="outlined" aria-label="large button group">
+                  <Button
+                    value={'-'}
+                    onClick={(event) => {
+                      //setClickedBtn(event.target.value);
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </Button>
+                  <Button>합격대기처리</Button>
+                  <Button
+                    value={'+'}
+                    onClick={(event) => {
+                      //setClickedBtn(event.target.value);
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </Button>
+                </ButtonGroup>
+              </Box>
+            </Grid>
+            <Divider variant="middle" />
+            <Grid
+              item
+              xs={'9'}
+              container
+              direction={'column'}
+              spacing={2}
+              sx={{
+                '& .MuiRating-root': { ml: '20px' },
+                '& .MuiBox-root': { display: 'flex', alignItems: 'end', justifyContent: 'space-between' },
+                '& .MuiFormControl-root': { mr: '40px' },
+                ml: '40px',
+                mt: '30px',
+                filter: applicantInfo.applicant_status == 'final' ? null : 'blur(10px)',
+                pointerEvents: applicantInfo.applicant_status == 'final' ? null : 'none'
+              }}
+            >
+              {evalSub.map((row, index) => {
+                const subKey = 'sub' + (index + 1);
+                return (
+                  <Grid item key={index}>
+                    <Box
+                      sx={{
+                        display: 'inline'
+                      }}
+                    >
+                      <Tooltip title={row.description} placement="right">
+                        <Typography component="legend">{row.sub}</Typography>
+                      </Tooltip>
+                    </Box>
+                    <Box
+                      sx={{
+                        '& .MuiInputBase-input': { textAlign: 'end', maxWidth: '60px' }
+                      }}
+                    >
+                      <Rating
+                        size="large"
+                        name="simple-controlled"
+                        value={evalScore[subKey]}
+                        onChange={(event, newValue) => {
+                          setEvalScore({ ...evalScore, [subKey]: newValue });
+                        }}
+                        precision={0.5}
+                        sx={{ mr: '15px' }}
+                      />
+                      <TextField
+                        id="standard-number"
+                        label="점수"
+                        type="number"
+                        value={evalScore[subKey]}
+                        onChange={(event) => {
+                          setEvalScore({ ...evalScore, [subKey]: checkScore(event.target.value) });
+                        }}
+                        InputLabelProps={{
+                          shrink: true
+                        }}
+                        variant="standard"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <StarRoundedIcon />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                );
+              })}
+              <Grid item>
+                <Typography component="legend">비고</Typography>
+                <TextField
+                  multiline
+                  rows={8}
+                  value={noteArea}
+                  onChange={(event) => {
+                    setNoteArea(event.target.value);
+                  }}
+                  sx={{
+                    width: '98%'
+                  }}
+                />
+              </Grid>
+              <Grid item sx={{ mt: '10px', mr: '5px', display: 'flex', justifyContent: 'flex-end' }}>
+                <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={onClickEval}>
+                  평가 등록
+                </Button>
+              </Grid>
+            </Grid>
+            {applicantInfo.applicant_status != 'final' && (
+              <Box sx={{ zIndex: 10, mt: '-380px', ml: '160px' }}>
+                <Typography variant="h3">면접 전</Typography>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+        {/* </applicant list> */}
+      </Grid>
+    </Paper>
   );
 };
 
