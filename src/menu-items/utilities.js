@@ -28,7 +28,7 @@ const utilities = {
       id: 'util-color',
       title: '공고관리',
       type: 'item',
-      url: '/manage/sorting',
+      url: '/manage/posts',
       icon: icons.IconPalette,
       breadcrumbs: false
     },

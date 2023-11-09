@@ -79,6 +79,7 @@ const SortingPage = () => {
 
   const setList = () => {
     sort.applicantList(job_posting_no, value).then((res) => {
+      console.log(res.data);
       const arr = res.data.map((appl, index) => {
         return { ...appl, id: index };
       });
