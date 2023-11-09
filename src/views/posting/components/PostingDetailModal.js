@@ -337,7 +337,7 @@ const PostingDetailModal = ({
                           <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>확인해주세요!</Typography>
                         </Grid>
                       ) : (
-                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>채용시 마감되는 공고입니다.</Typography>
+                        <Typography sx={{ fontSize: '24px', fontWeight: 'bold', mr: 1 }}>채용 시 마감되는 공고입니다.</Typography>
                       )}
                       <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -359,7 +359,7 @@ const PostingDetailModal = ({
                             </Typography>
                           ) : (
                             <Typography ml={2} sx={{ fontSize: '16px', fontWeight: 'bold' }}>
-                              채용시
+                              채용 시
                             </Typography>
                           )}
                         </Grid>
@@ -382,7 +382,7 @@ const PostingDetailModal = ({
                       width: '1100px',
                       border: '1px solid #ddd',
                       borderTop: ' 2px solid #364152',
-                      maxHeight: '900px'
+                      maxHeight: '1000px'
                     }}
                   >
                     <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 3, ml: 5 }}>{formData.job_role}</Typography>
@@ -404,19 +404,19 @@ const PostingDetailModal = ({
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>수행업무</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
                             {formData.job_duties}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>지원자격</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
                             {formData.qualification}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
                           <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>우대사항</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line' }}>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
                             {formData.preferred}
                           </Typography>
                         </Grid>
