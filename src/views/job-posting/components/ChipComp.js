@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
+import { StatusChip5, StatusChip6 } from './StatusChips';
 import Stack from '@mui/material/Stack';
 
 const ChipComp = ({ selectedChips, handleChipClick }) => {

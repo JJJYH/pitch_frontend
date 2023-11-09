@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import { setJobReqNo } from 'store/jobReqNoSlice';
 import { jobReqNoSelector } from 'store/jobReqNoSlice';
+import { setJobPostingNo, jobPostingNoSelector } from 'store/jobPostingNoSlice';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Typography } from '@mui/material';
@@ -41,14 +42,13 @@ const ReqDataGrid = forwardRef(
     const jobReqNo = useSelector(jobReqNoSelector);
 
     const getRowClassName = (params) => {
-      const isSelected = selectedRow && selectedRow.job_req_no === params.row.job_req_no;
+      const isSelected = selectedRow && selectedRow.job_req_no === params.row.jobReq.job_req_no;
       return isSelected ? 'selected-row' : '';
     };
 
     const handleRowClick = async (job_req_no) => {
       try {
         const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
-
         dispatch(setSelectedRow(response.data));
         console.log(response.data);
       } catch (error) {
@@ -79,45 +79,51 @@ const ReqDataGrid = forwardRef(
 
     const columns = [
       {
-        field: 'job_req_date',
-        headerName: '요청일자',
+        field: 'jobReq.posting_start',
+        headerName: '공고시작',
         width: 150,
         headerAlign: 'center',
         align: 'center',
         valueGetter: (params) => {
-          const timestamp = params.value;
+          //console.log(params);
+          const timestamp = params.row.jobReq.posting_start;
           const dateObject = dayjs(timestamp);
           const formattedDate = dateObject.format('YYYY-MM-DD');
           return formattedDate;
         }
       },
-      { field: 'req_title', headerName: '제목', width: 150, headerAlign: 'center', align: 'center' },
-      { field: 'job_role', headerName: '직무', width: 150, headerAlign: 'center', align: 'center' },
+
       {
-        field: 'req_status',
+        field: 'jobReq.req_title',
+        headerName: '제목',
+        width: 150,
+        headerAlign: 'center',
+        align: 'center',
+        valueGetter: (params) => {
+          const reqTitle = params.row.jobReq.req_title;
+          return reqTitle;
+        }
+      },
+      {
+        field: 'jobReq.job_role',
+        headerName: '직무',
+        width: 150,
+        headerAlign: 'center',
+        align: 'center',
+        valueGetter: (params) => {
+          const jobRole = params.row.jobReq.job_role;
+          return jobRole;
+        }
+      },
+      {
+        field: 'jobReq.req_status',
         headerName: '상태',
         width: 180,
         headerAlign: 'center',
         align: 'left',
-        // renderCell: (params) => {
-        //   const status = params.row.req_status;
-        //   switch (status) {
-        //     case '작성중':
-        //       return <StatusChip1 label={status} variant="selected" />;
-        //     case '요청완료':
-        //       return <StatusChip2 label={status} variant="selected" />;
-        //     case '승인':
-        //       return <StatusChip3 label={status} variant="selected" />;
-        //     case '반려':
-        //       return <StatusChip4 label={status} variant="selected" />;
-        //     case '공고중':
-        //       return <StatusChip5 label={status} variant="selected" />;
-        //     case '공고종료':
-        //       return <StatusChip6 label={status} variant="selected" />;
-        //   }
-        // }
+
         renderCell: (params) => {
-          const status = params.row.req_status;
+          const status = params.row.jobReq.req_status;
           switch (status) {
             case '작성중':
               return (
@@ -174,10 +180,11 @@ const ReqDataGrid = forwardRef(
           hideFooter
           checkboxSelection
           disableRowSelectionOnClick
-          getRowId={(row) => row.job_req_no}
+          getRowId={(row) => row.job_posting_no}
           onRowClick={(row) => {
             console.log(row);
-            handleRowClick(row.row.job_req_no);
+            dispatch(setJobPostingNo(row.row.job_posting_no));
+            handleRowClick(row.row.jobReq.job_req_no);
           }}
           getRowClassName={getRowClassName}
           onRowSelectionModelChange={(rows) => {

@@ -18,6 +18,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectedRowSelector } from 'store/selectedRowSlice';
 import { Link } from 'react-router-dom';
+import { jobPostingNoSelector } from 'store/jobPostingNoSlice';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -54,6 +58,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
   const userId = useSelector((state) => state.userInfo.user_id);
+  const jobPostingNo = useSelector(jobPostingNoSelector);
 
   const [formData, setFormData] = useState({
     job_req_no: '',
@@ -77,6 +82,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     req_status: '작성중'
   });
 
+  const currentDate = dayjs();
+  const postingEndDate = dayjs(formData.posting_end);
+  const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
   const scrollToTop = () => {
     contentRef.current.scrollTo(0, 0);
   };
@@ -127,213 +135,236 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               공고 상세
             </Typography>
             <Button variant="contained" style={{ backgroundColor: '#38678f ' }}>
-              <Link to={`/manage/posts/${'1'}/sort`} style={{ textDecoration: 'none', color: 'white' }}>
+              <Link to={`/manage/posts/${jobPostingNo}/sort`} style={{ textDecoration: 'none', color: 'white' }}>
                 관리하기
               </Link>
             </Button>
           </Grid>
-
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
-          <TextField value={formData.job_req_no} style={{ display: 'none' }} />
-          <TextField value={formData.users.user_id} style={{ display: 'none' }} />
-          <TextField value={formData.job_group} style={{ display: 'none' }} />
-          <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={8}>
-              <FormTypo>제목</FormTypo>
-              <TextField
-                fullWidth
-                placeholder="제목"
-                variant="outlined"
-                name="req_title"
-                size="small"
-                value={formData.req_title}
-                disabled={formData.req_status !== '작성중'}
-                onChange={(e) => {
-                  setFormData({ ...formData, req_title: e.target.value });
+
+          <Grid container sx={{ display: 'flex', justifyContent: 'center', maxWidth: '650px', ml: 3 }}>
+            <Grid item>
+              <Box
+                sx={{
+                  width: '650px',
+                  // border: '1px solid',
+                  height: '50px'
                 }}
-              />
+              >
+                <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }} spacing={2}>
+                  <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
+                    {/* <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} /> */}
+
+                    <FavoriteBorderIcon style={{ fontSize: 30, color: ' #666666' }} />
+
+                    <Typography ml={2}>관심공고</Typography>
+                  </Grid>
+                  <Grid item sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                    <ShareRoundedIcon />
+                    <Typography ml={1}>공유</Typography>
+                  </Grid>
+                </Grid>
+              </Box>
             </Grid>
-            <Grid item xs={4}>
-              <FormTypo>요청일</FormTypo>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  value={dayjs(formData.job_req_date)}
-                  onChange={(data) => {
-                    console.log(data);
-                    setFormData({ ...formData, job_req_date: data.$d });
+            <Grid item>
+              <Box
+                sx={{
+                  width: '650px',
+                  // border: '1px solid',
+                  height: '100px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography sx={{ fontSize: '30px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
+                <Typography sx={{ fontSize: '14px', mt: 1 }}>{formData.job_type}</Typography>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box
+                sx={{
+                  width: '650px',
+                  // border: '1px solid',
+                  height: '100px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Box
+                  sx={{
+                    width: '650px',
+                    border: '2px solid',
+                    height: '80px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '30px'
                   }}
-                  disabled={formData.req_status !== '작성중'}
-                  slotProps={{ textField: { size: 'small' } }}
-                />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={6}>
-              <FormTypo>직무</FormTypo>
-              <JobRole formData={formData} disabled={formData.req_status !== '작성중'} />
-            </Grid>
-            <Grid item xs={6}>
-              <FormTypo>근무지</FormTypo>
-
-              <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중'}>
-                <SelectBox value={formData.location || 'defaultLocation'}>
-                  <MenuItem value="defaultLocation" disabled>
-                    근무지 선택
-                  </MenuItem>
-                  <MenuItem value="근무지1">근무지1</MenuItem>
-                  <MenuItem value="근무지2">근무지2</MenuItem>
-                </SelectBox>
-              </FormControl>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={6}>
-              <FormTypo>채용인원</FormTypo>
-              <TextField
-                fullWidth
-                placeholder="숫자만 입력하세요"
-                variant="outlined"
-                name="hire_num"
-                size="small"
-                value={formData.hire_num}
-                disabled={formData.req_status !== '작성중'}
-                onChange={(e) => {
-                  setFormData({ ...formData, hire_num: e.target.value });
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <FormTypo>학력</FormTypo>
-              <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중'}>
-                <SelectBox value={formData.education || 'defaultEducation'}>
-                  <MenuItem value="defaultEducation" disabled>
-                    학력 선택
-                  </MenuItem>
-                  <MenuItem value="학력 무관">학력 무관</MenuItem>
-                  <MenuItem value="초대졸">초대졸</MenuItem>
-                  <MenuItem value="대졸">대졸</MenuItem>
-                </SelectBox>
-              </FormControl>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={6}>
-              <FormTypo>채용형태</FormTypo>
-
-              <FormControl sx={{ paddingLeft: '50px' }}>
-                <RadioGroup row>
-                  <FormControlLabel
-                    value="신입"
-                    control={<Radio size="small" checked={formData.job_type === '신입'} disabled={formData.req_status !== '작성중'} />}
-                    label="신입"
-                  />
-                  <Box sx={{ width: 60 }} />
-                  <FormControlLabel
-                    value="경력"
-                    control={<Radio size="small" checked={formData.job_type === '경력'} disabled={formData.req_status !== '작성중'} />}
-                    label="경력"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormTypo disabled={formData.job_type !== '경력'}>경력기간</FormTypo>
-              <TextField
-                fullWidth
-                placeholder={formData.job_type !== '경력' ? '경력 없음' : 'ex) 1~3년'}
-                variant="outlined"
-                name="job_year"
-                size="small"
-                value={formData.job_type === '신입' ? '' : formData.job_year}
-                disabled={formData.req_status !== '작성중' || formData.job_type !== '경력'}
-                onChange={(e) => {
-                  setFormData({ ...formData, job_year: e.target.value });
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container direction="row" spacing={2}>
-            <Grid item xs={6}>
-              <FormTypo>공고타입</FormTypo>
-              <FormControl sx={{ paddingLeft: '50px' }}>
-                <RadioGroup row>
-                  <FormControlLabel
-                    value="수시채용"
-                    control={
-                      <Radio size="small" checked={formData.posting_type === '수시채용'} disabled={formData.req_status !== '작성중'} />
-                    }
-                    label="수시"
-                  />
-                  <Box sx={{ width: 60 }} />
-                  <FormControlLabel
-                    value="상시채용"
-                    control={
-                      <Radio size="small" checked={formData.posting_type === '상시채용'} disabled={formData.req_status !== '작성중'} />
-                    }
-                    label="상시"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormTypo disabled={formData.posting_type === '상시채용'}>공고기간</FormTypo>
-              <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중' || formData.posting_type === '상시채용'}>
-                <SelectBox
-                  value={formData.posting_type === '상시채용' || !formData.posting_period ? 'defaultPeriod' : formData.posting_period}
                 >
-                  <MenuItem value="defaultPeriod" disabled>
-                    기간 선택
-                  </MenuItem>
-                  <MenuItem value="15일">15일</MenuItem>
-                  <MenuItem value="30일">30일</MenuItem>
-                  <MenuItem value="기타">기타</MenuItem>
-                </SelectBox>
-              </FormControl>
+                  <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {formData.posting_type === '수시채용' ? (
+                      <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mr: 1 }}>공고마감</Typography>
+                        <Typography sx={{ fontSize: '20px', fontWeight: 'bold', color: '#38678f', mr: 1 }}>D-{daysRemaining}</Typography>
+                        <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>확인해주세요!</Typography>
+                      </Grid>
+                    ) : (
+                      <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mr: 1 }}>채용 시 마감되는 공고입니다.</Typography>
+                    )}
+                    <Grid item sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography sx={{ fontSize: '14px' }}>게시</Typography>
+                        <Typography ml={2} mr={2} sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          {dayjs(formData.posting_start).format('YYYY-MM-DD')}
+                        </Typography>
+                      </Grid>
+                      <Typography ml={1} sx={{ fontSize: '20px', fontWeight: 'bold' }}>
+                        |
+                      </Typography>
+                      <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography ml={2} sx={{ fontSize: '14px' }}>
+                          마감
+                        </Typography>
+                        {formData.posting_type === '수시채용' ? (
+                          <Typography ml={2} sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            {dayjs(formData.posting_end).format('YYYY-MM-DD')}
+                          </Typography>
+                        ) : (
+                          <Typography ml={2} sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            채용 시
+                          </Typography>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box
+                sx={{
+                  width: '650px',
+                  // border: '1px solid',
+                  maxHeight: '1000px'
+                }}
+              >
+                <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 4, mb: 2.5, ml: 3 }}>모집분야 및 지원자격</Typography>
+                <Box
+                  sx={{
+                    width: '650px',
+                    border: '1px solid #ddd',
+                    borderTop: ' 2px solid #364152',
+                    maxHeight: '1000px'
+                  }}
+                >
+                  <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 3, ml: 5 }}>{formData.job_role}</Typography>
+                  <Box sx={{ width: '600px', borderTop: '1px solid #ddd', marginLeft: '25px', p: 2, pb: 3 }}>
+                    <Grid container direction="column">
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>공통지원자격</Typography>
+                        <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
+                        <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
+                        <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                      </Grid>
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>채용인원</Typography>
+                        <Typography mb={1}>{formData.hire_num}명</Typography>
+                      </Grid>
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>근무지</Typography>
+                        <Typography mb={1}>{formData.location}</Typography>
+                      </Grid>
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>수행업무</Typography>
+                        <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          {formData.job_duties}
+                        </Typography>
+                      </Grid>
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>지원자격</Typography>
+                        <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          {formData.qualification}
+                        </Typography>
+                      </Grid>
+                      <Grid item mb={2}>
+                        <Typography sx={{ fontSize: '14px', fontWeight: 'bold', mt: 3, mb: 2 }}>우대사항</Typography>
+                        <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          {formData.preferred}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item mt={3}>
+              <Box sx={{ width: '650px', height: '350px' }}>
+                <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 2.5, ml: 3 }}>제출서류</Typography>
+                <Box
+                  sx={{
+                    width: '650px',
+                    border: '1px solid #ddd',
+                    borderTop: ' 2px solid #364152',
+                    maxHeight: '400px',
+                    p: 4
+                  }}
+                >
+                  <Typography mb={1}>- 증빙서류는 이력서 작성시 제출합니다.</Typography>
+                  <Typography mb={1}>ㆍ졸업증명서(원본) / 성적증명서(원본) / 경력증명서(원본) 각 1부</Typography>
+                  <Typography mb={3}>ㆍ기타 자격증 및 확인서</Typography>
+                  <Typography mb={1}>※ 채용 서류 반환 관련 안내 (별도 안내 예정)</Typography>
+                  <Typography mb={1}>회사는 채용 전형 과정에서 지원자의 불편을 최소화하기 위해</Typography>
+                  <Typography mb={1}>입사지원서를 비롯하여 채용과 관련된 모든 서류는 채용 홈페이지를 통해</Typography>
+                  <Typography mb={1}>접수 받고 있습니다. 채용 과정에서 서류를 직접 제출 받은 경우,</Typography>
+                  <Typography mb={1}>
+                    해당 서류를 반환해 드리고 있사오니 자세한 내용은 지원가이드 - 채용서류 반환신청을 참고해 주시기 바랍니다.
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box sx={{ width: '650px', height: '250px' }}>
+                <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 7, mb: 2, ml: 3 }}>첨부자료</Typography>
+                <Typography ml={3} mb={1}>
+                  본 공고에 첨부된 자기소개서 다운로드후 작성하여 주시기 바랍니다.
+                </Typography>
+                <Typography ml={3}>작성한 파일은 pdf 변환 후 &lsquo;이력서 첨부&rsquo;란에 등록하여 주시기 바랍니다.</Typography>
+                <Box
+                  sx={{
+                    width: '650px',
+                    borderBottom: '1px solid #ddd',
+                    borderTop: ' 2px solid #364152',
+                    maxHeight: '100px',
+                    p: 2,
+                    mt: 4
+                  }}
+                >
+                  <Grid container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Grid item xs={4}>
+                      <Typography>(양식)입사지원서</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography>여기에 파일 들어가고</Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Button>다운로드</Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item>
+              <Box sx={{ width: '650px', height: '400px' }}>
+                <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 2, ml: 3 }}>채용절차</Typography>
+                <Box sx={{ border: '1px solid', p: 2, height: '350px' }}>채용절차 사진 넣겠음</Box>
+              </Box>
+            </Grid>
+
+            <Grid item mb={3}>
+              <Box sx={{ width: '650px', height: '400px', border: '1px solid' }}>지원 안내, 기타사항</Box>
             </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <FormTypo>지원자격</FormTypo>
-            <TextField
-              fullWidth
-              placeholder="지원자격"
-              variant="outlined"
-              multiline
-              rows={10}
-              name="qualification"
-              size="small"
-              value={formData.qualification}
-              disabled={formData.req_status !== '작성중'}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormTypo>우대사항</FormTypo>
-            <TextField
-              fullWidth
-              placeholder="우대사항"
-              variant="outlined"
-              multiline
-              rows={10}
-              name="preferred"
-              size="small"
-              value={formData.preferred}
-              disabled={formData.req_status !== '작성중'}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormTypo>수행업무</FormTypo>
-            <TextField
-              fullWidth
-              placeholder="수행업무"
-              variant="outlined"
-              multiline
-              rows={10}
-              name="job_duties"
-              size="small"
-              value={formData.job_duties}
-              disabled={formData.req_status !== '작성중'}
-            />
-          </Grid>
+
           <Divider sx={{ marginTop: '40px' }} />
         </Grid>
       </ReadBox>

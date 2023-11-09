@@ -15,7 +15,7 @@ import ReqDataGrid from './components/ReqDataGrid';
 import ReadReq from './components/ReadReq';
 import axios from 'axios';
 import ChipComp from './components/ChipComp';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { resetSelectedRow } from 'store/selectedRowSlice';
 import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
@@ -48,8 +48,9 @@ const JobPostingPage = () => {
 
   const reqlisthandler = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/admin/hire/reqlist');
+      const response = await axios.get('http://localhost:8888/admin/hire/getJobPostingList');
       setRows(response.data);
+      console.log(jobPostingNo);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
