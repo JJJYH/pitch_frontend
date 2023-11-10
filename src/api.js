@@ -189,8 +189,38 @@ const cv = {
   getPosition: (data) => {
     return instance.get('/admin/main/cv/find-position', { params: { job_posting_no: data } });
   },
+  getFiles: (data) => {
+    return instance.get('admin/main/cv/get-files', { params: { cv_no: data }, responseType: 'arraybuffer' });
+  },
+  getFileInfos: (data) => {
+    return instance.get('admin/main/cv/get-files-infos', { params: { cv_no: data } });
+  },
   postApply: (data) => {
     return instance.post('/admin/main/cv/send-apply', data);
+  },
+  deleteActivity: (data) => {
+    return instance.delete('/admin/main/cv/activity', data);
+  },
+  deleteAdvantage: (data) => {
+    return instance.delete('/admin/main/cv/advantage', data);
+  },
+  deleteCareer: (data) => {
+    return instance.delete('/admin/main/cv/career', data);
+  },
+  deleteCert: (data) => {
+    return instance.delete('/admin/main/cv/cert', data);
+  },
+  deleteEducation: (data) => {
+    return instance.delete('/admin/main/cv/edu', data);
+  },
+  deleteLanguage: (data) => {
+    return instance.delete('/admin/main/cv/lang', data);
+  },
+  deleteSkill: (data) => {
+    return instance.delete('/admin/main/cv/skill', data);
+  },
+  deleteCVFile: (data) => {
+    return instance.delete('admin/main/cv/cvfile', data);
   }
 };
 
@@ -198,4 +228,18 @@ const cv = {
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
 
+const languages = {
+  영어: {
+    grade1: [{ toeic: 900 }, { opic: 'al' }],
+    grade2: [{ toeic: 800 }, { opic: 'ih' }],
+    grade3: [{ toeic: 700 }, { opic: 'im1' }],
+    grade4: [{ toeic: 600 }, { opic: 'il' }]
+  },
+  제2외국어: {
+    grade1: [{ jpt: 880 }, { hsk: 6 }],
+    grade2: [{ jpt: 750 }, { hsk: 5 }],
+    grade3: [{ jpt: 700 }, { hsk: 4 }],
+    grade4: [{ jpt: 650 }, { hsk: 5 }]
+  }
+};
 export { get, post, principal, sort, cv, admin };

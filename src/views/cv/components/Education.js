@@ -51,7 +51,7 @@ const Education = () => {
             <Grid item xs={2}>
               <TextField
                 fullWidth
-                label={field.edu_type.includes('대학교') ? '전공' : '계열'}
+                label={field.edu_type? (field.edu_type.includes('대학교') ? '전공' : '계열'):'계열'}
                 color="primary"
                 type="text"
                 placeholder={education_data[index].major}
@@ -62,7 +62,7 @@ const Education = () => {
                 size="small"
               />
             </Grid>
-            {field.edu_type.includes('대학교') ? (
+            {field.edu_type?field.edu_type.includes('대학교') ? (
               <>
                 <Grid item xs={1}>
                   <TextField
@@ -102,7 +102,7 @@ const Education = () => {
               </>
             ) : (
               ''
-            )}
+            ):''}
 
             <Grid item xs={2}>
               <ControlledComponent

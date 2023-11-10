@@ -1,24 +1,26 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 // cvFileSlice.js
-
-import { createSlice } from '@reduxjs/toolkit';
-
 const cvFileSlice = createSlice({
   name: 'cvFile',
-  initialState: {
-    selectedFiles: []
-  },
+  initialState: [{
+    cv_file_no : '',
+    cv_no : '',
+    file_name: '',
+    file_type: '',
+    file_size: '',
+    upload_date: '',
+    path : '',
+    type : ''
+  }],
   reducers: {
-    addCVFile: (state, action) => {
-      state.selectedFiles.push(action.payload);
+    addFiles :(state, action)=> {
+      
     },
-    removeCVFile: (state, action) => {
-      state.selectedFiles = state.selectedFiles.filter((file) => file !== action.payload);
-    },
-    clearCVFile: (state, action) => {
-      state.selectedFiles = [];
-    }
-  }
+
+  },
 });
 
-export const { addCVFile, removeCVFile, clearCVFile } = cvFileSlice.actions;
+export const { setFiles, addFiles,removeFile } = cvFileSlice.actions;
+
 export default cvFileSlice.reducer;

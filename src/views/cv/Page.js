@@ -116,6 +116,7 @@ const CV = () => {
 
     cv.getCVNO(job_posting_no).then((res) => {
       dispatch(updateCVNO(res.data));
+      console.log(cv_no);
     });
 
     cv.getPosition(job_posting_no).then((res) => {
@@ -137,6 +138,7 @@ const CV = () => {
     etcDocs: [] // 초기에 빈 배열로 설정
   });
 
+  useEffect(() => {}, [selectedFiles]);
   const eduAddFields = () => {
     const new_edu_arr = {
       edu_no: '',
@@ -219,7 +221,7 @@ const CV = () => {
 
   return (
     <Grid container spacing={2.5}>
-      <OpenIconSpeedDial cvData={cvData} selectedFiles={selectedFiles} componentRef={componentRef} />
+      <OpenIconSpeedDial cvData={cvData} selectedFiles={selectedFiles} componentRef={componentRef} setSelectedFiles={setSelectedFiles} />
       <Grid item xs={1} />
       <Grid item xs={9}>
         <MainCard>

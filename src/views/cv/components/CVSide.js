@@ -27,6 +27,7 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   const cvCertification = useSelector((state) => state.cert);
   const cv_no = useSelector((state) => state.cv_no);
   const params = useParams().job_posting_no;
+
   //CV 데이터 포집 기능
   const cvData = {
     cv: {
@@ -48,9 +49,20 @@ const CVSide = ({ currentTab, scrollToTab, tabRef }) => {
   };
 
   const sendApply = () => {
-    cv.postApply(cvData).then((res) => {
-      console.log(res.data);
-    });
+    if (cvData.cv_no === 0) {
+      cv.postList(cvData).then((res) => {
+        // 응답을 출력합니다.
+        dispatch(updateCVNO(res.data));
+        console.log(res);
+        console.log('Response : ' + JSON.stringify(res));
+      });
+    }
+
+    if (cvData.cv_no !== 0) {
+      cv.postApply(cvData).then((res) => {
+        console.log(res.data);
+      });
+    }
   };
 
   //length와 비교해서 누락 값 찾기
