@@ -9,6 +9,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -18,19 +20,13 @@ const PostingListPage = () => {
   const userId = useSelector((state) => state.userInfo.user_id);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8888/admin/hire/getJobPostingList')
-      .then((response) => {
-        setJobPostings(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const likedList = async () => {
+      try {
+        const jobPostingResponse = await axios.get('http://localhost:8888/admin/hire/getJobPostingList');
+        setJobPostings(jobPostingResponse.data);
 
-    axios
-      .get('http://localhost:8888/admin/hire/liked')
-      .then((response) => {
-        const likedJobPostings = response.data;
+        const likedResponse = await axios.get('http://localhost:8888/admin/hire/liked');
+        const likedJobPostings = likedResponse.data;
         console.log(likedJobPostings);
         setJobPostings((prevJobPostings) =>
           prevJobPostings.map((jobPosting) => {
@@ -41,12 +37,13 @@ const PostingListPage = () => {
             };
           })
         );
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    };
+
+    likedList();
   }, [userId]);
-  // }, []);
 
   const handleJobPostingClick = (jobPosting) => {
     setSelectedJobPosting(jobPosting);
@@ -78,29 +75,17 @@ const PostingListPage = () => {
         return jobPosting;
       });
     });
+
+    setSelectedJobPosting((prevSelectedJobPosting) => {
+      if (prevSelectedJobPosting && prevSelectedJobPosting.job_posting_no === jobPostingNo) {
+        return {
+          ...prevSelectedJobPosting,
+          isLiked: !prevSelectedJobPosting.isLiked
+        };
+      }
+      return prevSelectedJobPosting;
+    });
   };
-
-  // const handleSortByLatest = () => {
-  //   axios
-  //     .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=latest')
-  //     .then((response) => {
-  //       setJobPostings(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // };
-
-  // const handleSortByDeadline = () => {
-  //   axios
-  //     .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=deadline')
-  //     .then((response) => {
-  //       setJobPostings(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // };
 
   const handleSortByLatest = () => {
     axios
@@ -264,7 +249,7 @@ const PostingListPage = () => {
               </Box>
             </Grid>
             <Grid item>
-              <Box sx={{ minHeight: '500px' }}>
+              <Box sx={{ minHeight: '700px' }}>
                 <Grid container spacing={2} pt={1} pl={12} pr={12}>
                   {jobPostings.map((jobPosting) => {
                     const postingStart = new Date(jobPosting.jobReq.posting_start);
@@ -272,10 +257,16 @@ const PostingListPage = () => {
                     //console.log(today);
                     //console.log(postingStart);
 
+                    const postingEndDate = dayjs(jobPosting.jobReq.posting_end);
+                    const daysRemaining = postingEndDate.diff(today, 'day') + 1;
+
                     if (postingStart <= today) {
                       return (
                         <Grid item xs={4} key={jobPosting.job_posting_no}>
-                          <Card sx={{ border: '1px solid', cursor: 'pointer' }} onClick={() => handleJobPostingClick(jobPosting)}>
+                          <Card
+                            sx={{ border: '1px solid', cursor: 'pointer', height: '250px' }}
+                            onClick={() => handleJobPostingClick(jobPosting)}
+                          >
                             <CardContent>
                               <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
                                 <Grid item>
@@ -302,7 +293,7 @@ const PostingListPage = () => {
                                 </Grid>
                               </Grid>
 
-                              <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
+                              <Typography sx={{ fontSize: '22px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
                               <Grid container mt={1}>
                                 <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
                                 <Typography mr={1}>|</Typography>
@@ -314,15 +305,29 @@ const PostingListPage = () => {
                                   <Typography mr={1}> 채용시</Typography>
                                 )}
                               </Grid>
-                              <Grid container mt={4}>
-                                <Grid item>d</Grid>
+                              <Grid container mt={4} direction="column">
+                                <Grid item>
+                                  <Stack direction="row" spacing={1}>
+                                    <Chip
+                                      label={jobPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
+                                      sx={{ backgroundColor: '#38678f', color: '#fff' }}
+                                    />
+                                    <Chip label={jobPosting.jobReq.job_group} />
+                                    <Chip label={jobPosting.jobReq.job_role} />
+                                  </Stack>
+                                </Grid>
+                                <Grid item mt={1}>
+                                  <Stack direction="row" spacing={1}>
+                                    <Chip label={jobPosting.jobReq.location} />
+                                    <Chip label={jobPosting.jobReq.education} />
+                                  </Stack>
+                                </Grid>
                               </Grid>
                             </CardContent>
                           </Card>
                         </Grid>
                       );
                     }
-
                     return null;
                   })}
                 </Grid>

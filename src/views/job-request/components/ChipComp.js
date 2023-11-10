@@ -1,13 +1,16 @@
 import React from 'react';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
 import Stack from '@mui/material/Stack';
+import { useSelector } from 'react-redux';
 
 const ChipComp = ({ selectedChips, handleChipClick }) => {
+  const userId = useSelector((state) => state.userInfo.user_id);
+
   return (
     <Stack direction="row" spacing={1}>
       {['작성중', '요청완료', '승인', '반려', '공고중', '공고종료'].map((status, index) => (
         <React.Fragment key={index}>
-          {status === '작성중' && (
+          {userId !== 'admin' && status === '작성중' && (
             <StatusChip1
               label={status}
               variant={selectedChips.includes(status) ? 'selected' : 'outlined'}

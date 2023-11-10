@@ -111,7 +111,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
       qualification: selectedJobRole.qual,
       preferred: selectedJobRole.prefer,
       job_duties: selectedJobRole.duties,
-      job_group: selectedJobRole.group
+      job_group: selectedJobRole.group,
+      req_title: `${selectedJobRole.label} ${formData.job_type}사원 채용`
     }));
   };
 
@@ -142,7 +143,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     //console.log(selectedJobType);
     setFormData((prevData) => ({
       ...prevData,
-      job_type: selectedJobType
+      job_type: selectedJobType,
+      req_title: `${formData.job_role} ${selectedJobType}사원 채용`
     }));
   };
 
@@ -252,6 +254,22 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           dispatch(setSelectedRow(submitData));
           setSelectedChips([]);
           reqlisthandler();
+        } else if (status === '승인') {
+          const job_req_no = selectedRow.job_req_no;
+          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          console.log(res);
+
+          dispatch(setSelectedRow(submitData));
+          setSelectedChips([]);
+          reqlisthandler();
+        } else if (status === '반려') {
+          const job_req_no = selectedRow.job_req_no;
+          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          console.log(res);
+
+          dispatch(setSelectedRow(submitData));
+          setSelectedChips([]);
+          reqlisthandler();
         } else {
           const job_req_no = selectedRow.job_req_no;
           const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
@@ -303,12 +321,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
             >
               {selectedRow ? '요청 상세' : '요청서 등록'}
             </Typography>
-            {formData.req_status !== '작성중' && (
+            {userId !== 'admin' && formData.req_status !== '작성중' && (
               <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCopy}>
                 복사하기
               </Button>
             )}
-            {copiedData && !selectedRow && (
+            {userId !== 'admin' && copiedData && !selectedRow && (
               <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handlePaste}>
                 붙여넣기
               </Button>
@@ -317,7 +335,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
           <TextField value={formData.job_req_no} style={{ display: 'none' }} />
-          <TextField value={formData.users.user_id} style={{ display: 'none' }} />
+          {/* <TextField value={formData.users.user_id} style={{ display: 'none' }} /> */}
           <TextField value={formData.job_group} style={{ display: 'none' }} />
           {/* <TextField value={formData.posting_start} style={{ display: 'none' }} />
           <TextField value={formData.posting_end} style={{ display: 'none' }} /> */}
@@ -327,7 +345,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               <FormTypo>제목</FormTypo>
               <TextField
                 fullWidth
-                placeholder="제목"
+                placeholder="직무, 채용형태 선택 시 자동 입력됩니다"
                 variant="outlined"
                 name="req_title"
                 size="small"
@@ -543,12 +561,22 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 </Button>
               </Stack>
             )}
-            {formData.req_status === '요청완료' && (
+            {userId !== 'admin' && formData.req_status === '요청완료' && (
               <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '작성중')}>
                 요청 취소
               </Button>
             )}
-            {formData.req_status === '승인' && (
+            {userId === 'admin' && formData.req_status === '요청완료' && (
+              <Stack direction="row" spacing={1}>
+                <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '승인')}>
+                  승인
+                </Button>
+                <Button variant="outlined" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '반려')}>
+                  반려
+                </Button>
+              </Stack>
+            )}
+            {userId !== 'admin' && formData.req_status === '승인' && (
               <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={handleOpen}>
                 공고 등록
               </Button>

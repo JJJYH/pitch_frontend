@@ -210,16 +210,7 @@ const PostingDetailModal = ({
                 </Grid>
                 <Grid item>
                   <Typography>공고종료</Typography>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      value={dayjs(formData.posting_end)}
-                      onChange={(data) => {
-                        console.log(data);
-                        setFormData({ ...formData, posting_end: data.$d });
-                      }}
-                      slotProps={{ textField: { size: 'small' } }}
-                    />
-                  </LocalizationProvider> */}
+
                   {formData.posting_type === '수시채용' ? (
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
@@ -256,9 +247,6 @@ const PostingDetailModal = ({
                 />
                 <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} handleInterviewers={handleInterviewers} />
               </Grid>
-              <Grid item>
-                <Typography>파일업로드</Typography>
-              </Grid>
             </Grid>
           )}
           {currentPage === 2 && (
@@ -273,16 +261,19 @@ const PostingDetailModal = ({
                 >
                   <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} spacing={2}>
                     <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                      {jobPosting && jobPosting.isLiked ? (
-                        <FavoriteIcon
-                          style={{ fontSize: 30, color: '#FF6F6F' }}
-                          onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
-                        />
+                      {jobPosting.isLiked ? (
+                        <IconButton onClick={(e) => handleToggle(e, jobPosting.job_posting_no)} sx={{ p: 0 }}>
+                          <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} />
+                        </IconButton>
                       ) : (
-                        <FavoriteBorderIcon
-                          style={{ fontSize: 30, color: ' #666666' }}
+                        <IconButton
                           onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
-                        />
+                          sx={{
+                            p: 0
+                          }}
+                        >
+                          <FavoriteBorderIcon style={{ fontSize: 30, color: ' #666666' }} />
+                        </IconButton>
                       )}
 
                       <Typography ml={2}>관심공고</Typography>
