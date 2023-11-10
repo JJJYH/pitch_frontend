@@ -18,16 +18,35 @@ const PostingListPage = () => {
   const [jobPostings, setJobPostings] = useState([]);
   const [selectedJobPosting, setSelectedJobPosting] = useState(null);
   const userId = useSelector((state) => state.userInfo.user_id);
+  const [sortBy, setSortBy] = useState('latest');
+  const [filters, setFilters] = useState({
+    jobType: 'defaultValue',
+    jobGroup: 'defaultValue',
+    location: 'defaultValue',
+    postingType: 'defaultValue',
+    search: ''
+  });
+
+  const { jobType, jobGroup, location, postingType, search } = filters;
 
   useEffect(() => {
-    const likedList = async () => {
+    const postingList = async () => {
       try {
-        const jobPostingResponse = await axios.get('http://localhost:8888/admin/hire/getJobPostingList');
-        setJobPostings(jobPostingResponse.data);
+        const response = await axios.post('http://localhost:8888/admin/hire/getJobPostingList', {
+          jobType,
+          jobGroup,
+          location,
+          postingType,
+          search,
+          orderType: sortBy
+        });
+
+        const data = response.data;
+        setJobPostings(data.jobPostings);
 
         const likedResponse = await axios.get('http://localhost:8888/admin/hire/liked');
         const likedJobPostings = likedResponse.data;
-        console.log(likedJobPostings);
+
         setJobPostings((prevJobPostings) =>
           prevJobPostings.map((jobPosting) => {
             const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
@@ -42,8 +61,8 @@ const PostingListPage = () => {
       }
     };
 
-    likedList();
-  }, [userId]);
+    postingList();
+  }, [userId, filters, sortBy]);
 
   const handleJobPostingClick = (jobPosting) => {
     setSelectedJobPosting(jobPosting);
@@ -87,94 +106,70 @@ const PostingListPage = () => {
     });
   };
 
-  const handleSortByLatest = () => {
-    axios
-      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=latest')
-      .then((response) => {
-        setJobPostings(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    axios
-      .get('http://localhost:8888/admin/hire/liked')
-      .then((response) => {
-        const likedJobPostings = response.data;
-        console.log(likedJobPostings);
-        setJobPostings((prevJobPostings) =>
-          prevJobPostings.map((jobPosting) => {
-            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
-            return {
-              ...jobPosting,
-              isLiked: isLiked
-            };
-          })
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleFilter = (type, value) => {
+    setFilters((filters) => {
+      const newValue = value === '전체' ? 'defaultValue' : value;
+      const newFilters = { ...filters, [type]: newValue };
+      console.log(newFilters);
+      return newFilters;
+    });
   };
 
-  const handleSortByDeadline = () => {
-    axios
-      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=deadline')
-      .then((response) => {
-        setJobPostings(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleFilterJobType = (e) => {
+    console.log('jobType', e.target.value);
 
-    axios
-      .get('http://localhost:8888/admin/hire/liked')
-      .then((response) => {
-        const likedJobPostings = response.data;
-        console.log(likedJobPostings);
-        setJobPostings((prevJobPostings) =>
-          prevJobPostings.map((jobPosting) => {
-            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
-            return {
-              ...jobPosting,
-              isLiked: isLiked
-            };
-          })
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    handleFilter('jobType', e.target.value);
   };
 
-  const handleSortByMostLiked = () => {
-    axios
-      .get('http://localhost:8888/admin/hire/getJobPostingList?orderType=mostLiked')
-      .then((response) => {
-        setJobPostings(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+  const handleFilterJobGroup = (e) => {
+    handleFilter('jobGroup', e.target.value);
+  };
+
+  const handleFilterLocation = (e) => {
+    handleFilter('location', e.target.value);
+  };
+
+  const handleFilterPostingType = (e) => {
+    handleFilter('postingType', e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    handleFilter('search', e.target.value);
+  };
+
+  const handleSort = async (orderType) => {
+    if (sortBy === orderType) {
+      setSortBy(null);
+      return;
+    }
+
+    try {
+      let orderTypeUrl = '';
+      switch (orderType) {
+        case 'latest':
+          orderTypeUrl = 'latest';
+          break;
+        case 'deadline':
+          orderTypeUrl = 'deadline';
+          break;
+        case 'mostLiked':
+          orderTypeUrl = 'mostLiked';
+          break;
+        default:
+          break;
+      }
+
+      const response = await axios.post('http://localhost:8888/admin/hire/getJobPostingList', {
+        filters: filters,
+        orderType: orderTypeUrl
       });
 
-    axios
-      .get('http://localhost:8888/admin/hire/liked')
-      .then((response) => {
-        const likedJobPostings = response.data;
-        console.log(likedJobPostings);
-        setJobPostings((prevJobPostings) =>
-          prevJobPostings.map((jobPosting) => {
-            const isLiked = likedJobPostings.some((liked) => liked.job_posting_no === jobPosting.job_posting_no);
-            return {
-              ...jobPosting,
-              isLiked: isLiked
-            };
-          })
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      const data = response.data;
+      setJobPostings(data.jobPostings);
+      setSortBy(orderType);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -195,8 +190,8 @@ const PostingListPage = () => {
                   <Grid item>
                     <Grid container spacing={1}>
                       <Grid item>
-                        <Select size="small" value="defaultType">
-                          <MenuItem value="defaultType" disabled style={{ display: 'none' }}>
+                        <Select size="small" value={jobType} onChange={handleFilterJobType}>
+                          <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                             인재유형
                           </MenuItem>
                           <MenuItem value="전체">전체</MenuItem>
@@ -205,18 +200,18 @@ const PostingListPage = () => {
                         </Select>
                       </Grid>
                       <Grid item>
-                        <Select size="small" value="defaultGroup">
-                          <MenuItem value="defaultGroup" disabled style={{ display: 'none' }}>
+                        <Select size="small" value={jobGroup} onChange={handleFilterJobGroup}>
+                          <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                             분야
                           </MenuItem>
                           <MenuItem value="전체">전체</MenuItem>
-                          <MenuItem value="직군1">직군1</MenuItem>
+                          <MenuItem value="개발">개발</MenuItem>
                           <MenuItem value="직군2">직군2</MenuItem>
                         </Select>
                       </Grid>
                       <Grid item>
-                        <Select size="small" value="defaultLoc">
-                          <MenuItem value="defaultLoc" disabled style={{ display: 'none' }}>
+                        <Select size="small" value={location} onChange={handleFilterLocation}>
+                          <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                             근무지
                           </MenuItem>
                           <MenuItem value="전체">전체</MenuItem>
@@ -224,24 +219,61 @@ const PostingListPage = () => {
                           <MenuItem value="근무지2">근무지2</MenuItem>
                         </Select>
                       </Grid>
+                      <Grid item>
+                        <Select size="small" value={postingType} onChange={handleFilterPostingType}>
+                          <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
+                            채용형태
+                          </MenuItem>
+                          <MenuItem value="전체">전체</MenuItem>
+                          <MenuItem value="수시채용">수시채용</MenuItem>
+                          <MenuItem value="상시채용">상시채용</MenuItem>
+                        </Select>
+                      </Grid>
                     </Grid>
                   </Grid>
                   <Grid item>
                     <Grid container spacing={1}>
                       <Grid item>
-                        <Button variant="outlined" onClick={handleSortByLatest}>
+                        <Typography
+                          sx={{
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            color: sortBy === 'latest' ? 'black' : 'grey',
+                            textDecoration: sortBy === 'latest' ? 'underline' : 'none'
+                          }}
+                          onClick={() => handleSort('latest')}
+                        >
                           최신순
-                        </Button>
+                        </Typography>
                       </Grid>
                       <Grid item>
-                        <Button variant="outlined" onClick={handleSortByDeadline}>
+                        <Typography
+                          sx={{
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            color: sortBy === 'deadline' ? 'black' : 'grey',
+                            textDecoration: sortBy === 'deadline' ? 'underline' : 'none'
+                          }}
+                          onClick={() => handleSort('deadline')}
+                        >
                           마감순
-                        </Button>
+                        </Typography>
                       </Grid>
                       <Grid item>
-                        <Button variant="outlined" onClick={handleSortByMostLiked}>
+                        <Typography
+                          sx={{
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            color: sortBy === 'mostLiked' ? 'black' : 'grey',
+                            textDecoration: sortBy === 'mostLiked' ? 'underline' : 'none'
+                          }}
+                          onClick={() => handleSort('mostLiked')}
+                        >
                           관심공고순
-                        </Button>
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
