@@ -116,7 +116,7 @@ const admin = {
   hrList: () => {
     return instance.get('/admin/hr-list');
   }
-}
+};
 
 const sort = {
   //공고 정보 api
@@ -189,15 +189,44 @@ const cv = {
   getPosition: (data) => {
     return instance.get('/admin/main/cv/find-position', { params: { job_posting_no: data } });
   },
+  getFiles: (data) => {
+    return instance.get('admin/main/cv/get-files', { params: { cv_no: data }, responseType: 'arraybuffer' });
+  },
+  getFileInfos: (data) => {
+    return instance.get('admin/main/cv/get-files-infos', { params: { cv_no: data } });
+  },
   postApply: (data) => {
     return instance.post('/admin/main/cv/send-apply', data);
+  },
+  deleteActivity: (data) => {
+    return instance.delete('/admin/main/cv/activity', data);
+  },
+  deleteAdvantage: (data) => {
+    return instance.delete('/admin/main/cv/advantage', data);
+  },
+  deleteCareer: (data) => {
+    return instance.delete('/admin/main/cv/career', data);
+  },
+  deleteCert: (data) => {
+    return instance.delete('/admin/main/cv/cert', data);
+  },
+  deleteEducation: (data) => {
+    return instance.delete('/admin/main/cv/edu', data);
+  },
+  deleteLanguage: (data) => {
+    return instance.delete('/admin/main/cv/lang', data);
+  },
+  deleteSkill: (data) => {
+    return instance.delete('/admin/main/cv/skill', data);
+  },
+  deleteCVFile: (data) => {
+    return instance.delete('admin/main/cv/cvfile', data);
   }
 };
 
 // 사용방법
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
-
 
 const languages = {
   영어: {
