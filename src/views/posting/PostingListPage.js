@@ -18,6 +18,7 @@ const PostingListPage = () => {
   const [currentPage, setCurrentPage] = useState(2);
   const [jobPostings, setJobPostings] = useState([]);
   const [selectedJobPosting, setSelectedJobPosting] = useState(null);
+  const [recommendedPostings, setRecommendedPostings] = useState([]);
   const userId = useSelector((state) => state.userInfo.user_id);
   const [sortBy, setSortBy] = useState('latest');
   const [filters, setFilters] = useState({
@@ -57,6 +58,10 @@ const PostingListPage = () => {
             };
           })
         );
+
+        const recommendResponse = await axios.get('http://localhost:8888/admin/hire/getRecommendList');
+        const recommendData = recommendResponse.data;
+        setRecommendedPostings(recommendData);
       } catch (error) {
         console.error(error);
       }
@@ -291,53 +296,57 @@ const PostingListPage = () => {
 
               <Box sx={{ height: '200px' }}>
                 <Carousel autoPlay={false} cycleNavigation={true} navButtonsAlwaysVisible={true}>
-                  {[...Array(Math.ceil(jobPostings.length / itemsPerGroup))].map((_, groupIndex) => (
+                  {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
                     <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
-                      {jobPostings.slice(groupIndex * itemsPerGroup, (groupIndex + 1) * itemsPerGroup).map((jobPosting, index) => {
-                        const today = new Date();
-                        const postingEndDate = dayjs(jobPosting.jobReq.posting_end);
-                        const daysRemaining = postingEndDate.diff(today, 'day') + 1;
+                      {recommendedPostings
+                        .slice(groupIndex * itemsPerGroup, (groupIndex + 1) * itemsPerGroup)
+                        .map((recommendedPosting, index) => {
+                          const today = new Date();
+                          const postingEndDate = dayjs(recommendedPosting.jobReq.posting_end);
+                          const daysRemaining = postingEndDate.diff(today, 'day') + 1;
 
-                        return (
-                          <Grid item xs={12} md={4} key={index}>
-                            <Card
-                              sx={{ border: '1px solid', cursor: 'pointer', height: '100px' }}
-                              onClick={() => handleJobPostingClick(jobPosting)}
-                            >
-                              <CardContent>
-                                <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
-                                  {/* ... */}
-                                </Grid>
-                                <Grid container item direction="row" display="flex" alignItems="center">
-                                  <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
-                                  <Chip
-                                    label={jobPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
-                                    sx={{ backgroundColor: '#38678f', color: '#fff', fontSize: '12px', ml: 1 }}
-                                  />
-                                </Grid>
-
-                                <Grid container mt={1}>
-                                  <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
-                                  <Typography mr={1}>|</Typography>
-                                  <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_start).format('YYYY-MM-DD')}</Typography>
-                                  <Typography mr={1}>~</Typography>
-                                  {jobPosting.jobReq.posting_type === '수시채용' ? (
-                                    <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
-                                  ) : (
-                                    <Typography mr={1}> 채용시</Typography>
-                                  )}
-                                </Grid>
-                                <Grid container mt={4} direction="column">
-                                  <Grid item>{/* ... */}</Grid>
-                                  <Grid item mt={1}>
+                          return (
+                            <Grid item xs={12} md={4} key={index}>
+                              <Card
+                                sx={{ border: '1px solid', cursor: 'pointer', height: '100px' }}
+                                onClick={() => handleJobPostingClick(recommendedPosting)}
+                              >
+                                <CardContent>
+                                  <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
                                     {/* ... */}
                                   </Grid>
-                                </Grid>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        );
-                      })}
+                                  <Grid container item direction="row" display="flex" alignItems="center">
+                                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                      {recommendedPosting.jobReq.req_title}
+                                    </Typography>
+                                    <Chip
+                                      label={recommendedPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
+                                      sx={{ backgroundColor: '#38678f', color: '#fff', fontSize: '12px', ml: 1 }}
+                                    />
+                                  </Grid>
+
+                                  <Grid container mt={1}>
+                                    <Typography mr={1}>{recommendedPosting.jobReq.job_type}</Typography>
+                                    <Typography mr={1}>|</Typography>
+                                    <Typography mr={1}>{dayjs(recommendedPosting.jobReq.posting_start).format('YYYY-MM-DD')}</Typography>
+                                    <Typography mr={1}>~</Typography>
+                                    {recommendedPosting.jobReq.posting_type === '수시채용' ? (
+                                      <Typography mr={1}>{dayjs(recommendedPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
+                                    ) : (
+                                      <Typography mr={1}> 채용시</Typography>
+                                    )}
+                                  </Grid>
+                                  <Grid container mt={4} direction="column">
+                                    <Grid item>{/* ... */}</Grid>
+                                    <Grid item mt={1}>
+                                      {/* ... */}
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+                          );
+                        })}
                     </Grid>
                   ))}
                 </Carousel>
