@@ -15,7 +15,7 @@ import { cv } from '../../api';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import preview_image from '../../preview_icon.png';
 import { useSelector } from 'react-redux';
-export default function TitlebarImageList() {
+export default function TitlebarImageList({ isMainCV }) {
   const [img_src, set_img_src] = useState('');
 
   const file_input_ref = useRef(null);

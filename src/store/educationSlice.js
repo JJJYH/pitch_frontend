@@ -13,7 +13,6 @@ const educationSlice = createSlice({
       return state.filter((_, index) => index !== action.payload);
     },
     updateEducation: (state, action) => {
-      console.log('UpdateEducation Action!!!');
       const { index, name, value } = action.payload;
       if (name === 'edu_type') {
         state[index].edu_type = value;

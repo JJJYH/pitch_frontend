@@ -265,7 +265,7 @@ const ProfileSection = () => {
                           <ListItemButton
                             sx={{ borderRadius: `${customization.borderRadius}px` }}
                             selected={selectedIndex === 0}
-                            onClick={(event) => handleListItemClick(event, 0, '#')}
+                            onClick={(event) => {handleListItemClick(event, 0, '#');  navigate(`/main/mypage`) }}
                           >
                             <ListItemIcon>
                               <IconUser stroke={1.5} size="1.3rem" />

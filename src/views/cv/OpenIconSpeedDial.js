@@ -41,13 +41,6 @@ export default function OpenIconSpeedDial({ cvData, selectedFiles, endPath, comp
     console.log(selectedFiles);
   }, [selectedFiles]);
 
-  // const [selectedFiles, setSelectedFiles] = useState({
-  //   Portfolio: [], // 초기에 빈 배열로 설정
-  //   Career: [], // 초기에 빈 배열로 설정
-  //   Statement: [], // 초기에 빈 배열로 설정
-  //   etcDocs: [] // 초기에 빈 배열로 설정
-  // });
-
   const downloadAndExtractZip = async () => {
     try {
       // 서버에서 ZIP 파일 다운로드
@@ -95,8 +88,6 @@ export default function OpenIconSpeedDial({ cvData, selectedFiles, endPath, comp
 
   const loadCV = async () => {
     //이력서 불러오기 요청 시 이력서가 없을 경우 Written false
-
-    // downloadAndExtractZip();
 
     try {
       const { data } = await cv.getFileInfos(cvData.cv.cv_no);
@@ -195,7 +186,7 @@ export default function OpenIconSpeedDial({ cvData, selectedFiles, endPath, comp
           }
           console.log('Key: ' + key);
           console.log(item);
-          console.log(cvData.cv.education);
+          console.log(cvData.cv.educations);
         });
         data.data['skills'].map((item, key) => {
           const new_skill_arr = { skill_no: item.skill_no, skill_name: item.skill_name, skill_domain: item.skill_domain };
@@ -287,7 +278,7 @@ export default function OpenIconSpeedDial({ cvData, selectedFiles, endPath, comp
   const CVChecked = async () => {
     // `cv.getList()` 함수의 비동기 호출 결과를 기다립니다.
     const data = await cv.getList(cvData.cv.cv_no);
-
+    console.log(cvData.cv.cv_no);
     // 작성 기록이 있는지 확인합니다.
     if (data.data === '') {
       console.log('작성 기록 없음');
