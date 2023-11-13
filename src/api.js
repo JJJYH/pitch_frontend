@@ -115,6 +115,17 @@ const admin = {
   //인사당담자 리스트 조회
   hrList: () => {
     return instance.get('/admin/hr-list');
+  },
+  //인사담당자 계정 추가
+  hrCreate: (data) => {
+    return instance.post('/auth/create-hr', data);
+  },
+  //인사담당자 계정 수정, 업데이트
+  hrModify: (data) => {
+    return instance.put('/auth/update-hr', data);
+  },
+  hrDelete: (data) => {
+    return instance.post('/auth/delete-hr-account', null, { params: { user_id: data } });
   }
 }
 

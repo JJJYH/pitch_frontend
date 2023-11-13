@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
+import { makeStyles } from '@mui/styles'
 
 // routing
 import Routes from 'routes';
@@ -20,6 +21,7 @@ import { useState } from 'react';
 
 // ==============================|| APP ||============================== //
 import { OpenCvProvider } from 'opencv-react';
+import { SnackbarProvider } from 'notistack';
 const App = () => {
   //=====================================//
   var sessionStorage_transfer = function (event) {
@@ -63,6 +65,25 @@ const App = () => {
     localStorage.removeItem('getSessionStorage', 'foobar');
   }
 
+  const Styles = makeStyles(() => ({
+    variantSuccess: {
+      //color: theme.palette.error.contrastText,
+      opacity: 0.9, // 투명도 조절
+    },
+    variantError: {
+      //color: theme.palette.error.contrastText,
+      opacity: 0.9,
+    },
+    variantInfo: {
+      //color: theme.palette.error.contrastText,
+      opacity: 0.9,
+    },
+    variantWarning: {
+      //color: theme.palette.error.contrastText,
+      opacity: 0.9,
+    },
+  }));
+
   // channel = new BroadcastChannel('token_channel');
   // channel.onmessage = (event) => {
   //   const receivedToken = event.data.accessToken;
@@ -86,6 +107,8 @@ const App = () => {
       dispatch(logoutUser());
     }
   };
+  const classes = Styles();
+
   let channel;
 
   useEffect(() => {
@@ -107,7 +130,7 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {}, [userInfo]);
+  useEffect(() => { }, [userInfo]);
 
   useEffect(() => {
     loginHandler(accessToken);
@@ -117,10 +140,20 @@ const App = () => {
     <OpenCvProvider openCvPath="/opencv/opencv.js">
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={themes(customization)}>
-          <CssBaseline />
-          <NavigationScroll>
-            <Routes />
-          </NavigationScroll>
+          <SnackbarProvider
+            autoHideDuration={2000}
+            classes={{
+              variantError: classes.variantError,
+              variantSuccess: classes.variantSuccess,
+              variantInfo: classes.variantInfo,
+              variantWarning: classes.variantWarning
+            }}
+          >
+            <CssBaseline />
+            <NavigationScroll>
+              <Routes />
+            </NavigationScroll>
+          </SnackbarProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </OpenCvProvider>
