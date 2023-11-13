@@ -23,9 +23,11 @@ import ReqPageSearch from './components/ReqPageSearch';
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
   const [rows, setRows] = useState([]);
+  const [defaultRow, setDefaultRow] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const userId = useSelector((state) => state.userInfo.user_id);
 
   const dispatch = useDispatch();
 
@@ -51,6 +53,9 @@ const JobReqPage = () => {
     try {
       const response = await axios.get('http://localhost:8888/admin/hire/reqlist');
       setRows(response.data);
+      const defaultRow = response.data[0];
+      //console.log(defaultRow);
+      setDefaultRow(defaultRow);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -66,7 +71,7 @@ const JobReqPage = () => {
     // const statusData = { selectedStatus: selectedChips };
     // const responseData = await postStatusData(statusData);
     // setRows(responseData);
-    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
     setRows(searchData);
 
     dispatch(resetSelectedRow());
@@ -93,7 +98,7 @@ const JobReqPage = () => {
 
     dispatch(resetSelectedRow());
 
-    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, newSelectedChips);
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, newSelectedChips, userId);
     setRows(searchData);
   };
 
@@ -115,13 +120,14 @@ const JobReqPage = () => {
     setSearchKeyword(value);
   };
 
-  const handleCombinedSearch = async (startDate, endDate, searchKeyword, selectedStatus) => {
+  const handleCombinedSearch = async (startDate, endDate, searchKeyword, selectedStatus, userId) => {
     try {
       const response = await axios.post('http://localhost:8888/admin/hire/search', {
         startDate,
         endDate,
         searchKeyword,
-        selectedStatus
+        selectedStatus,
+        userId
       });
       return response.data;
     } catch (error) {
@@ -130,8 +136,8 @@ const JobReqPage = () => {
     }
   };
 
-  const handleCombinedSearchButton = async (startDate, endDate, searchKeyword, selectedStatus) => {
-    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedStatus);
+  const handleCombinedSearchButton = async (startDate, endDate, searchKeyword, selectedStatus, userId) => {
+    const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedStatus, userId);
     setRows(searchData);
   };
 
@@ -166,7 +172,7 @@ const JobReqPage = () => {
                   <Button
                     variant="contained"
                     style={{ height: '38px', minWidth: '40px', width: '40px', backgroundColor: '#38678f' }}
-                    onClick={() => handleCombinedSearchButton(startDate, endDate, searchKeyword, selectedChips)}
+                    onClick={() => handleCombinedSearchButton(startDate, endDate, searchKeyword, selectedChips, userId)}
                   >
                     <SearchIcon fontSize="small" />
                   </Button>
@@ -175,14 +181,16 @@ const JobReqPage = () => {
             </Grid>
 
             <Grid item>
-              <Stack direction="row" spacing={1}>
-                <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
-                  등록
-                </Button>
-                <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
-                  삭제
-                </Button>
-              </Stack>
+              {userId !== 'admin' && (
+                <Stack direction="row" spacing={1}>
+                  <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
+                    등록
+                  </Button>
+                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
+                    삭제
+                  </Button>
+                </Stack>
+              )}
             </Grid>
           </Grid>
         </Box>
@@ -216,6 +224,7 @@ const JobReqPage = () => {
                     endDate={endDate}
                     searchKeyword={searchKeyword}
                     handleCombinedSearch={handleCombinedSearch}
+                    defaultRow={defaultRow}
                   />
                 </Box>
               </Grid>

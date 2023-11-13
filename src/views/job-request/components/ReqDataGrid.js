@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
@@ -35,10 +35,15 @@ const StyledDataGrid = styled(DataGrid)(() => ({
 }));
 
 const ReqDataGrid = forwardRef(
-  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword }, ref) => {
+  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword, defaultRow }, ref) => {
     const dispatch = useDispatch();
     const selectedRow = useSelector(selectedRowSelector);
     const jobReqNo = useSelector(jobReqNoSelector);
+    const userId = useSelector((state) => state.userInfo.user_id);
+
+    useEffect(() => {
+      if (userId === 'admin') dispatch(setSelectedRow(defaultRow));
+    }, [userId, dispatch.defaultRow]);
 
     const getRowClassName = (params) => {
       const isSelected = selectedRow && selectedRow.job_req_no === params.row.job_req_no;
@@ -50,7 +55,7 @@ const ReqDataGrid = forwardRef(
         const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${job_req_no}`);
 
         dispatch(setSelectedRow(response.data));
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -65,7 +70,7 @@ const ReqDataGrid = forwardRef(
         // const statusData = { selectedStatus: selectedChips };
         // const responseData = await postStatusData(statusData);
         // setRows(responseData);
-        const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+        const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
         setRows(searchData);
         dispatch(resetSelectedRow());
       } catch (error) {
