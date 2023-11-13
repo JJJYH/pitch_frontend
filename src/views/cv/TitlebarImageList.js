@@ -17,6 +17,7 @@ import preview_image from '../../preview_icon.png';
 import { useSelector } from 'react-redux';
 export default function TitlebarImageList() {
   const [img_src, set_img_src] = useState('');
+
   const file_input_ref = useRef(null);
   const [file_info, set_file_info] = useState([
     {

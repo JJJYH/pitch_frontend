@@ -3,7 +3,7 @@ import { styled as muiStyled } from '@mui/material/styles';
 import { useEffect, useState, useRef } from 'react';
 import { sort } from 'api.js';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getAge, getFormattedDate, getDday } from './sorts.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
@@ -79,6 +79,7 @@ const SortingPage = () => {
 
   const setList = () => {
     sort.applicantList(job_posting_no, value).then((res) => {
+      console.log(res.data);
       const arr = res.data.map((appl, index) => {
         return { ...appl, id: index };
       });
@@ -337,13 +338,13 @@ const RenderStar = (evals, apply_no) => {
 };
 
 const RenderName = (data) => {
-  const postingInfo = useSelector((state) => state.posting);
   return (
-    <ApplicantDetailPage
-      apply_no={data.row.apply_no}
-      text={`${data.row.user_nm} (${data.row.gender})`}
-      job_posting_no={postingInfo.postingNo}
-    />
+    <Link
+      to={`${data.row.apply_no}`}
+      sx={{
+        color: 'black'
+      }}
+    >{`${data.row.user_nm} (${data.row.gender.charAt(0)})`}</Link>
   );
 };
 

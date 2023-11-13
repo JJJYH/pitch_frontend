@@ -3,6 +3,7 @@ import { Box } from '@mui/system';
 import React from 'react';
 
 const Statement = ({ selectedFiles, setSelectedFiles }) => {
+  
   const handleRemoveFile = (groupKey, index) => {
     const updatedFiles = { ...selectedFiles };
     updatedFiles[groupKey].splice(index, 1);
@@ -20,7 +21,8 @@ const Statement = ({ selectedFiles, setSelectedFiles }) => {
               <ul>
                 {selectedFiles[groupKey].map((file, index) => (
                   <li key={index}>
-                    {file.name}
+                    {file instanceof File ? file.name : file.file_name}
+                    
                     <Button onClick={() => handleRemoveFile(groupKey, index)}>Remove</Button>
                   </li>
                 ))}

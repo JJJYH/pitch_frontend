@@ -25,6 +25,7 @@
     "dayjs": "^1.11.10",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
+    "jszip": "^3.10.1",
     "material-ui-popup-state": "^4.0.1",
     "notistack": "^3.0.1",
     "opencv-react": "^0.0.6",

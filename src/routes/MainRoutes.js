@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import JobPostingPage from 'views/job-posting/JobPostingPage';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -71,11 +72,15 @@ const MainRoutes = {
           element: <AdminManagePage />
         },
         {
-          path: ':job_posting_no/sort',
+          path: 'posts',
+          element: <JobPostingPage />
+        },
+        {
+          path: 'posts/:job_posting_no/sort',
           element: <ApplicantSortingPage />
         },
         {
-          path: ':job_posting_no/sort/:apply_no/detail',
+          path: 'posts/:job_posting_no/sort/:apply_no',
           element: <ApplicantDetailPage />
         }
       ]

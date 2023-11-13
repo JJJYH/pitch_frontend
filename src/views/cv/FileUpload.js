@@ -18,9 +18,7 @@ const FileUpload = ({ endPath, selectedFiles, setSelectedFiles }) => {
     }));
   };
 
-  useEffect(() => {
-    console.log('File ADD : ' + JSON.stringify(selectedFiles));
-  }, [selectedFiles]);
+  
 
   return (
     <React.Fragment>
