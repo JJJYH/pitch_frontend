@@ -1,4 +1,4 @@
-import { Grid, Box, Card, CardHeader, Avatar, CardContent, Typography, Chip } from '@mui/material';
+import { Grid, Box, Card, CardHeader, Avatar, CardContent, Typography, Chip, Divider, IconButton } from '@mui/material';
 
 import React from 'react';
 import SubCard from 'ui-component/cards/SubCard';
@@ -7,9 +7,88 @@ import { padding } from '@mui/system';
 import RadarChart from './RadarChart';
 import { useState } from 'react';
 import { amber, red, teal } from '@mui/material/colors';
-
+import { useDispatch, useSelector } from 'react-redux';
+import Page from '../cv/Page';
+import { cv } from 'api';
+import { useEffect } from 'react';
 const Mypage = () => {
   const [reqBtn, setReqBtn] = useState();
+  const userInfo = useSelector((state) => state.userInfo);
+  let job_info_list = [];
+  let job_info = {
+    req_title: '',
+    applicant_status: '',
+    apply_date: null,
+    apply_no: '',
+    cv_no: '',
+    read_status: '',
+    status_type: '',
+    education: '',
+    hire_num: '',
+    job_duties: '',
+    job_group: '',
+    job_posting_no: '',
+    job_req_no: '',
+    posting_status: null,
+    liked: false,
+    job_role: '',
+    job_type: '',
+    job_year: '',
+    location: '',
+    posting_end: null,
+    posting_period: '',
+    posting_start: null,
+    posting_type: '',
+    preferred: '',
+    qualification: '',
+    req_status: '',
+    user_id: ''
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      cv.getApplyList().then((res) => {
+        res.data.map((item) => {
+          console.log(item);
+          //**Setting Apply List Info */
+          job_info.applicant_status = item.applicant_status;
+          job_info.apply_date = item.apply_date;
+          job_info.apply_no = item.apply_no;
+          job_info.cv_no = item.cv_no;
+          job_info.job_posting_no = item.job_posting_no;
+          job_info.read_status = item.read_status;
+          job_info.status_type = item.status_type;
+          job_info.user_id = item.user_id;
+
+          cv.getJobInfoList(item.job_posting_no).then((result) => {
+            console.log(result.data[0]);
+            job_info.education = result.data[0].education;
+            job_info.hire_num = result.data[0].hire_num;
+            job_info.job_duties = result.data[0].job_duties;
+            job_info.job_group = result.data[0].job_group;
+            job_info.job_req_no = result.data[0].job_req_no;
+            job_info.posting_status = result.data[0].posting_status;
+            job_info.job_role = result.data[0].job_role;
+            job_info.job_type = result.data[0].job_type;
+            job_info.job_year = result.data[0].job_year;
+            job_info.location = result.data[0].location;
+            job_info.posting_end = result.data[0].posting_end;
+            job_info.posting_period = result.data[0].posting_period;
+            job_info.posting_start = result.data[0].posting_start;
+            job_info.posting_type = result.data[0].posting_type;
+            job_info.preferred = result.data[0].preferred;
+            job_info.qualification = result.data[0].qualification;
+            job_info.req_status = result.data[0].req_status;
+            job_info.req_title = result.data[0].req_title;
+            console.log(job_info);
+            job_info_list.push(job_info);
+            console.log(job_info_list);
+          });
+        });
+      });
+    };
+    fetchData();
+  }, []);
 
   return (
     <Grid container>
@@ -39,12 +118,12 @@ const Mypage = () => {
               sx={{ color: 'white', justifyContent: 'end' }}
               title={
                 <Typography fontSize={'16px'} sx={{ textAlign: 'end' }}>
-                  Name
+                  {userInfo.user_nm ? userInfo.user_nm : 'Name'}
                 </Typography>
               }
               subheader={
                 <Typography fontSize={'12px'} sx={{ color: '#cccccc', textAlign: 'end' }}>
-                  E-mail
+                  {userInfo.user_email ? userInfo.user_email : 'E-mail'}
                 </Typography>
               }
             ></CardHeader>
@@ -81,14 +160,6 @@ const Mypage = () => {
                 >
                   지원 공고
                 </Typography>
-                <Typography
-                  onClick={(e) => setReqBtn('recommend')}
-                  fontWeight={'bold'}
-                  fontSize={'20px'}
-                  sx={{ '&:hover': { color: '#4682b4' } }}
-                >
-                  추천 공고
-                </Typography>
               </Box>
             </div>
           </div>
@@ -105,7 +176,7 @@ const Mypage = () => {
                 gap: '24px'
               }}
             >
-              {reqBtn !== 'CVWrite' && (
+              {reqBtn !== 'CVWrite' ? (
                 <>
                   <Grid item xs={6} sx={{ width: '100%', padding: '20px' }} className={styles.avatarStyle}>
                     {reqBtn === 'reqList' && (
@@ -116,27 +187,15 @@ const Mypage = () => {
                         <RadarChart />
                       </>
                     )}
-                    {reqBtn === 'recommend' && (
-                      <>
-                        <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                          추천 공고 목록
-                        </Typography>
-
-                        <Card sx={{ border: '1px solid #cccccc', padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                          <CardHeader sx={{ padding: '10px' }} title={<Typography fontSize={'16px'}>Title</Typography>} />
-                          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <CardContent sx={{ padding: '10px' }}>Content</CardContent>
-                            <div className={styles.reqDateStyle}>D-7</div>
-                          </div>
-                        </Card>
-                      </>
-                    )}
                   </Grid>
                   <Grid item xs={6} sx={{ width: '100%', padding: '20px' }} className={styles.avatarStyle}>
                     <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
                       지원하신 공고
                     </Typography>
                     <div style={{ overflow: 'auto', maxHeight: '500px' }}>
+                      {job_info_list.map((info, index) => (
+                        <div key={index}>{index} 입니다.</div>
+                      ))}
                       <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
                         <CardHeader
                           sx={{ padding: '10px' }}
@@ -150,74 +209,6 @@ const Mypage = () => {
                           <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
                           <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
                             합격
-                          </div>
-                        </div>
-                      </Card>
-
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
-                            합격
-                          </div>
-                        </div>
-                      </Card>
-
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
-                            대기
-                          </div>
-                        </div>
-                      </Card>
-
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: amber[700] }}>
-                            대기
-                          </div>
-                        </div>
-                      </Card>
-
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: red[500] }}>
-                            불합격
                           </div>
                         </div>
                       </Card>
@@ -239,6 +230,12 @@ const Mypage = () => {
                         </div>
                       </Card>
                     </div>
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid item xs={12} sx={{ overflow: 'auto', maxHeight: '500px' }}>
+                    <Page isMainCV={'MainCV'} />
                   </Grid>
                 </>
               )}

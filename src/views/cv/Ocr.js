@@ -6,10 +6,11 @@ import { SmartButton } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { useRef } from 'react';
 import Tooltip from '@mui/material/Tooltip';
-const Ocr = () => {
+const Ocr = ({text}) => {
   const { loaded, cv } = useOpenCv();
   const [progress, setProgress] = useState(0);
   const [ocrText, setOcrText] = useState('');
+  
   // 유클리드 거리 계산 함수
   const calculateDistance = (box1, box2) => {
     const center1 = {

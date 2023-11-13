@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from 'store/profileSlice';
 import TitlebarImageList from '../TitlebarImageList';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-const Profile = () => {
+const Profile = ({ isMainCV }) => {
   const profile_data = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
@@ -106,22 +106,29 @@ const Profile = () => {
                   inputProps={{ readOnly: false }}
                 />
               </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  fullWidth
-                  required
-                  error={field.position === ''}
-                  helperText={field.position === '' ? 'This field is required' : ''}
-                  label="지원 직무"
-                  color="primary"
-                  type="text"
-                  variant="standard"
-                  name="position"
-                  value={field.position}
-                  onChange={(e) => handleProfileChange(e, index)}
-                  inputProps={{ readOnly: true }}
-                />
-              </Grid>
+              {isMainCV === 'MainCV' ? (
+                ''
+              ) : (
+                <>
+                  <Grid item xs={3}>
+                    <TextField
+                      fullWidth
+                      required
+                      error={field.position === ''}
+                      helperText={field.position === '' ? 'This field is required' : ''}
+                      label="지원 직무"
+                      color="primary"
+                      type="text"
+                      variant="standard"
+                      name="position"
+                      value={field.position}
+                      onChange={(e) => handleProfileChange(e, index)}
+                      inputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                </>
+              )}
+
               <Grid item xs={2}>
                 <TextField
                   fullWidth
@@ -205,12 +212,16 @@ const Profile = () => {
             </Box>
           </Grid>
         </Grid>
-        <Grid item sx={{ flex: '0 0 auto' }}>
-          <Grid item xs={12}>
-            <TitlebarImageList />
-            {/* <Card sx={{ width: '128px', height: '135px', background: 'light-grey' }}></Card> */}
+        {isMainCV === 'MainCV' ? (
+          ''
+        ) : (
+          <Grid item sx={{ flex: '0 0 auto' }}>
+            <Grid item xs={12}>
+              <TitlebarImageList isMainCV={isMainCV} />
+              {/* <Card sx={{ width: '128px', height: '135px', background: 'light-grey' }}></Card> */}
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Box>
     </React.Fragment>
   ));
