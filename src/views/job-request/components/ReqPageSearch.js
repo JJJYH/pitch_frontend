@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 
 const ReqPageSearch = ({ value, handleSearchInputChange }) => {
-  const [titles, setTitles] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [roles, setRoles] = useState([]);
 
   const SearchAutoComplete = styled(Autocomplete)(() => ({
@@ -19,22 +19,22 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
       .get('http://localhost:8888/admin/hire/reqlist')
       .then((response) => {
         const roleSet = new Set();
-        const titleSet = new Set();
+        const groupSet = new Set();
 
         response.data.forEach((item) => {
           if (item.job_role) {
             roleSet.add(item.job_role);
           }
-          if (item.req_title) {
-            titleSet.add(item.req_title);
+          if (item.job_group) {
+            groupSet.add(item.job_group);
           }
         });
 
         const newRoles = Array.from(roleSet);
-        const newTitles = Array.from(titleSet);
+        const newGroups = Array.from(groupSet);
 
         setRoles(newRoles);
-        setTitles(newTitles);
+        setGroups(newGroups);
       })
       .catch((error) => {
         console.error('Error fetching options:', error);
@@ -45,14 +45,14 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
     <SearchAutoComplete
       sx={{ width: '250px' }}
       freeSolo
-      options={[...titles, ...roles]}
+      options={[...groups, ...roles]}
       getOptionLabel={(option) => option}
       value={value}
       onChange={(event, value) => {
         console.log(value);
         handleSearchInputChange(value);
       }}
-      renderInput={(params) => <TextField {...params} placeholder="제목, 직무 검색" variant="outlined" name="search" />}
+      renderInput={(params) => <TextField {...params} placeholder="직군, 직무 검색" variant="outlined" name="search" />}
       filterOptions={(options, params) => {
         const filteredOptions = options.filter(
           (option) => option.toLowerCase().includes(params.inputValue.toLowerCase()) && params.inputValue.length > 1

@@ -11,18 +11,19 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { Box, Divider, TextField } from '@mui/material';
+import { Box, Card, CardContent, Chip, Divider, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
-
+import Carousel from 'react-material-ui-carousel';
 import dayjs from 'dayjs';
 import AddIcon from '@mui/icons-material/Add';
 import InterviewerListModal from 'views/posting/components/InterviewerListModal';
 import { useNavigate } from 'react-router';
+import procedure from './procedure.png';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -475,7 +476,9 @@ const PostingDetailModal = ({
               <Grid item>
                 <Box sx={{ width: '1100px', height: '400px' }}>
                   <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 3, mb: 2, ml: 3 }}>채용절차</Typography>
-                  <Box sx={{ border: '1px solid', p: 2, height: '350px' }}>채용절차 사진 넣겠음</Box>
+                  <Box sx={{ p: 2, height: '350px' }}>
+                    <img src={procedure} alt="채용절차 이미지" style={{ width: '100%', height: '90%' }} />
+                  </Box>
                 </Box>
               </Grid>
               <Grid item>
@@ -511,6 +514,70 @@ const PostingDetailModal = ({
               <Grid item mb={3}>
                 <Box sx={{ width: '1100px', height: '400px', border: '1px solid' }}>지원 안내, 기타사항</Box>
               </Grid>
+              {/* 
+              <Grid item>
+                <Box sx={{ height: '250px', ml: 12, mr: 12, mb: 2, borderRadius: '4px', backgroundColor: '#f2f2f2' }}>
+                  <Box sx={{ height: '50px', display: 'flex', alignItems: 'flex-end' }}>
+                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', pl: 2 }}>추천공고1</Typography>
+                  </Box>
+                  <Box sx={{ height: '200px' }}>
+                    <Carousel autoPlay={false} cycleNavigation={true} navButtonsAlwaysVisible={true}>
+                      {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
+                        <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
+                          {recommendedPostings
+                            .slice(groupIndex * itemsPerGroup, (groupIndex + 1) * itemsPerGroup)
+                            .map((recommendedPosting, index) => {
+                              const today = new Date();
+                              const postingEndDate = dayjs(recommendedPosting.jobReq.posting_end);
+                              const daysRemaining = postingEndDate.diff(today, 'day') + 1;
+
+                              return (
+                                <Grid item xs={12} md={4} key={index}>
+                                  <Card
+                                    sx={{ border: '1px solid', cursor: 'pointer', height: '100px' }}
+                                    onClick={() => handleJobPostingClick(recommendedPosting)}
+                                  >
+                                    <CardContent>
+                                      <Grid container alignItems="center" justifyContent="flex-end" spacing={1}></Grid>
+                                      <Grid container item direction="row" display="flex" alignItems="center">
+                                        <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                          {recommendedPosting.jobReq.req_title}
+                                        </Typography>
+                                        <Chip
+                                          label={recommendedPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
+                                          sx={{ backgroundColor: '#38678f', color: '#fff', fontSize: '12px', ml: 1 }}
+                                        />
+                                      </Grid>
+
+                                      <Grid container mt={1}>
+                                        <Typography mr={1}>{recommendedPosting.jobReq.job_type}</Typography>
+                                        <Typography mr={1}>|</Typography>
+                                        <Typography mr={1}>
+                                          {dayjs(recommendedPosting.jobReq.posting_start).format('YYYY-MM-DD')}
+                                        </Typography>
+                                        <Typography mr={1}>~</Typography>
+                                        {recommendedPosting.jobReq.posting_type === '수시채용' ? (
+                                          <Typography mr={1}>
+                                            {dayjs(recommendedPosting.jobReq.posting_end).format('YYYY-MM-DD')}
+                                          </Typography>
+                                        ) : (
+                                          <Typography mr={1}> 채용시</Typography>
+                                        )}
+                                      </Grid>
+                                      <Grid container mt={4} direction="column">
+                                        <Grid item mt={1}></Grid>
+                                      </Grid>
+                                    </CardContent>
+                                  </Card>
+                                </Grid>
+                              );
+                            })}
+                        </Grid>
+                      ))}
+                    </Carousel>
+                  </Box>
+                </Box>
+              </Grid> */}
             </Grid>
           )}
         </DialogContent>
