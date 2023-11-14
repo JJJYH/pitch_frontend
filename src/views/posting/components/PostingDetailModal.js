@@ -76,6 +76,10 @@ const PostingDetailModal = ({
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
 
+    if (open) {
+      setIsSticky(false);
+    }
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -167,11 +171,11 @@ const PostingDetailModal = ({
         </IconButton>
         {page === 'readReq' && (
           <DialogTitle style={{ fontSize: '25px', fontWeight: 'bold', minHeight: '80px', display: 'flex', alignItems: 'center' }}>
-            미리보기
+            {currentPage === 1 ? '공고등록' : '미리보기'}
           </DialogTitle>
         )}
         <Divider />
-        <DialogContent style={{ width: '1200px', overflow: 'auto', padding: 0 }} onScroll={handleScroll}>
+        <DialogContent style={{ width: currentPage === 1 ? '800px' : '1200px', overflow: 'auto', padding: 0 }} onScroll={handleScroll}>
           {page === 'postingList' && (
             <Box
               sx={{
@@ -179,61 +183,109 @@ const PostingDetailModal = ({
                 top: 0,
                 backgroundColor: 'white',
                 zIndex: 10,
-                borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                borderBottom: '2px solid ',
                 opacity: isSticky ? 1 : 0,
                 height: '100px',
                 transition: 'opacity 0.5s ease-in-out',
                 display: isSticky ? 'block' : 'none'
               }}
             >
-              제발 돼라
+              <IconButton
+                aria-label="close"
+                onClick={handleClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500]
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Grid container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
+                <Box display="flex">
+                  <Grid item pl={4}>
+                    <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
+                  </Grid>
+                  <Grid item pl={3}>
+                    <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f' }}>D-{daysRemaining}</Typography>
+                  </Grid>
+                </Box>
+                <Grid item pr={6}>
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: '#38678f',
+                      width: '200px',
+                      height: '70px',
+                      fontSize: '22px',
+                      fontWeight: 'bold'
+                    }}
+                    onClick={() => {
+                      navigate(`/main/cv/${job_posting_no}`);
+                    }}
+                  >
+                    지원서 작성
+                  </Button>
+                </Grid>
+              </Grid>
             </Box>
           )}
           {page === 'readReq' && currentPage === 1 && (
             <Grid container>
-              <Grid item>
-                <Typography>공고 기간</Typography>
+              <Grid item container direction="row" display="flex" alignItems="center">
+                <Typography sx={{ fontSize: '21px', fontWeight: 'bold', mt: 3, ml: 3, mb: 1 }}>공고 기간 선택</Typography>
               </Grid>
               <Grid container item>
-                <Grid item>
-                  <Typography>공고시작</Typography>
+                <Grid item mt={1}>
+                  <Typography sx={{ fontSize: '16px', my: 1, mx: 3 }}>공고시작</Typography>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
+                      sx={{ mx: 3 }}
                       value={dayjs(formData.posting_start)}
                       onChange={(data) => {
                         console.log(data);
 
                         setFormData({ ...formData, posting_start: data.$d });
                       }}
-                      slotProps={{ textField: { size: 'small' } }}
+                      // slotProps={{ textField: { size: 'small' } }}
                     />
                   </LocalizationProvider>
                 </Grid>
-                <Grid item>
-                  <Typography>공고종료</Typography>
+                <Grid item mt={1}>
+                  <Typography sx={{ fontSize: '16px', my: 1, mx: 3 }}>공고종료</Typography>
 
                   {formData.posting_type === '수시채용' ? (
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
+                        sx={{ mx: 3 }}
                         value={dayjs(formData.posting_end)}
                         onChange={(data) => {
                           console.log(data);
                           setFormData({ ...formData, posting_end: data.$d });
                         }}
-                        slotProps={{ textField: { size: 'small' } }}
+                        // slotProps={{ textField: { size: 'small' } }}
                       />
                     </LocalizationProvider>
                   ) : (
-                    <TextField fullWidth variant="outlined" size="small" disabled value="상시채용 선택 시 종료일을 입력할 수 없습니다." />
+                    <TextField
+                      sx={{ mx: 3, width: '300px' }}
+                      variant="outlined"
+                      disabled
+                      value="상시채용 시 종료일을 입력할 수 없습니다."
+                    />
                   )}
                 </Grid>
               </Grid>
-              <Grid item container xs={12}>
-                <Typography>면접관 목록</Typography>
-                <IconButton onClick={handleOpenInterviewers}>
-                  <AddIcon />
-                </IconButton>
+              <Grid item container xs={12} mt={2}>
+                <Grid container display="flex" alignItems="center" justifyContent="space-between">
+                  <Typography sx={{ fontSize: '21px', fontWeight: 'bold', mt: 3, ml: 3, mb: 2 }}>면접관 목록 추가</Typography>
+                  <IconButton onClick={handleOpenInterviewers} sx={{ mr: 2, pb: 0 }}>
+                    <AddIcon sx={{ fontSize: '30px' }} />
+                  </IconButton>
+                </Grid>
                 <TextField
+                  sx={{ mx: 3, mb: 3 }}
                   fullWidth
                   variant="outlined"
                   multiline
@@ -262,7 +314,7 @@ const PostingDetailModal = ({
                 >
                   <Grid container sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} spacing={2}>
                     <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-                      {jobPosting.isLiked ? (
+                      {page === 'postingList' && jobPosting.isLiked ? (
                         <IconButton onClick={(e) => handleToggle(e, jobPosting.job_posting_no)} sx={{ p: 0 }}>
                           <FavoriteIcon style={{ fontSize: 30, color: '#FF6F6F' }} />
                         </IconButton>
@@ -474,10 +526,10 @@ const PostingDetailModal = ({
                 </Box>
               </Grid>
               <Grid item>
-                <Box sx={{ width: '1100px', height: '400px' }}>
+                <Box sx={{ width: '1100px', height: '350px' }}>
                   <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 3, mb: 2, ml: 3 }}>채용절차</Typography>
                   <Box sx={{ p: 2, height: '350px' }}>
-                    <img src={procedure} alt="채용절차 이미지" style={{ width: '100%', height: '90%' }} />
+                    <img src={procedure} alt="채용절차 이미지" style={{ width: '100%', height: '70%' }} />
                   </Box>
                 </Box>
               </Grid>
@@ -486,7 +538,7 @@ const PostingDetailModal = ({
                   <Box
                     sx={{
                       width: '1100px',
-                      height: '200px',
+                      height: '100px',
                       // border: '1px solid',
                       display: 'flex',
                       justifyContent: 'center',
@@ -511,73 +563,26 @@ const PostingDetailModal = ({
                   </Box>
                 )}
               </Grid>
-              <Grid item mb={3}>
-                <Box sx={{ width: '1100px', height: '400px', border: '1px solid' }}>지원 안내, 기타사항</Box>
-              </Grid>
-              {/* 
-              <Grid item>
-                <Box sx={{ height: '250px', ml: 12, mr: 12, mb: 2, borderRadius: '4px', backgroundColor: '#f2f2f2' }}>
-                  <Box sx={{ height: '50px', display: 'flex', alignItems: 'flex-end' }}>
-                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold', pl: 2 }}>추천공고1</Typography>
-                  </Box>
-                  <Box sx={{ height: '200px' }}>
-                    <Carousel autoPlay={false} cycleNavigation={true} navButtonsAlwaysVisible={true}>
-                      {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
-                        <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
-                          {recommendedPostings
-                            .slice(groupIndex * itemsPerGroup, (groupIndex + 1) * itemsPerGroup)
-                            .map((recommendedPosting, index) => {
-                              const today = new Date();
-                              const postingEndDate = dayjs(recommendedPosting.jobReq.posting_end);
-                              const daysRemaining = postingEndDate.diff(today, 'day') + 1;
-
-                              return (
-                                <Grid item xs={12} md={4} key={index}>
-                                  <Card
-                                    sx={{ border: '1px solid', cursor: 'pointer', height: '100px' }}
-                                    onClick={() => handleJobPostingClick(recommendedPosting)}
-                                  >
-                                    <CardContent>
-                                      <Grid container alignItems="center" justifyContent="flex-end" spacing={1}></Grid>
-                                      <Grid container item direction="row" display="flex" alignItems="center">
-                                        <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>
-                                          {recommendedPosting.jobReq.req_title}
-                                        </Typography>
-                                        <Chip
-                                          label={recommendedPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
-                                          sx={{ backgroundColor: '#38678f', color: '#fff', fontSize: '12px', ml: 1 }}
-                                        />
-                                      </Grid>
-
-                                      <Grid container mt={1}>
-                                        <Typography mr={1}>{recommendedPosting.jobReq.job_type}</Typography>
-                                        <Typography mr={1}>|</Typography>
-                                        <Typography mr={1}>
-                                          {dayjs(recommendedPosting.jobReq.posting_start).format('YYYY-MM-DD')}
-                                        </Typography>
-                                        <Typography mr={1}>~</Typography>
-                                        {recommendedPosting.jobReq.posting_type === '수시채용' ? (
-                                          <Typography mr={1}>
-                                            {dayjs(recommendedPosting.jobReq.posting_end).format('YYYY-MM-DD')}
-                                          </Typography>
-                                        ) : (
-                                          <Typography mr={1}> 채용시</Typography>
-                                        )}
-                                      </Grid>
-                                      <Grid container mt={4} direction="column">
-                                        <Grid item mt={1}></Grid>
-                                      </Grid>
-                                    </CardContent>
-                                  </Card>
-                                </Grid>
-                              );
-                            })}
-                        </Grid>
-                      ))}
-                    </Carousel>
-                  </Box>
+              <Grid item mt={8}>
+                <Box sx={{ width: '1200px', height: '550px', backgroundColor: '#f8f8f8', px: 8, pt: 3 }}>
+                  <Typography sx={{ fontSize: '22px', fontWeight: 'bold', mt: 5, mb: 2 }}>지원안내</Typography>
+                  <Typography mb={1}>※ 계정이 없으신 분들은 먼저 회원가입을 해주시기 바랍니다.</Typography>
+                  <Typography mb={1}>※ 채용 서류 반환 관련 안내</Typography>
+                  <Typography mb={1}>회사는 채용 전형 과정에서 지원자의 불편을 최소화하기 위해 입사지원서를 비롯하여</Typography>
+                  <Typography mb={1}>채용과 관련된 모든 서류는 채용 홈페이지를 통해 접수 받고 있습니다.</Typography>
+                  <Typography mb={1}>채용 과정에서 서류를 직접 제출 받은 경우, 해당 서류를 반환해 드리고 있사오니</Typography>
+                  <Typography mb={1}>자세한 내용은 지원가이드 - 채용서류 반환신청을 참고해 주시기 바랍니다.</Typography>
+                  <Typography sx={{ fontSize: '22px', fontWeight: 'bold', mt: 6, mb: 2 }}>기타 사항</Typography>
+                  <Typography mb={1}>ㆍ지원서는 삼성채용 홈페이지를 통해 접수하며, 그 외의 개별 접수는 받지 않습니다.</Typography>
+                  <Typography mb={1}>ㆍ국가등록장애인 및 국가보훈대상자는 관련법 및 내부규정에 의거하여 우대합니다.</Typography>
+                  <Typography mb={1}>ㆍ기재 내용에 허위사실이 있는 경우 합격이 취소될 수 있습니다.</Typography>
+                  <Typography mb={1}>ㆍ전형단계별 결과는 삼성채용 홈페이지에 로그인하여 확인하실 수 있습니다.</Typography>
+                  <Typography mb={1}>
+                    ㆍ입사지원자께서는 입사지원 시점부터 채용전형 전체 과정에 걸쳐 전/현직 직장의 영업비밀을 침해하는 일이 없도록 각별히
+                    유의하시기 바랍니다.
+                  </Typography>
                 </Box>
-              </Grid> */}
+              </Grid>
             </Grid>
           )}
         </DialogContent>
@@ -613,8 +618,7 @@ const PostingDetailModal = ({
                 variant="outlined"
                 style={{
                   borderColor: '#38678f',
-                  color: '#38678f',
-                  width: '80px'
+                  color: '#38678f'
                 }}
                 onClick={handleClose}
               >
