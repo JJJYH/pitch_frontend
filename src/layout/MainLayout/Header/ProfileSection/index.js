@@ -15,6 +15,7 @@ import {
   Divider,
   Grid,
   InputAdornment,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
@@ -24,8 +25,11 @@ import {
   Popper,
   Stack,
   Switch,
-  Typography
+  Typography,
+  TextField
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -44,8 +48,23 @@ import RegisterIcon from 'assets/images/icons/register.svg';
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
 import { logoutUser } from '../../../../store/userInfoSlice';
 import { principal } from 'api';
+import Badge from '@mui/material/Badge';
+import { styled } from '@mui/material/styles'
+import { margin } from '@mui/system';
+import { async } from 'q';
+
 
 // ==============================|| PROFILE MENU ||============================== //
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: 3,
+    top: 36,
+    border: `2px solid #fBC02D`,
+    padding: '0 4px',
+    color: 'white',
+    backgroundColor: '#fBC02D'
+  },
+}));
 
 const ProfileSection = () => {
   const theme = useTheme();
@@ -56,9 +75,58 @@ const ProfileSection = () => {
 
   const [sdm, setSdm] = useState(true);
   const [value, setValue] = useState('');
-  const [notification, setNotification] = useState(false);
+  //const [notification, setNotification] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [notifications, setNotifications] = useState([
+    // { id: 1, text: '새로운 메시지 도착', url: '/messages', date: '2023-11-15' },
+    // { id: 2, text: '오후 3시에 회의 예정', url: '/meetings', date: '2023-11-16' },
+    // { id: 3, text: '오늘은 중요한 기한이 있습니다', url: '/deadlines', date: '2023-11-17' },
+    // { id: 4, text: '새로운 업데이트 사용 가능', url: '/updates', date: '2023-11-18' },
+    // { id: 5, text: '최근에 로그인한 기기가 있습니다', url: '/recent-logins', date: '2023-11-19' },
+  ]);
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getNoti = () => {
+    principal.notifications().then((res) => {
+      const sort = res.data.sort((a, b) => b.date - a.date);
+      setNotifications(sort);
+    });
+  }
+
+  const setPolling = async () => {
+    try {
+      const resData = await principal.polling();
+      console.log(resData.data);
+      if (resData.data[0] === 'find new notification') {
+        getNoti();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    let interval;
+
+    if (userInfo.isLogin) {
+      getNoti();
+      interval = setInterval(() => {
+        setPolling();
+      }, 5000);
+    }
+
+    return () => clearInterval(interval);
+  }, [userInfo]);
+
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -138,18 +206,21 @@ const ProfileSection = () => {
           }
         }}
         icon={!userInfo.isLogin ? <></> :
-          <Avatar
-            src={User1}
-            sx={{
-              ...theme.typography.mediumAvatar,
-              margin: '8px 0 8px 8px !important',
-              cursor: 'pointer'
-            }}
-            ref={anchorRef}
-            aria-controls={open ? 'menu-list-grow' : undefined}
-            aria-haspopup="true"
-            color="inherit"
-          />
+          <StyledBadge badgeContent={notifications.length} invisible={notifications.length === 0}>
+            <Avatar
+              src={'broken.png'}
+              alt={userInfo.user_nm}
+              sx={{
+                ...theme.typography.mediumAvatar,
+                margin: '8px 0 8px 8px !important',
+                cursor: 'pointer'
+              }}
+              ref={anchorRef}
+              aria-controls={open ? 'menu-list-grow' : undefined}
+              aria-haspopup="true"
+              color="inherit"
+            />
+          </StyledBadge>
         }
         label={!userInfo.isLogin ? <PersonOutlineIcon sx={{ color: theme.palette.secondary.main }} /> :
           <IconSettings stroke={1.5} size="1.5rem" color={theme.palette.secondary.main} />
@@ -244,8 +315,52 @@ const ProfileSection = () => {
                       </Box>
                       <Divider />
                       <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
+                        <Grid item xs={12} mb={0.5}>
+                          <Box sx={{ pt: 0.25 }}>
+                            {notifications.length !== 0 ? notifications.map((notification, index) => (
+                              <ListItemButton
+                                key={notification.id}
+                                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e3e8ef' }}
+                                onMouseEnter={() => setHoveredIndex(index)}
+                                onMouseLeave={() => setHoveredIndex(null)}
+                                onClick={() => {
+                                  navigate(notification.url);
+                                  principal.notiDelte(notification.id);
+                                  const updatedNotifications = [...notifications];
+                                  updatedNotifications.splice(index, 1);
+                                  setNotifications(updatedNotifications);
+                                }}
+                              >
+                                <Stack>
+                                  <Typography variant="body2">
+                                    {notification.text}
+                                  </Typography>
+                                  <Typography variant="caption" color="textSecondary">
+                                    {formatDate(notification.date)}
+                                  </Typography>
+                                </Stack>
+                                {hoveredIndex === index && (
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      principal.notiDelte(notification.id);
+                                      const updatedNotifications = [...notifications];
+                                      updatedNotifications.splice(index, 1);
+                                      setNotifications(updatedNotifications);
+                                    }}
+                                    sx={{ width: 10, height: 10, paddingRight: 2 }}
+                                  >
+                                    <CloseIcon />
+                                  </IconButton>
+                                )}
+                              </ListItemButton>
+                            )) : <></>}
+                          </Box>
+                        </Grid>
                       </PerfectScrollbar>
-                      <Box sx={{ p: 2, marginTop: '-4px' }}>
+                      <Box sx={{ paddingX: 2, marginTop: '-4px' }}>
                         <List
                           component="nav"
                           sx={{
@@ -258,14 +373,14 @@ const ProfileSection = () => {
                               minWidth: '100%'
                             },
                             '& .MuiListItemButton-root': {
-                              mt: 0.5
+                              //mt: 0.5
                             }
                           }}
                         >
                           <ListItemButton
                             sx={{ borderRadius: `${customization.borderRadius}px` }}
                             selected={selectedIndex === 0}
-                            onClick={(event) => {handleListItemClick(event, 0, '#');  navigate(`/main/mypage`) }}
+                            onClick={(event) => { handleListItemClick(event, 0, '#'); navigate(`/main/mypage`) }}
                           >
                             <ListItemIcon>
                               <IconUser stroke={1.5} size="1.3rem" />

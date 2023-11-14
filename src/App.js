@@ -117,7 +117,7 @@ const App = () => {
 
     channel.onmessage = (event) => {
       const receivedToken = event.data.accesstoken;
-      console.log(event);
+      //console.log(event);
       if (receivedToken) {
         setAccessToken(receivedToken);
         sessionStorage.setItem('AccessToken', event.data.accesstoken);
