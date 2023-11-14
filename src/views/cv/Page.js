@@ -6,7 +6,6 @@ import OpenIconSpeedDial from './OpenIconSpeedDial';
 import Profile from './components/Profile';
 import Education from './components/Education';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-// import Skills from './components/SkillsTest';
 import Career from './components/Career';
 import Certification from './components/Certification';
 import Language from './components/Language';
@@ -17,10 +16,10 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Activity from './components/Activity';
 import { addEducation, updateEducation } from 'store/educationSlice';
-import { addCareer } from 'store/careerSlice';
-import { addActivity } from 'store/activitySlice';
-import { addLang } from 'store/langSlice';
-import { addCert } from 'store/certSlice';
+import { addCareer, updateCareer } from 'store/careerSlice';
+import { addActivity, updateActivity } from 'store/activitySlice';
+import { addLang, updateLang } from 'store/langSlice';
+import { addCert, updateCert } from 'store/certSlice';
 import { get, cv } from 'api';
 import AddIcon from '@mui/icons-material/Add';
 import ControllableStates from './components/Skills';
@@ -35,13 +34,13 @@ import { useParams } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import { addSkill, updateSkill } from 'store/skillSlice';
-import { addAdvantage } from 'store/advantageSlice';
+import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 const CV = ({ isMainCV, sendData }) => {
   const profileInfo = useSelector((state) => state.profile);
   const params = useParams().job_posting_no;
   //공고 상세에서 넘어온 job_posting_no 세팅
   let job_posting_no = params;
-
+  const [ocrText, setOcrText] = useState('');
   /**State Selector 모음 */
   const cv_no = useSelector((state) => state.cv_no);
   const cvProfile = useSelector((state) => state.profile);
@@ -140,6 +139,10 @@ const CV = ({ isMainCV, sendData }) => {
           });
     }
   }, []);
+  /**APPLY PAGE 대표이력서 불러오기 시 APPLY CV_NO로 SETTING*/
+  const setting_cv_no = async () => {
+    return cv.getCVNO(job_posting_no);
+  };
 
   const loadMainCV = (cv_no) => {
     cv.getList(cv_no).then((data) => {
@@ -156,13 +159,18 @@ const CV = ({ isMainCV, sendData }) => {
         data.data['educations'].map((item, key) => {
           if (key == 0) {
             // console.log(item);
-            dispatch(
-              updateEducation({
-                index: 0,
-                name: 'edu_no',
-                value: item.edu_no
-              })
-            );
+            {
+              isMainCV !== 'MainCV'
+                ? ''
+                : dispatch(
+                    updateEducation({
+                      index: 0,
+                      name: 'edu_no',
+                      value: item.edu_no
+                    })
+                  );
+            }
+
             dispatch(
               updateEducation({
                 index: 0,
@@ -216,28 +224,63 @@ const CV = ({ isMainCV, sendData }) => {
           console.log(data.data['educations'].length);
           console.log(cvData);
           if (key !== 0 && data.data['educations'].length > cvData.cv.educations.length) {
-            console.log(item);
+            //APPLY CV에서 부른 경우 edu_no 초기화
+            {
+              isMainCV !== 'MainCV' ? (item.edu_no = 0) : '';
+            }
             dispatch(addEducation(item));
           }
           console.log('Key: ' + key);
           console.log(item);
           console.log(cvData.cv.educations);
         });
+
+        // {isMainCV !== 'MainCV'?
+        //   ''
+        //   :
+        //   ''}
         data.data['skills'].map((item, key) => {
           const new_skill_arr = { skill_no: item.skill_no, skill_name: item.skill_name, skill_domain: item.skill_domain };
-          if (
-            data.data['skills'].length > cvData.cv.skills.length &&
-            !cvData.cv.skills.some((skill) => skill.skill_name === item.skill_name) &&
-            item.skill_no !== 0
-          ) {
-            dispatch(addSkill(item));
-          } else if (item.skill_no !== 0) {
-            dispatch(updateSkill({ index: key, value: item.skill_name }));
+          {
+            isMainCV !== 'MainCV'
+              ? // 'MainCV'가 아닐 때 실행되는 블록
+                (() => {
+                  if (
+                    data.data['skills'].length > cvData.cv.skills.length &&
+                    !cvData.cv.skills.some((skill) => skill.skill_name === item.skill_name) &&
+                    item.skill_no !== 0
+                  ) {
+                    // APPLY CV에서 부른 경우 skill_no 초기화
+                    item.skill_no = 0;
+                    dispatch(addSkill(item));
+                  } else if (item.skill_no !== 0) {
+                    dispatch(updateSkill({ index: key, value: item.skill_name }));
+                  }
+                })()
+              : // 'MainCV'일 때 실행되는 블록
+                (() => {
+                  if (
+                    data.data['skills'].length > cvData.cv.skills.length &&
+                    !cvData.cv.skills.some((skill) => skill.skill_name === item.skill_name) &&
+                    item.skill_no !== 0
+                  ) {
+                    dispatch(addSkill(item));
+                  } else if (item.skill_no !== 0) {
+                    dispatch(updateSkill({ index: key, value: item.skill_name }));
+                  }
+                })();
           }
+
           console.log(item);
         });
+
         data.data['careers'].map((item, key) => {
           if (data.data['careers'].length > cvData.cv.careers.length && item.career_no !== 0) {
+            //APPLY CV에서 부른 경우 career_no 초기화
+            if (isMainCV !== 'MainCV') {
+              item.career_no = 0;
+            }
+
             dispatch(addCareer(item));
           }
           console.log(key);
@@ -246,6 +289,10 @@ const CV = ({ isMainCV, sendData }) => {
         data.data['certifications'].map((item, key) => {
           if (data.data['certifications'].length > cvData.cv.certifications.length && item.cert_no !== 0) {
             console.log('들어옴');
+            //APPLY CV에서 부른 경우 cert_no 초기화
+            if (isMainCV !== 'MainCV') {
+              item.cert_no = 0;
+            }
             dispatch(addCert(item));
           }
           console.log(key);
@@ -254,6 +301,16 @@ const CV = ({ isMainCV, sendData }) => {
         });
         data.data['languages'].map((item, key) => {
           if (data.data['languages'].length > cvData.cv.languages.length && item.language_no !== 0) {
+            console.log(item);
+            //HSK일 경우 역산
+            if (item.exam_type === 'HSK') {
+              console.log(reverseHskFromScore(item.language_score));
+              item = { ...item, language_level: reverseHskFromScore(item.language_score) };
+            }
+            //APPLY CV에서 부른 경우 language_no 초기화
+            if (isMainCV !== 'MainCV') {
+              item.language_no = 0;
+            }
             dispatch(addLang(item));
           }
           console.log(key);
@@ -261,6 +318,10 @@ const CV = ({ isMainCV, sendData }) => {
         });
         data.data['activities'].map((item, key) => {
           if (data.data['activities'].length > cvData.cv.activities.length && item.activity_no !== 0) {
+            //APPLY CV에서 부른 경우 activity_no 초기화
+            if (isMainCV !== 'MainCV') {
+              item.activity_no = 0;
+            }
             dispatch(addActivity(item));
           }
           console.log(key);
@@ -268,20 +329,51 @@ const CV = ({ isMainCV, sendData }) => {
         });
         data.data['advantages'].map((item, key) => {
           if (data.data['advantages'].length > cvData.cv.advantages.length && item.advantage_no !== 0) {
+            //APPLY CV에서 부른 경우 advantage_no 초기화
+            if (isMainCV !== 'MainCV') {
+              item.advantage_no = 0;
+            }
             dispatch(addAdvantage(item));
           }
           console.log(key);
           console.log(item);
           console.log(cvData.cv.advantages);
         });
+        if (isMainCV !== 'MainCV') {
+          setting_cv_no().then((re_cv_no) => {
+            console.log(re_cv_no.data);
+            dispatch(updateCVNO(re_cv_no.data));
+          });
+        }
       }
     });
   };
+  /**역산 로직 */
+  const reverseHskFromScore = (score) => {
+    const hsk1000ScoreRange = {
+      '1급': [185, 280],
+      '2급': [285, 380],
+      '3급': [301, 499],
+      '4급': [501, 699],
+      '5급': [701, 899],
+      '6급': [901, 999]
+    };
 
+    // 등급 찾기
+    for (const [level, range] of Object.entries(hsk1000ScoreRange)) {
+      if (score >= range[0] && score <= range[1]) {
+        return level;
+      }
+    }
+
+    // 등급을 찾지 못한 경우
+    return null;
+  };
   //대표 이력서 불러오기
   const MainToApplyCV = () => {
     cv.getMainCVNO().then((res) => {
       console.log(cvData.cv.cv_no);
+
       loadMainCV(res.data);
     });
   };
@@ -478,7 +570,7 @@ const CV = ({ isMainCV, sendData }) => {
                     자격증
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                    <Ocr />
+                    <Ocr Ocr />
                     <IconButton onClick={() => certAddFields()}>
                       <AddIcon />
                     </IconButton>
@@ -736,6 +828,7 @@ const CV = ({ isMainCV, sendData }) => {
                   selectedFiles={selectedFiles}
                   componentRef={componentRef}
                   setSelectedFiles={setSelectedFiles}
+                  reverseFuction={reverseHskFromScore}
                 />
               </Grid>
               <Grid item xs={1} />

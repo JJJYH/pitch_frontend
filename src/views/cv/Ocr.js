@@ -6,11 +6,13 @@ import { SmartButton } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { useRef } from 'react';
 import Tooltip from '@mui/material/Tooltip';
-const Ocr = ({text}) => {
+import { useDispatch } from 'react-redux';
+import { addCert } from 'store/certSlice';
+const Ocr = ({ text }) => {
   const { loaded, cv } = useOpenCv();
   const [progress, setProgress] = useState(0);
   const [ocrText, setOcrText] = useState('');
-  
+  const dispatch = useDispatch();
   // 유클리드 거리 계산 함수
   const calculateDistance = (box1, box2) => {
     const center1 = {
@@ -183,11 +185,50 @@ const Ocr = ({text}) => {
               PSM.SINGLE_COLUMN
               // OEM.TESSERACT_LSTM_COMBINED
             ).then(({ data: { text } }) => {
+              let ocr_cert_name = '';
+              let ocr_acq_date = '';
+              let ocr_publisher = '';
+              const regex = /(.*?생년.*?:(\d+).*?§)|(.*?유효.*?)|(.*?한국.*)|(.*?공인.*?)|(.*?등급(.*))/;
               text = text
                 .split('\n')
-                .map((line) => line.trim().replace(/\s/g, ''))
-                .filter((line) => line !== '' && '/^[가-힣A-Za-z0-9]*$/');
-              setOcrText(text);
+                .map((line) =>
+                  line
+                    .trim()
+                    .replace(/[{}[\]\\|=+_-]/g, ' ')
+                    .replace(/\s/g, '')
+                )
+                .filter((line) => regex.exec(line))
+                .map((line) => line.replace(/[^가-힣A-Za-z0-9]/g, ''));
+              text.map((item) => {
+                var splitChar = '';
+                if (item.includes('등급')) {
+                  splitChar = item.split('등급');
+                  item = splitChar[1];
+                  ocr_cert_name = item;
+                  console.log(ocr_cert_name);
+                }
+                if (item.includes('유효')) {
+                  const match = item.match(/\d+/);
+                  if (match !== null) {
+                    const acq_date = match[0] ? match[0].substr(0, 8) : '';
+                    var dateFormat = acq_date ? acq_date.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3') : '';
+                    ocr_acq_date = dateFormat;
+                    console.log(ocr_acq_date);
+                  }
+                }
+                if (item.includes('원장')) {
+                  ocr_publisher = item;
+                  console.log(ocr_publisher);
+                }
+              });
+              const sendOcr = {
+                cert_no: '',
+                cert_name: ocr_cert_name,
+                publisher: ocr_publisher,
+                acquisition_date: ocr_acq_date === null ? '' : ocr_acq_date
+              };
+              dispatch(addCert(sendOcr));
+              setOcrText(sendOcr);
             });
           });
         };

@@ -3,7 +3,7 @@ import { Grid, Box, Card, CardHeader, Avatar, CardContent, Typography, Chip, Div
 import React from 'react';
 import SubCard from 'ui-component/cards/SubCard';
 import styles from './mypage.module.scss';
-import { padding } from '@mui/system';
+import { padding, width } from '@mui/system';
 import RadarChart from './RadarChart';
 import { useState } from 'react';
 import { amber, red, teal } from '@mui/material/colors';
@@ -12,9 +12,9 @@ import Page from '../cv/Page';
 import { cv } from 'api';
 import { useEffect } from 'react';
 const Mypage = () => {
-  const [reqBtn, setReqBtn] = useState();
+  const [reqBtn, setReqBtn] = useState('reqList');
   const userInfo = useSelector((state) => state.userInfo);
-  let job_info_list = [];
+  const [jobInfoList, setJobInfoList] = useState([]);
   let job_info = {
     req_title: '',
     applicant_status: '',
@@ -47,10 +47,14 @@ const Mypage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      cv.getApplyList().then((res) => {
-        res.data.map((item) => {
+      try {
+        const applyList = await cv.getApplyList();
+        const newJobInfoList = [];
+
+        for (const item of applyList.data) {
           console.log(item);
-          //**Setting Apply List Info */
+
+          // 지원 목록 정보 설정
           job_info.applicant_status = item.applicant_status;
           job_info.apply_date = item.apply_date;
           job_info.apply_no = item.apply_no;
@@ -60,35 +64,43 @@ const Mypage = () => {
           job_info.status_type = item.status_type;
           job_info.user_id = item.user_id;
 
-          cv.getJobInfoList(item.job_posting_no).then((result) => {
-            console.log(result.data[0]);
-            job_info.education = result.data[0].education;
-            job_info.hire_num = result.data[0].hire_num;
-            job_info.job_duties = result.data[0].job_duties;
-            job_info.job_group = result.data[0].job_group;
-            job_info.job_req_no = result.data[0].job_req_no;
-            job_info.posting_status = result.data[0].posting_status;
-            job_info.job_role = result.data[0].job_role;
-            job_info.job_type = result.data[0].job_type;
-            job_info.job_year = result.data[0].job_year;
-            job_info.location = result.data[0].location;
-            job_info.posting_end = result.data[0].posting_end;
-            job_info.posting_period = result.data[0].posting_period;
-            job_info.posting_start = result.data[0].posting_start;
-            job_info.posting_type = result.data[0].posting_type;
-            job_info.preferred = result.data[0].preferred;
-            job_info.qualification = result.data[0].qualification;
-            job_info.req_status = result.data[0].req_status;
-            job_info.req_title = result.data[0].req_title;
-            console.log(job_info);
-            job_info_list.push(job_info);
-            console.log(job_info_list);
-          });
-        });
-      });
+          const result = await cv.getJobInfoList(item.job_posting_no);
+          console.log(result.data[0]);
+
+          job_info.education = result.data[0].education;
+          job_info.hire_num = result.data[0].hire_num;
+          job_info.job_duties = result.data[0].job_duties;
+          job_info.job_group = result.data[0].job_group;
+          job_info.job_req_no = result.data[0].job_req_no;
+          job_info.posting_status = result.data[0].posting_status;
+          job_info.job_role = result.data[0].job_role;
+          job_info.job_type = result.data[0].job_type;
+          job_info.job_year = result.data[0].job_year;
+          job_info.location = result.data[0].location;
+          job_info.posting_end = result.data[0].posting_end;
+          job_info.posting_period = result.data[0].posting_period;
+          job_info.posting_start = result.data[0].posting_start;
+          job_info.posting_type = result.data[0].posting_type;
+          job_info.preferred = result.data[0].preferred;
+          job_info.qualification = result.data[0].qualification;
+          job_info.req_status = result.data[0].req_status;
+          job_info.req_title = result.data[0].req_title;
+          // ... (다른 속성들)
+
+          const newJobInfo = { ...job_info };
+          newJobInfoList.push(newJobInfo);
+          console.log(newJobInfoList);
+        }
+
+        setJobInfoList((prevList) => [...prevList, ...newJobInfoList]);
+      } catch (error) {
+        console.error('데이터를 가져오는 중 오류 발생:', error);
+      }
     };
     fetchData();
   }, []);
+
+  console.log(jobInfoList);
 
   return (
     <Grid container>
@@ -184,7 +196,7 @@ const Mypage = () => {
                         <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
                           지원자 평균 스펙
                         </Typography>
-                        <RadarChart />
+                        <RadarChart user_nm={userInfo.user_nm} />
                       </>
                     )}
                   </Grid>
@@ -193,42 +205,39 @@ const Mypage = () => {
                       지원하신 공고
                     </Typography>
                     <div style={{ overflow: 'auto', maxHeight: '500px' }}>
-                      {job_info_list.map((info, index) => (
-                        <div key={index}>{index} 입니다.</div>
-                      ))}
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300] }}>
-                            합격
-                          </div>
-                        </div>
-                      </Card>
-
-                      <Card sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
-                        <CardHeader
-                          sx={{ padding: '10px' }}
-                          title={
-                            <Typography fontSize={'16px'} fontWeight={'bold'}>
-                              Title
-                            </Typography>
-                          }
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <CardContent sx={{ padding: '10px', color: '#cccccc' }}>Content</CardContent>
-                          <div className={styles.reqDateStyle} style={{ backgroundColor: red[500] }}>
-                            불합격
-                          </div>
-                        </div>
-                      </Card>
+                      {jobInfoList.length !== 0
+                        ? jobInfoList.map((info, index) => (
+                            <Card key={index} sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                              <CardHeader
+                                sx={{ padding: '10px' }}
+                                title={
+                                  <Typography fontSize={'18px'} fontWeight={'bold'}>
+                                    {info.req_title}
+                                  </Typography>
+                                }
+                              />
+                              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <CardContent sx={{ padding: '10px', color: '#cccccc' }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      paddingRight: '100x'
+                                    }}
+                                  >
+                                    {info.job_role}
+                                    <div style={{ marginLeft: '12px', marginRight: '12px', borderRight: '1px solid #cccccc' }}></div>
+                                    {info.location}
+                                  </div>
+                                </CardContent>
+                                <div className={styles.reqDateStyle} style={{ backgroundColor: teal[300], width: '125px' }}>
+                                  {info.applicant_status === 'first' ? '1차 ' : info.applicant_status === 'second' ? '2차 ' : '최종 '}
+                                  {info.status_type}
+                                </div>
+                              </div>
+                            </Card>
+                          ))
+                        : ''}
                     </div>
                   </Grid>
                 </>

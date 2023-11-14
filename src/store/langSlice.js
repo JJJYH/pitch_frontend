@@ -20,6 +20,8 @@ const langSlice = createSlice({
         state[index].language_name = value;
       } else if (name === 'language_score') {
         state[index].language_score = value;
+      } else if (name === 'language_level') {
+        state[index].language_level = value;
       }
     }
   }
