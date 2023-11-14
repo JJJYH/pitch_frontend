@@ -25,7 +25,7 @@ import { addActivity } from 'store/activitySlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import { updateCVNO } from 'store/cvSlice';
 import JSZip from 'jszip';
-const CVSide = ({ currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPath, componentRef, setSelectedFiles }) => {
+const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPath, componentRef, setSelectedFiles }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
   const [location_point, set_location_point] = useState('');
@@ -95,12 +95,9 @@ const CVSide = ({ currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPat
 
     try {
       const { data } = await cv.getFileInfos(cvData.cv.cv_no);
-
       console.log(data);
-
       data.forEach((res) => {
         const { type } = res;
-
         setSelectedFiles((prevSelectedFiles) => ({
           ...prevSelectedFiles,
           [type]: [...(prevSelectedFiles[type] || []), res]
@@ -223,6 +220,11 @@ const CVSide = ({ currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPat
         });
         data.data['languages'].map((item, key) => {
           if (data.data['languages'].length > cvData.cv.languages.length && item.language_no !== 0) {
+            //HSK일 경우 역산
+            if (item.exam_type === 'HSK') {
+              console.log(reverseFuction(item.language_score));
+              item = { ...item, language_level: reverseFuction(item.language_score) };
+            }
             dispatch(addLang(item));
           }
           console.log(key);

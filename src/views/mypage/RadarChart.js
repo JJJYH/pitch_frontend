@@ -4,7 +4,8 @@ import { Radar } from 'react-chartjs-2';
 
 ChartJS.register(LineElement, PointElement, Tooltip, Legend, RadialLinearScale);
 
-const RadarChart = () => {
+const RadarChart = ({ user_nm }) => {
+  console.log(user_nm);
   const data = {
     labels: ['학력', '자격증', '경력', '어학점수', '우대사항', '나이'],
     datasets: [
@@ -19,7 +20,7 @@ const RadarChart = () => {
         data: [65, 59, 90, 81, 56, 55]
       },
       {
-        label: '김민수 님',
+        label: user_nm + '님',
         backgroundColor: 'rgba(85, 110, 230, 0.2)',
         borderColor: '#556ee6',
         pointBackgroundColor: '#556ee6',
