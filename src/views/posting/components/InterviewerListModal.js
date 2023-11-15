@@ -22,12 +22,6 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 
-import { TextField } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-//import dayjs from 'dayjs';
-
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2)
@@ -50,17 +44,12 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
   const [right, setRight] = useState([]);
   const [expandedDepts, setExpandedDepts] = useState([]);
 
-  // const leftChecked = intersection(checked, left);
-  // const rightChecked = intersection(checked, right);
-  const leftChecked = intersection(checked, left, 'user_id');
-  const rightChecked = intersection(checked, right, 'user_id');
-
   const getDeptUsers = async () => {
     try {
       const response = await axios.get('http://localhost:8888/admin/hire/deptusers');
       //console.log(response.data);
       //setLeft(response.data);
-      const deptData = {}; // 데이터를 계층적 구조로 정리
+      const deptData = {};
 
       response.data.forEach((user) => {
         const deptName = user.department.dept_name;
@@ -83,139 +72,33 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
     getDeptUsers();
   }, []);
 
-  function not(a, b) {
-    return a.filter((value) => b.indexOf(value) === -1);
-  }
-
-  // function intersection(a, b) {
-  //   return a.filter((value) => b.indexOf(value) !== -1);
-  // }
-  // function intersection(a, b, prop) {
-  //   return a.filter((valueA) => b.some((valueB) => valueA[prop] === valueB[prop]));
-  // }
-  function intersection(a, b, prop) {
-    if (Array.isArray(b)) {
-      return a.filter((valueA) => b.some((valueB) => valueA[prop] === valueB[prop]));
-    } else {
-      // b가 객체일 경우에 대한 처리
-      return a.filter((valueA) => valueA[prop] === b[prop]);
-    }
-  }
-
-  function union(a, b) {
-    return [...a, ...not(b, a)];
-  }
-
-  // const handleToggle = (value) => () => {
-  //   const currentIndex = checked.indexOf(value);
-  //   const newChecked = [...checked];
-
-  //   if (currentIndex === -1) {
-  //     newChecked.push(value);
-  //   } else {
-  //     newChecked.splice(currentIndex, 1);
-  //   }
-
-  //   setChecked(newChecked);
-  // };
-  const handleToggle = (value) => () => {
-    const isChecked = checked.includes(value.users.user_id);
+  const handleToggle = (deptName, user) => {
+    const isChecked = checked.some((item) => item.users.user_id === user.users.user_id);
 
     if (isChecked) {
-      // 이미 체크된 상태이면 해당 아이템을 제거
-      setChecked(checked.filter((id) => id !== value.users.user_id));
+      setChecked(checked.filter((item) => item.users.user_id !== user.users.user_id));
     } else {
-      // 체크되지 않은 상태이면 해당 아이템을 추가
-      setChecked([...checked, value.users.user_id]);
+      setChecked([...checked, user]);
     }
-  };
-
-  const numberOfChecked = (items) => intersection(checked, items).length;
-
-  const handleToggleAll = (items) => () => {
-    if (numberOfChecked(items) === items.length) {
-      setChecked(not(checked, items));
-    } else {
-      setChecked(union(checked, items));
-    }
-  };
-
-  const handleCheckedRight = () => {
-    setRight([...right, ...left.filter((item) => checked.includes(item))]);
-
-    setChecked([]);
-  };
-
-  const handleCheckedLeft = () => {
-    setRight(right.filter((item) => !checked.includes(item)));
-    setChecked([]);
+    console.log(checked);
   };
 
   const handleDeptClick = (deptName) => {
-    // 부서의 가시성을 토글
     setExpandedDepts((prevExpandedDepts) => {
       if (prevExpandedDepts.includes(deptName)) {
-        // 이미 펼쳐진 부서면 닫음
         return prevExpandedDepts.filter((d) => d !== deptName);
       } else {
-        // 펼쳐지지 않은 부서면 열음
         return [...prevExpandedDepts, deptName];
       }
     });
   };
 
-  // const customList = (title, items) => (
-  //   <Card>
-  //     <CardHeader
-  //       sx={{ px: 2, py: 1 }}
-  //       avatar={
-  //         <Checkbox
-  //           onClick={handleToggleAll(items)}
-  //           checked={numberOfChecked(items) === items.length && items.length !== 0}
-  //           indeterminate={numberOfChecked(items) !== items.length && numberOfChecked(items) !== 0}
-  //           disabled={items.length === 0}
-  //           inputProps={{
-  //             'aria-label': 'all items selected'
-  //           }}
-  //         />
-  //       }
-  //       title={title}
-  //       subheader={`${numberOfChecked(items)}/${items.length} 선택`}
-  //     />
-  //     <Divider />
-  //     <List
-  //       sx={{
-  //         width: 310,
-  //         height: 250,
-  //         bgcolor: 'background.paper',
-  //         overflow: 'auto'
-  //       }}
-  //       dense
-  //       component="div"
-  //       role="list"
-  //     >
-  //       {items.map((value) => {
-  //         const labelId = `transfer-list-all-item-${value}-label`;
+  const handleMoveRight = () => {
+    setRight((prevRight) => [...prevRight, ...checked]);
 
-  //         return (
-  //           <ListItem key={value.users.user_id} role="listitem" button onClick={handleToggle(value)}>
-  //             <ListItemIcon>
-  //               <Checkbox
-  //                 checked={checked.indexOf(value) !== -1}
-  //                 tabIndex={-1}
-  //                 disableRipple
-  //                 inputProps={{
-  //                   'aria-labelledby': labelId
-  //                 }}
-  //               />
-  //             </ListItemIcon>
-  //             <ListItemText id={labelId} primary={`${value.department.dept_name}\n ${value.users.user_nm}\n  ${value.users.user_email}`} />
-  //           </ListItem>
-  //         );
-  //       })}
-  //     </List>
-  //   </Card>
-  // );
+    setChecked([]);
+    console.log(right);
+  };
 
   const customList = (title, items) => (
     <Card>
@@ -238,94 +121,47 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
               <ListItemText primary={deptName} />
             </ListItem>
 
-            {/* 해당 부서가 펼쳐진 상태면 사용자 목록을 렌더링 */}
             {expandedDepts.includes(deptName) &&
-              items[deptName].map((value) => {
-                const labelId = `transfer-list-all-item-${value}-label`;
-
-                return (
-                  <ListItem key={value.users.user_id} role="listitem" button onClick={handleToggle(value)}>
-                    <ListItemIcon>
-                      <Checkbox
-                        checked={checked.indexOf(value) !== -1}
-                        // checked={checked.includes(value)}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{
-                          'aria-labelledby': labelId
-                        }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={labelId} primary={`${value.users.user_nm}\n  ${value.users.user_email}`} />
-                  </ListItem>
-                );
-              })}
+              items[deptName].map((user) => (
+                <ListItem key={user.users.user_id} role="listitem" onClick={() => handleToggle(deptName, user)}>
+                  <ListItemIcon>
+                    <Checkbox disableRipple />
+                  </ListItemIcon>
+                  <ListItemText primary={`${user.users.user_nm}\n  ${user.users.user_email}`} />
+                </ListItem>
+              ))}
           </React.Fragment>
         ))}
       </List>
     </Card>
   );
 
-  // const customList = (title, items) => (
-  //   <Card>
-  //     <CardHeader
-  //       sx={{ px: 2, py: 1 }}
-  //       avatar={
-  //         <Checkbox
-  //           onClick={handleToggleAll(items)}
-  //           checked={numberOfChecked(items) === items.length && items.length !== 0}
-  //           indeterminate={numberOfChecked(items) !== items.length && numberOfChecked(items) !== 0}
-  //           disabled={items.length === 0}
-  //           inputProps={{
-  //             'aria-label': 'all items selected'
-  //           }}
-  //         />
-  //       }
-  //       title={title}
-  //       subheader={`${numberOfChecked(items)}/${items.length} 선택`}
-  //     />
-  //     <Divider />
-  //     <List
-  //       sx={{
-  //         width: 310,
-  //         height: 250,
-  //         bgcolor: 'background.paper',
-  //         overflow: 'auto'
-  //       }}
-  //       dense
-  //       component="div"
-  //       role="list"
-  //     >
-  //       {Object.keys(groupedLeft).map((departmentName) => (
-  //         <React.Fragment key={departmentName}>
-  //           <ListItem role="listitem" button onClick={() => handleDeptClick(departmentName)}>
-  //             <ListItemText primary={departmentName} />
-  //           </ListItem>
-
-  //           {departmentName === selectedDept &&
-  //             groupedLeft[selectedDept].map((value) => {
-  //               const labelId = `transfer-list-all-item-${value}-label`;
-  //               return (
-  //                 <ListItem key={value.users.user_id} role="listitem" button onClick={handleToggle(value)}>
-  //                   <ListItemIcon>
-  //                     <Checkbox
-  //                       checked={checked.indexOf(value) !== -1}
-  //                       tabIndex={-1}
-  //                       disableRipple
-  //                       inputProps={{
-  //                         'aria-labelledby': labelId
-  //                       }}
-  //                     />
-  //                   </ListItemIcon>
-  //                   <ListItemText id={labelId} primary={`${value.users.user_nm}\n  ${value.users.user_email}`} />
-  //                 </ListItem>
-  //               );
-  //             })}
-  //         </React.Fragment>
-  //       ))}
-  //     </List>
-  //   </Card>
-  // );
+  const customList2 = (title, items) => (
+    <Card>
+      <CardHeader sx={{ px: 2, py: 1 }} title={title} />
+      <Divider />
+      <List
+        sx={{
+          width: 310,
+          height: 250,
+          bgcolor: 'background.paper',
+          overflow: 'auto'
+        }}
+        dense
+        component="div"
+        role="list"
+      >
+        {items.map((user) => (
+          <ListItem key={user.users.user_id} role="listitem" onClick={() => handleToggle(deptName, user)}>
+            <ListItemIcon>
+              <Checkbox disableRipple />
+            </ListItemIcon>
+            <ListItemText primary={`${user.department.dept_name}\n${user.users.user_nm}\n  ${user.users.user_email}`} />
+          </ListItem>
+        ))}
+      </List>
+    </Card>
+  );
 
   return (
     <StyledDialog maxWidth="md" onClose={close} aria-labelledby="customized-dialog-title" open={open}>
@@ -353,25 +189,26 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
                 sx={{ my: 0.5 }}
                 variant="outlined"
                 size="small"
-                onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0}
+                onClick={handleMoveRight}
+                disabled={checked.length === 0}
                 aria-label="move selected right"
               >
                 &gt;
               </Button>
+
               <Button
                 sx={{ my: 0.5 }}
                 variant="outlined"
                 size="small"
-                onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0}
+                disabled={checked.length === 0}
+                // onClick={handleMoveLeft}
                 aria-label="move selected left"
               >
                 &lt;
               </Button>
             </Grid>
           </Grid>
-          <Grid item>{customList('선택 목록', right)}</Grid>
+          <Grid item>{customList2('선택 목록', right)}</Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
