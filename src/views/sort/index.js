@@ -4,9 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 import { sort } from 'api.js';
 import styled from 'styled-components';
 import { Link, useParams } from 'react-router-dom';
-import { getAge, getFormattedDate, getDday } from './sorts.js';
+import { getAge, getFormattedDate, getDday, getFileNameFromContentDisposition } from './sorts.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
+import { getImage } from './sorts.js';
 
 /* mui components */
 import Box from '@mui/material/Box';
@@ -29,12 +30,12 @@ import MenuBtn from './components/MenuBtn';
 import classNames from './sort.module.scss';
 import { setPosting } from 'store/postingSlice.js';
 import CVToPrint from './components/CVToPrint.js';
-import ApplicantDetailPage from './ApplicantDetailPage.js';
+import DownloadModal from './components/DownloadModal.js';
 
 /*
  *
  * 지원자 선별 페이지
- * url : manage/:job_posting_no/sort
+ * url : manage/posts/:job_posting_no/sort
  *
  */
 const SortingPage = () => {
@@ -43,9 +44,12 @@ const SortingPage = () => {
   const componentRef = useRef();
   const [value, setValue] = useState('F');
   const [rows, setRows] = useState([]);
+  const [checked, setChecked] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isSelected, setIsSelected] = useState(false);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
+  const [isExcelClicked, setIsExcelClicked] = useState(false);
+  const [isInfoFetched, setIsInfoFetched] = useState(false);
   const [btnType, setBtnType] = useState('');
   const [info, setInfo] = useState({
     hire_num: 0,
@@ -53,12 +57,16 @@ const SortingPage = () => {
     job_posting_no,
     job_req_no: 0,
     job_type: '',
+    job_group: '',
+    job_role: '',
+    job_year: 0,
     likedCnt: 0,
     posting_end: 0,
     posting_start: 0,
     posting_status: '',
     posting_type: '',
     req_title: '',
+    education: '',
     total_applicants: 0
   });
 
@@ -79,13 +87,53 @@ const SortingPage = () => {
 
   const setList = () => {
     sort.applicantList(job_posting_no, value).then((res) => {
-      console.log(res.data);
       const arr = res.data.map((appl, index) => {
         return { ...appl, id: index };
       });
       setRows(arr);
+      dispatch(setPosting({ list: arr }));
     });
   };
+
+  useEffect(() => {
+    if (checked.length > 0) {
+      const list = selectedRows.map((row) => row.apply_no);
+      const data = {
+        title: info.req_title,
+        type: [...checked],
+        applyNo: [...list]
+      };
+
+      sort
+        .fileDownload(data)
+        .then((res) => {
+          if (res.status === 200) {
+            const header = res.headers['content-disposition'];
+
+            const fileName = getFileNameFromContentDisposition(header);
+
+            const blob = new Blob([res.data], { type: 'application/zip' });
+
+            return { fileName, blob };
+          } else {
+            console.error('파일 다운로드 실패');
+            throw new Error('파일 다운로드 실패');
+          }
+        })
+        .then(({ fileName, blob }) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error('파일 다운로드 오류:', error);
+        });
+    }
+  }, [checked]);
 
   useEffect(() => {
     setList();
@@ -94,7 +142,14 @@ const SortingPage = () => {
   useEffect(() => {
     sort.postingInfo(job_posting_no).then((res) => {
       setInfo({ ...res.data });
-      dispatch(setPosting({ postingNo: job_posting_no, reqNo: res.data.job_req_no }));
+      setIsInfoFetched(true);
+      dispatch(
+        setPosting({
+          postingNo: job_posting_no,
+          reqNo: res.data.job_req_no,
+          title: res.data.req_title
+        })
+      );
     });
   }, []);
 
@@ -194,13 +249,16 @@ const SortingPage = () => {
 
             <Box sx={{ display: 'flex' }}>
               {isSelected ? (
-                <Button onClick={handlePrint} variant="outlined" size="medium" sx={{ borderColor: '#38678f', color: '#38678f' }}>
-                  <PrintIcon />
-                  인쇄하기
-                </Button>
+                <>
+                  <DownloadModal setChecked={setChecked} />
+                  <Button variant="outlined" onClick={handlePrint} size="medium" sx={{ borderColor: '#38678f', color: '#38678f' }}>
+                    <PrintIcon />
+                    인쇄하기
+                  </Button>
+                </>
               ) : (
                 <>
-                  {value == 'F' && <FilteringModal />}
+                  {isInfoFetched && value == 'F' && <FilteringModal postingNo={job_posting_no} postingInfo={info} />}
                   {value == 'S' && <InterviewDateModal />}
                   <NoticeModal postingNo={job_posting_no} title={info.req_title} />
                 </>
@@ -217,6 +275,7 @@ const SortingPage = () => {
                 setList={setList}
                 setIsSelected={setIsSelected}
                 setSelectedRows={setSelectedRows}
+                isExcelClicked={isExcelClicked}
               />
             </MyTabPanel>
             <MyTabPanel value="S">
@@ -228,6 +287,7 @@ const SortingPage = () => {
                 setList={setList}
                 setIsSelected={setIsSelected}
                 setSelectedRows={setSelectedRows}
+                isExcelClicked={isExcelClicked}
               />
             </MyTabPanel>
             <MyTabPanel value="FL">
@@ -239,6 +299,7 @@ const SortingPage = () => {
                 setList={setList}
                 setIsSelected={setIsSelected}
                 setSelectedRows={setSelectedRows}
+                isExcelClicked={isExcelClicked}
               />
             </MyTabPanel>
             <MyTabPanel value="FH">
@@ -250,6 +311,7 @@ const SortingPage = () => {
                 isBtnClicked={isBtnClicked}
                 setList={setList}
                 setSelectedRows={setSelectedRows}
+                isExcelClicked={isExcelClicked}
               />
             </MyTabPanel>
           </Box>
@@ -266,8 +328,10 @@ const MyTabPanel = muiStyled(TabPanel)(({ theme }) => ({
   paddingTop: '10px'
 }));
 
-const RenderAvatar = () => {
-  return <Avatar alt="profile" src="images/test2.png" sx={{ width: 50, height: 50 }} />;
+const RenderAvatar = (data) => {
+  const image = data.row.picture;
+
+  return <Avatar alt="profile" src={getImage(image)} sx={{ width: 50, height: 50 }} />;
 };
 
 const StatusChip3 = styled(Chip)(() => ({
@@ -340,6 +404,7 @@ const RenderStar = (evals, apply_no) => {
 const RenderName = (data) => {
   return (
     <Link
+      style={{ textDecoration: 'under-line', color: 'black' }}
       to={`${data.row.apply_no}`}
       sx={{
         color: 'black'

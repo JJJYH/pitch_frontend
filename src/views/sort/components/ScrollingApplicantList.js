@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import styled from 'styled-components';
 import { sort } from 'api.js';
-import { getAge } from '../sorts.js';
-import { useNavigate } from "react-router-dom";
+import { getAge, getImage } from '../sorts.js';
 
 /* mui components */
 import ListItem from '@mui/material/ListItem';
@@ -12,86 +11,106 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import { ListItemButton, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import { Box } from '@mui/system';
 
 /* custom components */
 
+const ScrollingApplicantList = ({ height, width, itemSize, list, isBtnClicked, setIsBtnClicked, setCheckedList, setOpenModal }) => {
+  const [checked, setChecked] = React.useState([]);
 
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
 
-const ScrollingApplicantList = ({height, width, itemSize, clickedBtn, postingNo, applyNo}) => {
-  const [rows, setRows] = React.useState([]);
-  const [selectedApplyNo, setSelectedApplyNo] = useState(applyNo);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const navigate = useNavigate();
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
 
-  useEffect(() => {
-    sort.applicantList(postingNo, 'A') 
-      .then((res) => {
-        setRows(res.data);
-        setSelectedIndex(getIndex(res.data, applyNo));
-      });
-      setSelectedApplyNo(applyNo);
-  }, []);
-
-  useEffect((e) => {
-    setNextIndex(clickedBtn);
-    console.log('clicked');
-  }, [clickedBtn]);
-
-  const handleItemClick = (e, applyNo, index) => {
-    setSelectedApplyNo(applyNo);
-    setSelectedIndex(index);
-    navigate(`/manage/${postingNo}/sort/${applyNo}/detail`);
+    setChecked(newChecked);
   };
 
-  return(
-    <MyScrollingElement 
-      height={height} 
-      width={width} 
-      itemSize={itemSize} 
-      itemCount={rows.length} 
-      overscanCount={5}
-    >
-      {({ index, style }) => renderRow({ index, style }, rows, handleItemClick, selectedApplyNo)}
+  useEffect(() => {
+    const newChecked = Array.from({ length: list.length }, (_, index) => index);
+    setChecked(newChecked);
+  }, [list]);
+
+  useEffect(() => {
+    const tempList = [];
+    if (isBtnClicked) {
+      checked.map((index) => {
+        tempList.push(list[index].apply_no);
+      });
+
+      sort.applicantHandle('fail', tempList).then((res) => {
+        setIsBtnClicked(false);
+        setOpenModal(false);
+      });
+    }
+  }, [isBtnClicked]);
+
+  return (
+    <MyScrollingElement height={height} width={width} itemSize={itemSize} itemCount={list.length} overscanCount={5}>
+      {({ index, style }) => renderRow({ index, style }, list, handleToggle, checked)}
     </MyScrollingElement>
   );
-}
+};
 
+const renderRow = ({ index, style }, list, handleToggle, checked) => {
+  const labelId = `checkbox-list-label-${index}`;
+  const applicant = list[index];
 
-const renderRow = ({ index, style }, rows, handleItemClick, selectedApplyNo) => {
   return (
     <>
-      <ListItem style={style} component="div" disablePadding
-        onClick={(event) =>{ 
-          handleItemClick(event, rows[index].apply_no, index) 
-      }}>
-        <ListItemButton selected={selectedApplyNo == rows[index].apply_no}>
+      <ListItem style={style} component="div" disablePadding>
+        <ListItemButton
+          onClick={() => {
+            handleToggle(index)();
+          }}
+        >
+          <ListItemIcon>
+            <Checkbox
+              edge="start"
+              checked={checked.indexOf(index) !== -1}
+              tabIndex={-1}
+              disableRipple
+              inputProps={{ 'aria-labelledby': labelId }}
+            />
+          </ListItemIcon>
           <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" 
+            <Avatar
+              alt="Profile"
+              src={applicant.picture && getImage(applicant.picture)}
               sx={{
                 height: '60px',
                 width: '60px',
-                mr: '15px'
-            }}/>
+                mr: '15px',
+                backgroundColor: 'white'
+              }}
+            />
           </ListItemAvatar>
-          <ListItemText
-            primary={`${rows[index].user_nm}  ${rows[index].gender}, 만 ${getAge(rows[index].user_birth)}세`}
-            secondary={
-              <React.Fragment>
-                <Typography sx={{ display: 'inline' }} 
-                  component="span" 
-                  variant="body2" 
-                  color="text.primary"
-                >
-                  {rows[index].career == 'y' ? '경력' : '신입'}
-                </Typography>   
-              </React.Fragment>
-            }
-          />
+          <ListItemText primary={`${applicant['cv']?.user_nm}  ${applicant['cv']?.gender}, 만 ${getAge(applicant['cv']?.user_birth)}세`} />
+          <Box>
+            <Typography
+              sx={{ display: 'inline', mr: '3px' }}
+              component="span"
+              variant="h3"
+              color={applicant.score > 59 ? '#52af77' : applicant.score > 39 ? 'text.primary' : 'indianred'}
+            >
+              {applicant.score}
+            </Typography>
+            <Typography sx={{ display: 'inline', mr: '20px' }} component="span" variant="h3" color="text.primary">
+              점
+            </Typography>
+          </Box>
         </ListItemButton>
-    </ListItem>
+      </ListItem>
     </>
   );
-}
+};
 
 const MyScrollingElement = styled(FixedSizeList)(() => ({
   overflow: 'auto',
@@ -103,17 +122,5 @@ const MyScrollingElement = styled(FixedSizeList)(() => ({
     display: 'none'
   }
 }));
-
-
-const getIndex = (rows, applyNo) => rows.findIndex((row) => row.apply_no == applyNo);
-
-const setNextIndex = (op) => {
-  console.log(op)
-  if(op == '-') {
-    console.log('----');
-  } else if(op == '+') {
-    console.log('++++');
-  }
-}
 
 export default ScrollingApplicantList;

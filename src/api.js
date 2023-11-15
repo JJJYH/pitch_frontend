@@ -17,7 +17,6 @@ const instance = axios.create({
 });
 // AccessToken 검증 로직
 instance.interceptors.request.use((config) => {
-  console.log(config);
   if (!config.headers) return config;
 
   let accessToken = sessionStorage.getItem('AccessToken');
@@ -32,24 +31,18 @@ instance.interceptors.request.use((config) => {
 //accessToken 재발급 로직
 instance.interceptors.response.use(
   (response) => {
-    console.log('get response', response);
     const accessToken = response.headers.accesstoken;
-    console.log('1. ' + accessToken);
     if (accessToken) {
       sessionStorage.setItem('AccessToken', accessToken);
       principal.setToken(accessToken);
-      console.log('accesstoken set storage');
     }
     return response;
   }, //accessToken 에러로직(진행중)
   async function (error) {
     const originalConfig = error.config;
-    console.log(error);
     const msg = error.response.data.message;
     const status = error.response.status;
 
-    console.log(error);
-    console.log(msg);
     //AccessToken 값이 유효하지 않으면 없으면 자동 로그아웃
     if (msg === 'AccessToken is not valid') {
       sessionStorage.removeItem('AccessToken');
@@ -160,6 +153,23 @@ const sort = {
   //지원자 선별 목록 요청 api
   applicantSortList: (postingNo, data) => {
     return instance.post(`/admin/${postingNo}/filter`, data);
+  },
+  //이력서 엑셀 저장 api
+  cvToExcel: (data) => {
+    return instance.post(`/admin/excel`, data);
+  },
+  //파일 다운로드 api
+  fileDownload: (data) => {
+    return instance.post(`/admin/file`, data, {
+      responseType: 'arraybuffer'
+    });
+  },
+  //점수 상세 조회 api
+  applicantScore: (postingNo, applyNo) => {
+    return instance.get(`/admin/${postingNo}/sort/${applyNo}`);
+  },
+  applicantAvg: (postingNo) => {
+    return instance.get(`/admin/${postingNo}/average`);
   }
 };
 
