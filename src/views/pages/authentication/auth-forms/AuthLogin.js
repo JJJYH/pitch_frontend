@@ -174,11 +174,6 @@ const FirebaseLogin = ({ ...others }) => {
               principal.login(userData).then((res) => {
                 sessionStorage.setItem('AccessToken', res.headers.accesstoken);
                 principal.setToken(res.headers.accesstoken)
-                // principal.getUser(res.headers.accesstoken).then((res) => {
-                //   console.log(res.data);
-                //   dispatch(setUser(res.data));
-                //   navigate('/main');
-                // });
                 channel.postMessage({ accesstoken: res.headers.accesstoken });
                 window.close();
               })

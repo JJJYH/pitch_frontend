@@ -46,16 +46,16 @@ const Register = () => {
                   <Grid item xs={12}>
                     <AuthRegister />
                   </Grid>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Divider />
-                  </Grid>
-                  <Grid item xs={12}>
+                  </Grid> */}
+                  {/* <Grid item xs={12}>
                     <Grid item container direction="column" alignItems="center" xs={12}>
                       <Typography component={Link} to="/pages/login/login3" variant="subtitle1" sx={{ textDecoration: 'underline', textUnderlineOffset: '3px', fontWeight: 'bold', fontSize: '13px' }}>
                         이미 계정이 존재하시나요?
                       </Typography>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </AuthCardWrapper>
             </Grid>

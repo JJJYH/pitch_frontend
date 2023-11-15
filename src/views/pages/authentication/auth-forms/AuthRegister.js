@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -65,6 +65,9 @@ const FirebaseRegister = ({ ...others }) => {
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { email } = location.state || {};
+  console.log(email);
 
   const googleHandler = async () => {
     console.error('Register');
@@ -91,7 +94,7 @@ const FirebaseRegister = ({ ...others }) => {
   return (
     <>
       <Grid container direction="column" justifyContent="center" spacing={2}>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <AnimateButton>
             <Button
               variant="outlined"
@@ -135,7 +138,7 @@ const FirebaseRegister = ({ ...others }) => {
             </Button>
             <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
           </Box>
-        </Grid>
+        </Grid> */}
         {/* <Grid item xs={12} container alignItems="center" justifyContent="center">
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Sign up with Email address</Typography>
@@ -147,10 +150,10 @@ const FirebaseRegister = ({ ...others }) => {
         initialValues={{
           user_birth: dayjs('1999-12-31').locale('ko').format('YYYY-MM-DD'),
           user_nm: '',
-          user_email: '',
+          user_email: email ? email : '',
           user_pw: '',
           passwordRepeat: '',
-          user_id: '',
+          user_id: email ? email.split('@')[0] : '',
           user_phone: '',
           submit: null
         }}
@@ -234,7 +237,7 @@ const FirebaseRegister = ({ ...others }) => {
                 name="user_email"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                inputProps={{}}
+                inputProps={{ readOnly: email ? true : false }}
               />
               {touched.user_email && errors.user_email && (
                 <FormHelperText error id="standard-weight-helper-text-user_email-register">

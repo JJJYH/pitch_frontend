@@ -13,6 +13,7 @@ import toolkitStore from './store/toolkitStore'; // 'toolkitStore' 모듈의 기
 // style + assets
 import 'assets/scss/style.scss';
 import config from './config';
+import { ModalProvider } from 'layout/Common/ModalContext';
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 
@@ -23,7 +24,9 @@ root.render(
 
   <Provider store={toolkitStore}>
     <BrowserRouter basename={config.basename}>
-      <App />
+      <ModalProvider>
+        <App />
+      </ModalProvider>
     </BrowserRouter>
   </Provider>
 );

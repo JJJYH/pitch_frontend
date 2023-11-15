@@ -22,6 +22,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import SearchIcon from '@mui/icons-material/Search';
 import AMDataGrid from './components/AMDataGrid';
 import { useRef } from 'react';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 const AdminManagePage = () => {
 
@@ -48,8 +49,8 @@ const AdminManagePage = () => {
     return (
         <Paper sx={{ height: 1 }}>
             <Box sx={{ height: '140px' }}>
-                <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px' }} variant="h2">
-                    권한 관리
+                <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
+                    <ManageAccountsIcon /> 권한 관리
                 </Typography>
                 <Box sx={{ padding: '0px 20px' }}>
                     <Grid container alignItems="center" justifyContent="space-between">
