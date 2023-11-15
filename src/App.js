@@ -22,7 +22,10 @@ import { useState } from 'react';
 // ==============================|| APP ||============================== //
 import { OpenCvProvider } from 'opencv-react';
 import { SnackbarProvider } from 'notistack';
+import { ModalProvider, useModal } from 'layout/Common/ModalContext';
+
 const App = () => {
+
   //=====================================//
   var sessionStorage_transfer = function (event) {
     if (!event) {
@@ -108,6 +111,7 @@ const App = () => {
     }
   };
   const classes = Styles();
+  const { openModal, open, closeModal } = useModal();
 
   let channel;
 
@@ -121,6 +125,10 @@ const App = () => {
       if (receivedToken) {
         setAccessToken(receivedToken);
         sessionStorage.setItem('AccessToken', event.data.accesstoken);
+      }
+      if (event.data.notFoundAccount) {
+        console.log(event.data.notFoundAccount);
+        openModal(event.data.email);
       }
     };
 

@@ -118,7 +118,7 @@ const JobPostingPage = () => {
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
-        <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px' }} variant="h2">
+        <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
           <TaskOutlinedIcon /> 채용 공고 관리
         </Typography>
         <Box sx={{ padding: '0px 20px' }}>

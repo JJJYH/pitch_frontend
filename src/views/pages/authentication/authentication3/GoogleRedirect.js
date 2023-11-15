@@ -28,6 +28,10 @@ const GoogleRedirect = () => {
             token = res.headers.accesstoken
             channel.postMessage({ accesstoken: token });
             window.close();
+        }).catch((err) => {
+            console.log(err);
+            channel.postMessage({ notFoundAccount: 'nfa', email: err.response.data.email });
+            window.close();
         })
     }, [])
     return <></>
