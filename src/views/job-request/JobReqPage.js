@@ -81,6 +81,14 @@ const JobReqPage = () => {
     // setSearchKeyword('');
   };
 
+  const handleReset = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setSearchKeyword('');
+    setSelectedChips([]);
+    reqlisthandler();
+  };
+
   const postStatusData = async (statusData) => {
     try {
       const response = await axios.post('http://localhost:8888/admin/hire/statuslist', statusData);
@@ -104,6 +112,10 @@ const JobReqPage = () => {
 
   const handleDataGrid = () => {
     dataGridRef.current.handleCheckedRowsDelete();
+  };
+
+  const handleDataGridUpdate = (reqStatus) => {
+    dataGridRef.current.handleCheckedRowsUpdateStatus(reqStatus);
   };
 
   const handleStartDateChange = (date) => {
@@ -177,6 +189,15 @@ const JobReqPage = () => {
                     <SearchIcon fontSize="small" />
                   </Button>
                 </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#38678f ', height: '40px', marginLeft: '20px' }}
+                    onClick={handleReset}
+                  >
+                    초기화
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
 
@@ -188,6 +209,20 @@ const JobReqPage = () => {
                   </Button>
                   <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
                     삭제
+                  </Button>
+                </Stack>
+              )}
+              {userId === 'admin' && (
+                <Stack direction="row" spacing={1}>
+                  <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => handleDataGridUpdate('승인')}>
+                    일괄승인
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    style={{ borderColor: '#38678f', color: '#38678f' }}
+                    onClick={() => handleDataGridUpdate('반려')}
+                  >
+                    일괄반려
                   </Button>
                 </Stack>
               )}
