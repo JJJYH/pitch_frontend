@@ -13,6 +13,7 @@ import { useRef, useImperativeHandle, forwardRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Typography } from '@mui/material';
 import { typography } from '@mui/system';
+import { async } from 'q';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   border: '1px solid #c0c0c0',
@@ -63,7 +64,7 @@ const ReqDataGrid = forwardRef(
 
     const handleCheckedRowsDelete = async () => {
       try {
-        const response = await axios.delete(`http://localhost:8888/admin/hire/delete/checked`, { data: { jobReqNo } });
+        const response = await axios.delete('http://localhost:8888/admin/hire/delete/checked', { data: { jobReqNo } });
 
         console.log(response);
 
@@ -78,17 +79,40 @@ const ReqDataGrid = forwardRef(
       }
     };
 
+    const handleCheckedRowsUpdateStatus = async (reqStatus) => {
+      console.log(reqStatus);
+      const updateData = {
+        jobReqs: jobReqNo.map((jobReqNo) => ({
+          job_req_no: jobReqNo,
+          req_status: reqStatus
+        }))
+      };
+      console.log(updateData);
+      try {
+        const response = await axios.put('http://localhost:8888/admin/hire/update/status', updateData);
+
+        console.log(response);
+
+        const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
+        setRows(searchData);
+        dispatch(resetSelectedRow());
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     useImperativeHandle(ref, () => ({
-      handleCheckedRowsDelete
+      handleCheckedRowsDelete,
+      handleCheckedRowsUpdateStatus
     }));
 
     const columns = [
       {
         field: 'job_req_date',
         headerName: '요청일자',
-        width: 150,
-        headerAlign: 'center',
-        align: 'center',
+        width: 100,
+        headerAlign: 'left',
+        align: 'left',
         valueGetter: (params) => {
           const timestamp = params.value;
           const dateObject = dayjs(timestamp);
@@ -96,13 +120,14 @@ const ReqDataGrid = forwardRef(
           return formattedDate;
         }
       },
-      { field: 'req_title', headerName: '제목', width: 150, headerAlign: 'center', align: 'center' },
-      { field: 'job_role', headerName: '직무', width: 150, headerAlign: 'center', align: 'center' },
+      { field: 'req_title', headerName: '제목', width: 200, headerAlign: 'left', align: 'left' },
+      { field: 'job_group', headerName: '직군', width: 100, headerAlign: 'left', align: 'left' },
+      { field: 'job_role', headerName: '직무', width: 120, headerAlign: 'left', align: 'left' },
       {
         field: 'req_status',
         headerName: '상태',
-        width: 180,
-        headerAlign: 'center',
+        width: 150,
+        headerAlign: 'left',
         align: 'left',
         // renderCell: (params) => {
         //   const status = params.row.req_status;
@@ -126,42 +151,42 @@ const ReqDataGrid = forwardRef(
           switch (status) {
             case '작성중':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#FFBD33', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>
               );
             case '요청완료':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>
               );
             case '승인':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#7EBF6F', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>
               );
             case '반려':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#EC5C87', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>
               );
             case '공고중':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#5092E2', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>
               );
             case '공고종료':
               return (
-                <div style={{ display: 'flex', alignItems: 'center', margin: '45px' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CircleIcon fontSize="16px" style={{ color: '#809B95', marginRight: '8px' }} />
                   <Typography>{status}</Typography>
                 </div>

@@ -3,30 +3,32 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
+import SearchIcon from '@mui/icons-material/Search';
 
-const ReqPageSearch = ({ value, handleSearchInputChange }) => {
+const MainPageSearch = ({ value, handleSearchInputChange }) => {
   const [groups, setGroups] = useState([]);
   const [roles, setRoles] = useState([]);
 
   const SearchAutoComplete = styled(Autocomplete)(() => ({
     '& .MuiOutlinedInput-root': {
-      padding: '2.5px'
+      padding: '7px'
     }
   }));
 
   useEffect(() => {
     axios
-      .get('http://localhost:8888/admin/hire/reqlist')
+      .get('http://localhost:8888/admin/hire/getAllJobPostingList')
       .then((response) => {
+        console.log(response.data);
         const roleSet = new Set();
         const groupSet = new Set();
 
         response.data.forEach((item) => {
-          if (item.job_role) {
-            roleSet.add(item.job_role);
+          if (item.jobReq.job_role) {
+            roleSet.add(item.jobReq.job_role);
           }
-          if (item.job_group) {
-            groupSet.add(item.job_group);
+          if (item.jobReq.job_group) {
+            groupSet.add(item.jobReq.job_group);
           }
         });
 
@@ -43,7 +45,7 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
 
   return (
     <SearchAutoComplete
-      sx={{ width: '250px' }}
+      sx={{ width: '350px', mb: 2 }}
       freeSolo
       options={[...groups, ...roles]}
       getOptionLabel={(option) => option}
@@ -52,7 +54,23 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
         console.log(value);
         handleSearchInputChange(value);
       }}
-      renderInput={(params) => <TextField {...params} placeholder="직군, 직무 검색" variant="outlined" name="search" />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder="직군, 직무 검색"
+          variant="outlined"
+          name="search"
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {params.InputProps.endAdornment}
+                <SearchIcon />
+              </>
+            )
+          }}
+        />
+      )}
       filterOptions={(options, params) => {
         const filteredOptions = options.filter(
           (option) => option.toLowerCase().includes(params.inputValue.toLowerCase()) && params.inputValue.length > 1
@@ -64,4 +82,4 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
   );
 };
 
-export default ReqPageSearch;
+export default MainPageSearch;

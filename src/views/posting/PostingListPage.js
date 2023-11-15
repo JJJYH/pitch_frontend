@@ -12,6 +12,8 @@ import { useSelector } from 'react-redux';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Carousel from 'react-material-ui-carousel';
+import MainPageSearch from './components/MainPageSearch';
+import SearchIcon from '@mui/icons-material/Search';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -28,6 +30,7 @@ const PostingListPage = () => {
     postingType: 'defaultValue',
     search: ''
   });
+  // const [search, setSearch] = useState('');
 
   const { jobType, jobGroup, location, postingType, search } = filters;
 
@@ -139,8 +142,8 @@ const PostingListPage = () => {
     handleFilter('postingType', e.target.value);
   };
 
-  const handleSearch = (e) => {
-    handleFilter('search', e.target.value);
+  const handleSearch = (value) => {
+    handleFilter('search', value);
   };
 
   const handleSort = async (orderType) => {
@@ -186,10 +189,13 @@ const PostingListPage = () => {
         <Grid item xs={1.2}></Grid>
         <Grid container direction="column" item xs={9.6}>
           <Grid item>
-            <Box sx={{ height: '150px', pt: 8, pl: 12, pr: 12 }}>
+            <Box sx={{ height: '140px', pt: 10, pl: 12, pr: 12, display: 'flex', justifyContent: 'space-between' }}>
               <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>채용공고</Typography>
-              <Divider sx={{ border: '1px solid', mt: 2 }} />
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <MainPageSearch value={filters.search} handleSearchInputChange={handleSearch} />
+              </Box>
             </Box>
+            <Divider sx={{ border: '1px solid', mb: 3, mx: 12 }} />
           </Grid>
           <Grid item>
             <Box sx={{ height: '80px' }}>
@@ -197,7 +203,7 @@ const PostingListPage = () => {
                 <Grid item>
                   <Grid container spacing={1}>
                     <Grid item>
-                      <Select size="small" value={jobType} onChange={handleFilterJobType}>
+                      <Select size="small" value={jobType} onChange={handleFilterJobType} style={{ width: '120px' }}>
                         <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                           인재유형
                         </MenuItem>
@@ -207,7 +213,7 @@ const PostingListPage = () => {
                       </Select>
                     </Grid>
                     <Grid item>
-                      <Select size="small" value={jobGroup} onChange={handleFilterJobGroup}>
+                      <Select size="small" value={jobGroup} onChange={handleFilterJobGroup} style={{ width: '120px' }}>
                         <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                           분야
                         </MenuItem>
@@ -217,7 +223,7 @@ const PostingListPage = () => {
                       </Select>
                     </Grid>
                     <Grid item>
-                      <Select size="small" value={location} onChange={handleFilterLocation}>
+                      <Select size="small" value={location} onChange={handleFilterLocation} style={{ width: '120px' }}>
                         <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                           근무지
                         </MenuItem>
@@ -227,7 +233,7 @@ const PostingListPage = () => {
                       </Select>
                     </Grid>
                     <Grid item>
-                      <Select size="small" value={postingType} onChange={handleFilterPostingType}>
+                      <Select size="small" value={postingType} onChange={handleFilterPostingType} style={{ width: '120px' }}>
                         <MenuItem value="defaultValue" disabled style={{ display: 'none' }}>
                           채용형태
                         </MenuItem>

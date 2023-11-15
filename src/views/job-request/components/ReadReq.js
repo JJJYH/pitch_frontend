@@ -168,13 +168,13 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     const copyData = { ...formData, job_req_no: 0, job_req_date: new Date(), req_status: '작성중' };
     console.log(copyData);
     setCopiedData(copyData);
-    // dispatch(resetSelectedRow());
+    dispatch(resetSelectedRow());
   };
 
-  const handlePaste = () => {
-    setFormData(copiedData);
-    setCopiedData('');
-  };
+  // const handlePaste = () => {
+  //   setFormData(copiedData);
+  //   setCopiedData('');
+  // };
 
   const handlePosting = async () => {
     try {
@@ -214,27 +214,32 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
       //console.log(selectedRow);
     } else {
-      setFormData({
-        job_req_no: '',
-        users: { user_id: userId },
-        req_title: '',
-        job_req_date: new Date(),
-        job_group: '',
-        job_role: '',
-        location: '',
-        hire_num: '',
-        education: '',
-        job_type: '신입',
-        job_year: '',
-        posting_type: '수시채용',
-        posting_period: '',
-        posting_start: '',
-        posting_end: '',
-        qualification: '',
-        preferred: '',
-        job_duties: '',
-        req_status: '작성중'
-      });
+      if (copiedData) {
+        setFormData(copiedData);
+        setCopiedData('');
+      } else {
+        setFormData({
+          job_req_no: '',
+          users: { user_id: userId },
+          req_title: '',
+          job_req_date: new Date(),
+          job_group: '',
+          job_role: '',
+          location: '',
+          hire_num: '',
+          education: '',
+          job_type: '신입',
+          job_year: '',
+          posting_type: '수시채용',
+          posting_period: '',
+          posting_start: '',
+          posting_end: '',
+          qualification: '',
+          preferred: '',
+          job_duties: '',
+          req_status: '작성중'
+        });
+      }
     }
   }, [selectedRow]);
 
@@ -260,16 +265,16 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.log(res);
 
           dispatch(setSelectedRow(submitData));
-          setSelectedChips([]);
-          reqlisthandler();
+          // setSelectedChips([]);
+          // reqlisthandler();
         } else if (status === '반려') {
           const job_req_no = selectedRow.job_req_no;
           const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
           console.log(res);
 
           dispatch(setSelectedRow(submitData));
-          setSelectedChips([]);
-          reqlisthandler();
+          // setSelectedChips([]);
+          // reqlisthandler();
         } else {
           const job_req_no = selectedRow.job_req_no;
           const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
@@ -280,7 +285,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           // const statusData = { selectedStatus: selectedChips };
           // const responseData = await postStatusData(statusData);
           // setRows(responseData);
-          const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips);
+          const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
           setRows(searchData);
         }
       } else {
@@ -321,16 +326,19 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
             >
               {selectedRow ? '요청 상세' : '요청서 등록'}
             </Typography>
-            {userId !== 'admin' && formData.req_status !== '작성중' && (
-              <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCopy}>
-                복사하기
-              </Button>
-            )}
-            {userId !== 'admin' && copiedData && !selectedRow && (
+            {userId !== 'admin' &&
+              formData.req_status !== '작성중' &&
+              formData.req_status !== '요청완료' &&
+              formData.req_status !== '반려' && (
+                <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCopy}>
+                  복사하기
+                </Button>
+              )}
+            {/* {userId !== 'admin' && copiedData && !selectedRow && (
               <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handlePaste}>
                 붙여넣기
               </Button>
-            )}
+            )} */}
           </Grid>
 
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />
