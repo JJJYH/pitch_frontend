@@ -23,6 +23,7 @@ const getAge = (data) => {
   return age;
 };
 
+/* d-day 계산하는 함수 */
 const getDday = (targetDate) => {
   const now = new Date();
   const target = new Date(targetDate);
@@ -31,6 +32,23 @@ const getDday = (targetDate) => {
   const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
   return daysDiff;
+};
+
+/* 이미지 파일 변환하는 함수 */
+const getImage = (image) => {
+  const byteCharacters = window.atob(image);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+  const imageUrl = URL.createObjectURL(blob);
+
+  return imageUrl;
 };
 
 const evalSub = [
@@ -56,4 +74,13 @@ const evalSub = [
   }
 ];
 
-export { getFormattedDate, getAge, getDday, evalSub };
+/* 헤더에서 파일명 가져오는 함수*/
+const getFileNameFromContentDisposition = (contentDisposition) => {
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename=([^;\s]+)/);
+    return match ? match[1] : null;
+  }
+  return null;
+};
+
+export { getFormattedDate, getAge, getDday, getImage, getFileNameFromContentDisposition, evalSub };

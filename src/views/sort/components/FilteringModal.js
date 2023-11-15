@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import { sort } from 'api';
-import { useSelector } from 'react-redux';
 
 /* mui components */
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +14,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Divider,
   FormControl,
@@ -34,9 +36,8 @@ import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 /* custom components */
 import ScrollingApplicantList from './ScrollingApplicantList';
 
-const FilteringModal = () => {
+const FilteringModal = ({ postingNo, postingInfo }) => {
   const theme = useTheme();
-  const posting = useSelector((state) => state.posting);
   const [selectedFilter, setSelectedFilter] = useState([
     { key: 3, label: '우대사항', value: 5 },
     { key: 0, label: '경력', value: 30 },
@@ -50,6 +51,9 @@ const FilteringModal = () => {
   const [openModal, setOpenModal] = useState(false);
   const [list, setList] = useState([]);
   const [total, setTotal] = useState(0);
+  const [max, setMax] = useState(0);
+  const [isBtnClicked, setIsBtnClicked] = useState(false);
+  const [checkedList, setCheckedList] = useState([]);
   const [totalSliderValue, setTotalSliderValue] = useState(100);
 
   const handleSliderChange = (event, filter) => {
@@ -75,9 +79,11 @@ const FilteringModal = () => {
     setOpenModal(false);
   };
   const handleClick = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleClose = (e) => {
+    e.stopPropagation();
     setAnchorEl(null);
   };
 
@@ -92,9 +98,6 @@ const FilteringModal = () => {
     setSelectedFilter((prevSelectedFilter) => prevSelectedFilter.filter((item) => item.key !== filter.key));
     setFilterList((prevFilterList) => [...prevFilterList, filter]);
   };
-  const handleBtnClick = (event, type) => {
-    sort.applicantHandle(type, list).then(() => {});
-  };
 
   const handleClear = () => {
     setSelectedFilter([{ key: 3, label: '우대사항', value: 5 }]);
@@ -108,21 +111,76 @@ const FilteringModal = () => {
   };
 
   useEffect(() => {
-    sort.applicantSortList(posting.postingNo).then((res) => {
-      console.log(res.data);
+    const filter = setFilter();
+    sort.applicantSortList(postingNo, filter).then((res) => {
+      setList([...res.data]);
+      setMax(res.data.length);
+    });
+
+    let val = 0;
+
+    selectedFilter.map((fil) => {
+      val += fil.value;
+    });
+
+    setTotalSliderValue(100 - val);
+  }, []);
+
+  useEffect(() => {
+    let val = 0;
+    selectedFilter.map((fil) => {
+      val += fil.value;
+    });
+
+    setTotalSliderValue(100 - val);
+  }, [selectedFilter]);
+
+  useEffect(() => {
+    const filter = setFilter();
+    sort.applicantSortList(postingNo, filter).then((res) => {
+      setList([...res.data]);
     });
   }, [selectedFilter, totalSliderValue]);
 
+  const setFilter = () => {
+    const filter = {
+      job_type: postingInfo.job_type,
+      job_year: postingInfo.job_year,
+      job_group: postingInfo.job_group,
+      education: postingInfo.education
+    };
+
+    const selected = selectedFilter.reduce((accumulator, f) => {
+      if (f.label === '우대사항') {
+        accumulator.advantageScore = f.value;
+      } else if (f.label === '경력') {
+        accumulator.experienceScore = f.value;
+      } else if (f.label === '자격증') {
+        accumulator.certificationScore = f.value;
+      } else if (f.label === '어학점수') {
+        accumulator.languageScore = f.value;
+      } else if (f.label === '학력') {
+        accumulator.educationScore = f.value;
+      }
+
+      return accumulator;
+    }, {});
+
+    return { ...selected, ...filter };
+  };
+
   return (
     <div>
-      <Button
-        variant="contained"
-        size="medium"
-        style={{ marginRight: '5px', borderColor: '#38678f', background: '#38678f' }}
-        onClick={handleOpen}
-      >
-        지원자 선별
-      </Button>
+      {postingInfo && (
+        <Button
+          variant="contained"
+          size="medium"
+          style={{ marginRight: '5px', borderColor: '#38678f', background: '#38678f' }}
+          onClick={handleOpen}
+        >
+          지원자 선별
+        </Button>
+      )}
       <BootstrapDialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={openModal} maxWidth={'md'}>
         <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center' }} id="customized-dialog-title">
           <FilterAltOutlinedIcon />
@@ -155,17 +213,17 @@ const FilteringModal = () => {
           </Typography>
           <Divider sx={{ mb: '20px' }} />
           <Grid container direction={'column'}>
-            <Grid item container sx={{ display: 'flex', alignItems: 'center', mb: '20px' }}>
-              <Grid item xs={2}>
+            <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Typography variant="h5">선별인원수</Typography>
               </Grid>
               <Grid item xs={7}>
                 <PrettoSlider
-                  sx={{ ml: '5px' }}
+                  sx={{ ml: '20px' }}
                   valueLabelDisplay="auto"
                   aria-label="pretto slider"
                   defaultValue={20}
-                  max={1000}
+                  max={max}
                   value={total}
                   onChange={(e) => {
                     setTotal(e.target.value);
@@ -173,7 +231,7 @@ const FilteringModal = () => {
                 />
               </Grid>
               <Grid item xs={3} sx={{ display: 'flex', alignItems: 'end', justifyContent: 'center' }}>
-                <Box sx={{ width: '80px' }}>
+                <Box sx={{ width: '80px', ml: '50px' }}>
                   <TextField
                     id="standard-number"
                     label="미분류 지원자수"
@@ -187,165 +245,194 @@ const FilteringModal = () => {
                     }}
                   />
                 </Box>
-                <Typography variant="h3">/1000</Typography>
+                <Typography variant="h3">/{max}</Typography>
               </Grid>
             </Grid>
-            <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
-              <Grid item xs={2}>
-                <Typography variant="h5">선별조건</Typography>
-              </Grid>
-              <Grid
-                item
-                xs={10}
-                sx={{ height: '60px', display: 'flex', justifyContent: 'space-between', border: '1px solid black', alignItems: 'center' }}
-              >
-                <Box sx={{ display: 'flex', justifyContent: 'start', ml: '10px' }}>
-                  {selectedFilter.map((data) => {
-                    return (
-                      <Chip
-                        sx={{ mr: '6px' }}
-                        key={data.key}
-                        label={data.label}
-                        onDelete={() => {
-                          data.label === '기본' ? undefined : removeFilter(data);
-                        }}
-                      />
-                    );
-                  })}
-                </Box>
-                <Box>
-                  <IconButton
-                    color="primary"
-                    aria-label="add to list"
-                    onClick={handleClick}
-                    aria-controls={open ? 'account-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                  >
-                    <AddCircleOutlinedIcon />
-                  </IconButton>
-                  <Menu
-                    anchorEl={anchorEl}
-                    id="account-menu"
-                    open={open}
-                    onClose={handleClose}
-                    onClick={handleClose}
-                    PaperProps={{
-                      elevation: 0,
-                      sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                        mt: 1.5,
-                        '& .MuiAvatar-root': {
-                          width: 32,
-                          height: 32,
-                          ml: -0.5,
-                          mr: 1
-                        },
-                        '&:before': {
-                          content: '""',
-                          display: 'block',
-                          position: 'absolute',
-                          top: 0,
-                          right: 14,
-                          width: 10,
-                          height: 10,
-                          bgcolor: 'background.paper',
-                          transform: 'translateY(-50%) rotate(45deg)',
-                          zIndex: 0
-                        }
-                      }
+            <Accordion
+              elevation={0}
+              sx={{
+                '&.MuiAccordion-root:before': {
+                  display: 'none'
+                }
+              }}
+            >
+              <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
+                <AccordionSummary aria-controls="panel2a-content" id="panel2a-header">
+                  <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', pr: '10px' }}>
+                    <Typography variant="h5">선별조건</Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={10}
+                    sx={{
+                      height: '60px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      border: '1px solid black',
+                      alignItems: 'center'
                     }}
-                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                   >
-                    {filterList.map((filter) => {
+                    <Box sx={{ width: '620px', display: 'flex', justifyContent: 'start', ml: '10px' }}>
+                      {selectedFilter.map((data) => {
+                        return (
+                          <Chip
+                            sx={{ mr: '6px' }}
+                            key={data.key}
+                            label={data.label}
+                            onDelete={(e) => {
+                              e.stopPropagation();
+                              data.label === '기본' ? undefined : removeFilter(data);
+                            }}
+                          />
+                        );
+                      })}
+                    </Box>
+                    <Box>
+                      <IconButton
+                        color="primary"
+                        aria-label="add to list"
+                        onClick={handleClick}
+                        aria-controls={open ? 'account-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                      >
+                        <AddCircleOutlinedIcon />
+                      </IconButton>
+                      <Menu
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={open}
+                        onClose={handleClose}
+                        onClick={handleClose}
+                        PaperProps={{
+                          elevation: 0,
+                          sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: 1.5,
+                            '& .MuiAvatar-root': {
+                              width: 32,
+                              height: 32,
+                              ml: -0.5,
+                              mr: 1
+                            },
+                            '&:before': {
+                              content: '""',
+                              display: 'block',
+                              position: 'absolute',
+                              top: 0,
+                              right: 14,
+                              width: 10,
+                              height: 10,
+                              bgcolor: 'background.paper',
+                              transform: 'translateY(-50%) rotate(45deg)',
+                              zIndex: 0
+                            }
+                          }
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      >
+                        {filterList.map((filter) => {
+                          return (
+                            <MenuItem
+                              key={filter.key}
+                              onClick={() => {
+                                addFilter(filter);
+                              }}
+                            >
+                              {filter.label}
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
+                    </Box>
+                  </Grid>
+                </AccordionSummary>
+              </Grid>
+              <AccordionDetails>
+                <Grid item container>
+                  <Grid item xs={2}></Grid>
+                  <Grid item xs={8} container>
+                    {selectedFilter?.map((filter) => {
                       return (
-                        <MenuItem
-                          key={filter.key}
-                          onClick={() => {
-                            addFilter(filter);
-                          }}
-                        >
-                          {filter.label}
-                        </MenuItem>
+                        <Grid item container key={filter.key}>
+                          <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Typography variant="h5">{filter.label}</Typography>
+                          </Grid>
+                          <Grid item xs={7}>
+                            <PrettoSlider
+                              onChange={(e, val) => {
+                                handleSliderChange(e, filter);
+                              }}
+                              sx={{ ml: '5px', maxWidth: '338px' }}
+                              valueLabelDisplay="auto"
+                              aria-label="pretto slider"
+                              max={100}
+                              value={filter.value}
+                            />
+                          </Grid>
+                          <Grid item xs={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <TextField
+                              sx={{ maxWidth: '60px' }}
+                              id="standard-number"
+                              InputLabelProps={{
+                                shrink: true
+                              }}
+                              variant="standard"
+                              value={filter.value}
+                              aria-readonly
+                            />
+                          </Grid>
+                        </Grid>
                       );
                     })}
-                  </Menu>
-                </Box>
-              </Grid>
-            </Grid>
-            <Grid item container sx={{ mt: '15px' }}>
-              <Grid item xs={2}></Grid>
-              <Grid item xs={8} container>
-                {selectedFilter?.map((filter) => {
-                  return (
-                    <Grid item container key={filter.key}>
-                      <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Typography variant="h5">{filter.label}</Typography>
-                      </Grid>
-                      <Grid item xs={7}>
-                        <PrettoSlider
-                          onChange={(e) => {
-                            handleSliderChange(e, filter);
-                          }}
-                          sx={{ ml: '5px', maxWidth: '338px' }}
-                          valueLabelDisplay="auto"
-                          aria-label="pretto slider"
-                          max={100}
-                          value={filter.value}
-                        />
-                      </Grid>
-                      <Grid item xs={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <TextField
-                          sx={{ maxWidth: '60px' }}
-                          id="standard-number"
-                          InputLabelProps={{
-                            shrink: true
-                          }}
-                          variant="standard"
-                          value={filter.value}
+                  </Grid>
+                  <Grid item container>
+                    <Grid item xs={9}></Grid>
+                    <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button onClick={handleClear}>초기화</Button>
+                    </Grid>
+                    <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <FormControl sx={{ maxWidth: '85px' }}>
+                        <InputLabel htmlFor="outlined-adornment-amount">잔여</InputLabel>
+                        <OutlinedInput
+                          id="outlined-adornment-amount"
+                          endAdornment={<InputAdornment position="end">%</InputAdornment>}
+                          value={totalSliderValue}
+                          label="잔여"
                           aria-readonly
                         />
-                      </Grid>
+                      </FormControl>
                     </Grid>
-                  );
-                })}
-              </Grid>
-              <Grid item container>
-                <Grid item xs={9}></Grid>
-                <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button onClick={handleClear}>초기화</Button>
+                  </Grid>
                 </Grid>
-                <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <FormControl sx={{ maxWidth: '85px' }}>
-                    <InputLabel htmlFor="outlined-adornment-amount">잔여</InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-amount"
-                      endAdornment={<InputAdornment position="end">%</InputAdornment>}
-                      value={totalSliderValue}
-                      label="잔여"
-                      aria-readonly
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </Grid>
+              </AccordionDetails>
+            </Accordion>
           </Grid>
-          <Typography variant="h4" sx={{ mt: '20px', mb: '10px' }}>
+          <Typography variant="h4" sx={{ mb: '10px' }}>
             지원자 목록
           </Typography>
           <Divider sx={{ mb: '20px' }} />
-          <ScrollingApplicantList height={400} width={768} itemSize={80} />
+          <ScrollingApplicantList
+            height={400}
+            width={768}
+            itemSize={80}
+            list={list}
+            isBtnClicked={isBtnClicked}
+            setIsBtnClicked={setIsBtnClicked}
+            setCheckedList={setCheckedList}
+            setOpenModal={setOpenModal}
+          />
         </DialogContent>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box sx={{ ml: '15px' }}>
-            <Typography variant="h4">
-              총 <b style={{ fontWeight: 'bold', fontSize: '25px', color: theme.palette.primary[800] }}>24</b> 지원자
-            </Typography>
-          </Box>
+        <DialogActions>
           <Box>
-            <Button autoFocus onClick={(event) => handleBtnClick(event, 'fail')}>
+            <Button
+              autoFocus
+              onClick={() => {
+                setIsBtnClicked(true);
+              }}
+            >
               불합격대기
             </Button>
             <Button autoFocus onClick={handleCloseModal}>

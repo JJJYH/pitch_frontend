@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import classNames from '../sort.module.scss';
 import { getFormattedDate } from '../sorts';
 import styled from 'styled-components';
+import { getImage } from '../sorts';
 
 const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
   return (
@@ -14,7 +15,11 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
         </Grid>
         <Grid item container className={classNames.row} sx={{ border: '1px solid black' }}>
           <Grid item xs={2} sx={{ minHeight: '230px', borderRight: '1px solid black' }}>
-            사진
+            <img
+              src={applicantInfo.picture && getImage(applicantInfo.picture)}
+              alt={applicantInfo.user_nm}
+              style={{ width: '130px', height: '200px', marginTop: '15px' }}
+            />
           </Grid>
           <Grid item container xs={10}>
             <Grid item xs={1} className={classNames.subTitleGrid} sx={{ borderRight: '1px solid black' }}>
@@ -421,6 +426,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
               </Grid>
             </Grid>
             {applicantInfo['cv']?.['activities'].map((ac, index) => {
+              if (ac.activity_detail == null) return;
               return (
                 <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
                   <Grid item xs={2}>

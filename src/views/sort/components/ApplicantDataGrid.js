@@ -10,7 +10,7 @@ import { template } from 'lodash';
 
 /* custom components */
 
-const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList, setIsSelected, setSelectedRows }) => {
+const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnType, setList, setIsSelected, setSelectedRows }) => {
   const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
 
   useEffect(() => {
@@ -22,6 +22,14 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, btnType, setList, setI
       setList();
     });
   }, [isBtnClicked]);
+
+  useEffect(() => {
+    const list = [];
+    rowSelectionModel.map((index) => {
+      list.push(rows[index].apply_no);
+    });
+    sort.cvToExcel(list).then(() => {});
+  }, [isExcelClicked]);
 
   useEffect(() => {
     if (rowSelectionModel.length > 0) {
