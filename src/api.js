@@ -17,10 +17,6 @@ const instance = axios.create({
 });
 // AccessToken 검증 로직
 instance.interceptors.request.use((config) => {
-<<<<<<< HEAD
-  //console.log(config);
-=======
->>>>>>> soyoung
   if (!config.headers) return config;
 
   let accessToken = sessionStorage.getItem('AccessToken');
@@ -35,13 +31,7 @@ instance.interceptors.request.use((config) => {
 //accessToken 재발급 로직
 instance.interceptors.response.use(
   (response) => {
-<<<<<<< HEAD
-    //console.log('get response', response);
     const accessToken = response.headers.accesstoken;
-    //console.log('1. ' + accessToken);
-=======
-    const accessToken = response.headers.accesstoken;
->>>>>>> soyoung
     if (accessToken) {
       sessionStorage.setItem('AccessToken', accessToken);
       principal.setToken(accessToken);
@@ -50,18 +40,9 @@ instance.interceptors.response.use(
   }, //accessToken 에러로직(진행중)
   async function (error) {
     const originalConfig = error.config;
-<<<<<<< HEAD
-    //console.log(error);
     const msg = error.response.data.message;
     const status = error.response.status;
 
-    //console.log(error);
-    //console.log(msg);
-=======
-    const msg = error.response.data.message;
-    const status = error.response.status;
-
->>>>>>> soyoung
     //AccessToken 값이 유효하지 않으면 없으면 자동 로그아웃
     if (msg === 'AccessToken is not valid') {
       sessionStorage.removeItem('AccessToken');
