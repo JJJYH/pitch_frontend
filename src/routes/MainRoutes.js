@@ -36,9 +36,16 @@ const MainRoutes = {
   element: <MainLayout />,
   children: [
     {
+      path: '/',
+      element: <PostingListPage />
+    },
+    {
       path: 'main',
-      element: <PostingListPage />,
       children: [
+        {
+          path: '',
+          element: <PostingListPage />
+        },
         {
           path: 'cv/:job_posting_no',
           element: <CVPage />
