@@ -25,6 +25,7 @@ import { addActivity } from 'store/activitySlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import { updateCVNO } from 'store/cvSlice';
 import JSZip from 'jszip';
+
 const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPath, componentRef, setSelectedFiles }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
@@ -32,6 +33,15 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
   for (const key in tabRef.current) {
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
+
+  const [missingValues, setMissingValues] = useState({
+    edu: 0,
+    career: 0,
+    advantage: 0,
+    cert: 0,
+    lang: 0,
+    activity: 0
+  });
 
   const [isWritten, setIsWritten] = useState();
   const dispatch = useDispatch();
@@ -220,11 +230,6 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
         });
         data.data['languages'].map((item, key) => {
           if (data.data['languages'].length > cvData.cv.languages.length && item.language_no !== 0) {
-            //HSK일 경우 역산
-            if (item.exam_type === 'HSK') {
-              console.log(reverseFuction(item.language_score));
-              item = { ...item, language_level: reverseFuction(item.language_score) };
-            }
             dispatch(addLang(item));
           }
           console.log(key);
@@ -442,11 +447,128 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
     };
   }, [scrollPosition]);
 
+  //누락 값 Search
+  let missingEduValuesCount = 0;
+  let missingCareerValueCount = 0;
+  let missingAdvantageValueCount = 0;
+  let missingCertValueCount = 0;
+  let missingLangValueCount = 0;
+  let missingActivityValueCount = 0;
+  const checkEmptyValue = (cvData) => {
+    // console.log(JSON.stringify(cvData.cv));
+
+    if (!cvData.cv || !cvData.cv.educations || !Array.isArray(cvData.cv.educations)) {
+      console.log('데이터가 비어있습니다.');
+      return;
+    }
+    // educations 배열 순회
+
+    cvData.cv.educations.forEach((item) => {
+      // 각 속성이 존재하고 값이 비어있는지 확인
+      const requiredUnivFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major', 'score', 'total_score'];
+      const requiredHighFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major'];
+
+      if (item.edu_type.includes('고등학교') || !item.edu_type) {
+        requiredHighFields.forEach((field) => {
+          if (!item[field] || item[field].length === 0) {
+            missingEduValuesCount++;
+          }
+        });
+      } else if (item.edu_type.includes('대학교')) {
+        requiredUnivFields.forEach((field) => {
+          if (!item[field] || item[field].length === 0) {
+            missingEduValuesCount++;
+          }
+        });
+      }
+    });
+
+    cvData.cv.careers.forEach((item) => {
+      const requiredCareerFields = ['company_name', 'cv_dept_name', 'join_date', 'position', 'job', 'salary', 'quit_date'];
+      requiredCareerFields.forEach((field) => {
+        if (!item[field] || item[field].length === 0) {
+          missingCareerValueCount++;
+        }
+      });
+    });
+
+    cvData.cv.careers.forEach((item) => {
+      const requiredCareerFields = ['company_name', 'cv_dept_name', 'join_date', 'position', 'job', 'salary', 'quit_date'];
+      requiredCareerFields.forEach((field) => {
+        if (!item[field] || item[field].length === 0) {
+          missingCareerValueCount++;
+        }
+      });
+    });
+
+    cvData.cv.advantages.forEach((item) => {
+      const requireAdvantageDetailFields = ['advantage_type', 'advantage_detail'];
+      if (item.advantage_type.includes('병역') || item.advantage_type.includes('장애')) {
+        requireAdvantageDetailFields.forEach((field) => {
+          if (!item[field] || item[field].length === 0) {
+            missingAdvantageValueCount++;
+          }
+        });
+      }
+    });
+
+    cvData.cv.certifications.forEach((item) => {
+      const requireCertFields = ['cert_name', 'publisher', 'acquisition_date'];
+      requireCertFields.forEach((field) => {
+        if (!item[field] || item[field].length === 0) {
+          missingCertValueCount++;
+        }
+      });
+    });
+
+    cvData.cv.languages.forEach((item) => {
+      const requireLangFields = ['exam_type', 'language_name', 'language_score'];
+      requireLangFields.forEach((field) => {
+        if (!item[field] || item[field].length === 0) {
+          missingLangValueCount++;
+        }
+      });
+    });
+
+    cvData.cv.activities.forEach((item) => {
+      const requrieActivityFields = ['activity_type', 'organiztion', 'start_date', 'end_date', 'activity_detail'];
+      requrieActivityFields.forEach((field) => {
+        if (!item[field] || item[field].length === 0) {
+          missingActivityValueCount++;
+        }
+      });
+    });
+
+    console.log(`Advantage 누락된 값의 개수: ${missingAdvantageValueCount}`);
+    console.log(`Activity 누락된 값의 개수: ${missingActivityValueCount}`);
+    console.log(`Language 누락된 값의 개수: ${missingLangValueCount}`);
+    console.log(`Certification 누락된 값의 개수: ${missingCertValueCount}`);
+    console.log(`Edu 누락된 값의 개수: ${missingEduValuesCount}`);
+    console.log(`Career 누락된 값의 개수: ${missingCareerValueCount}`);
+  };
+
+  // 색상 계산 함수
+  const calculateColor = (MissingCount) => {
+    const initialColor = '#D18AC7'; // 초기 색상
+    const finalColor = '#4682B4'; // 최종 색상
+    const maxCount = 100; // 최대 카운트 (증가할 때마다)
+
+    // 계산된 비율을 기반으로 색상 계산
+    const ratio = MissingCount / maxCount;
+    const red = Math.round(parseInt(initialColor.slice(1, 3), 16) * (1 - ratio) + parseInt(finalColor.slice(1, 3), 16) * ratio);
+    const green = Math.round(parseInt(initialColor.slice(3, 5), 16) * (1 - ratio) + parseInt(finalColor.slice(3, 5), 16) * ratio);
+    const blue = Math.round(parseInt(initialColor.slice(5, 7), 16) * (1 - ratio) + parseInt(finalColor.slice(5, 7), 16) * ratio);
+
+    // 계산된 RGB 값을 16진수로 변환하여 반환
+    return `#${(red * 0x10000 + green * 0x100 + blue).toString(16).padStart(6, '0')}`;
+  };
+  checkEmptyValue(cvData);
+
   return (
     <Box sx={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', position: 'sticky', top: 90, width: '150px' }}>
       <MainCard sx={{ width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingEduValuesCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'education' ? 'primary' : 'default'}
@@ -459,7 +581,6 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'skills' ? 'primary' : 'default'}
@@ -472,7 +593,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingCareerValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'career' ? 'primary' : 'default'}
@@ -485,7 +606,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingCertValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'cert' ? 'primary' : 'default'}
@@ -498,7 +619,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingLangValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'lang' ? 'primary' : 'default'}
@@ -512,7 +633,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          {/* <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} /> */}
           <Typography
             variant="h4"
             color={location_point === 'activity' ? 'primary' : 'default'}
@@ -526,7 +647,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingActivityValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'docs' ? 'primary' : 'default'}
@@ -539,7 +660,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          <CircleIcon fontSize="16px" style={{ color: missingAdvantageValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'advantage' ? 'primary' : 'default'}

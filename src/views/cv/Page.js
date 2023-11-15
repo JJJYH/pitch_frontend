@@ -302,11 +302,7 @@ const CV = ({ isMainCV, sendData }) => {
         data.data['languages'].map((item, key) => {
           if (data.data['languages'].length > cvData.cv.languages.length && item.language_no !== 0) {
             console.log(item);
-            //HSK일 경우 역산
-            if (item.exam_type === 'HSK') {
-              console.log(reverseHskFromScore(item.language_score));
-              item = { ...item, language_level: reverseHskFromScore(item.language_score) };
-            }
+
             //APPLY CV에서 부른 경우 language_no 초기화
             if (isMainCV !== 'MainCV') {
               item.language_no = 0;
@@ -348,27 +344,7 @@ const CV = ({ isMainCV, sendData }) => {
       }
     });
   };
-  /**역산 로직 */
-  const reverseHskFromScore = (score) => {
-    const hsk1000ScoreRange = {
-      '1급': [185, 280],
-      '2급': [285, 380],
-      '3급': [301, 499],
-      '4급': [501, 699],
-      '5급': [701, 899],
-      '6급': [901, 999]
-    };
 
-    // 등급 찾기
-    for (const [level, range] of Object.entries(hsk1000ScoreRange)) {
-      if (score >= range[0] && score <= range[1]) {
-        return level;
-      }
-    }
-
-    // 등급을 찾지 못한 경우
-    return null;
-  };
   //대표 이력서 불러오기
   const MainToApplyCV = () => {
     cv.getMainCVNO().then((res) => {
@@ -570,7 +546,7 @@ const CV = ({ isMainCV, sendData }) => {
                     자격증
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                    <Ocr Ocr />
+                    <Ocr />
                     <IconButton onClick={() => certAddFields()}>
                       <AddIcon />
                     </IconButton>
@@ -583,7 +559,6 @@ const CV = ({ isMainCV, sendData }) => {
                     어학 성적
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                    <Ocr />
                     <IconButton onClick={() => langAddFields()}>
                       <AddIcon />
                     </IconButton>
@@ -740,7 +715,6 @@ const CV = ({ isMainCV, sendData }) => {
                         어학 성적
                       </Typography>
                       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                        <Ocr />
                         <IconButton onClick={() => langAddFields()}>
                           <AddIcon />
                         </IconButton>
@@ -828,7 +802,6 @@ const CV = ({ isMainCV, sendData }) => {
                   selectedFiles={selectedFiles}
                   componentRef={componentRef}
                   setSelectedFiles={setSelectedFiles}
-                  reverseFuction={reverseHskFromScore}
                 />
               </Grid>
               <Grid item xs={1} />
