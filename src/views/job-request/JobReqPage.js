@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
+import { reqPosting } from 'api';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -51,7 +52,7 @@ const JobReqPage = () => {
 
   const reqlisthandler = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/admin/hire/reqlist');
+      const response = await reqPosting.jobReqList();
       setRows(response.data);
       const defaultRow = response.data[0];
       //console.log(defaultRow);
@@ -66,19 +67,10 @@ const JobReqPage = () => {
   }, []);
 
   const handleCreate = async () => {
-    // setSelectedChips([]);
-    // reqlisthandler();
-    // const statusData = { selectedStatus: selectedChips };
-    // const responseData = await postStatusData(statusData);
-    // setRows(responseData);
     const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
     setRows(searchData);
 
     dispatch(resetSelectedRow());
-
-    // setStartDate(null);
-    // setEndDate(null);
-    // setSearchKeyword('');
   };
 
   const handleReset = () => {
@@ -91,7 +83,7 @@ const JobReqPage = () => {
 
   const postStatusData = async (statusData) => {
     try {
-      const response = await axios.post('http://localhost:8888/admin/hire/statuslist', statusData);
+      const response = await reqPosting.statusList(statusData);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -134,7 +126,7 @@ const JobReqPage = () => {
 
   const handleCombinedSearch = async (startDate, endDate, searchKeyword, selectedStatus, userId) => {
     try {
-      const response = await axios.post('http://localhost:8888/admin/hire/search', {
+      const response = await reqPosting.search({
         startDate,
         endDate,
         searchKeyword,

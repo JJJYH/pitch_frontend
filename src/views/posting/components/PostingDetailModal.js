@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { Box, Card, CardContent, Chip, Divider, TextField } from '@mui/material';
+import { Box, Card, CardContent, Chip, Divider, Menu, MenuItem, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -24,6 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import InterviewerListModal from 'views/posting/components/InterviewerListModal';
 import { useNavigate } from 'react-router';
 import procedure from './procedure.png';
+import SharePosting from './SharePosting';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -57,11 +58,21 @@ const PostingDetailModal = ({
   const [isSticky, setIsSticky] = useState(false);
   const [openInterviewers, setOpenInterviewers] = useState(false);
   const [interviewers, setInterviewers] = useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openAnchorEl = Boolean(anchorEl);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
   const daysRemaining = postingEndDate.diff(currentDate, 'day') + 1;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => document.body.removeChild(script);
+  }, []);
 
   const handleScroll = (e) => {
     const scrollY = e.target.scrollTop;
@@ -152,6 +163,13 @@ const PostingDetailModal = ({
 
   const handleInterviewers = (list) => {
     setInterviewers(list);
+  };
+
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -332,7 +350,66 @@ const PostingDetailModal = ({
                       <Typography ml={2}>관심공고</Typography>
                     </Grid>
                     <Grid item sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-                      <ShareRoundedIcon />
+                      {/* <IconButton>
+                        <ShareRoundedIcon />
+                      </IconButton> */}
+
+                      <IconButton
+                        onClick={handleClickMenu}
+                        size="small"
+                        sx={{ ml: 2 }}
+                        aria-controls={openAnchorEl ? 'account-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openAnchorEl ? 'true' : undefined}
+                      >
+                        <ShareRoundedIcon />
+                      </IconButton>
+
+                      <Menu
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={openAnchorEl}
+                        onClose={handleCloseMenu}
+                        onClick={handleCloseMenu}
+                        PaperProps={{
+                          elevation: 0,
+                          sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: 1.5,
+                            '& .MuiMenu-list': {
+                              display: 'flex',
+                              flexDirection: 'row'
+                            },
+
+                            '& .MuiAvatar-root': {
+                              width: 32,
+                              height: 32,
+                              ml: -0.5,
+                              mr: 1
+                            },
+                            '&:before': {
+                              content: '""',
+                              display: 'block',
+                              position: 'absolute',
+                              top: 0,
+                              right: 14,
+                              width: 10,
+                              height: 10,
+                              bgcolor: 'background.paper',
+                              transform: 'translateY(-50%) rotate(45deg)',
+                              zIndex: 0
+                            }
+                          }
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      >
+                        <MenuItem onClick={handleCloseMenu}>d</MenuItem>
+                        <MenuItem onClick={handleCloseMenu}>
+                          <SharePosting />
+                        </MenuItem>
+                      </Menu>
                       <Typography ml={1}>공유</Typography>
                     </Grid>
                   </Grid>
@@ -433,34 +510,44 @@ const PostingDetailModal = ({
                     <Box sx={{ width: '1050px', borderTop: '1px solid #ddd', marginLeft: '25px', p: 2, pb: 3 }}>
                       <Grid container direction="column">
                         <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>공통지원자격</Typography>
-                          <Typography mb={1}>- 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자</Typography>
-                          <Typography mb={1}>- 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자</Typography>
-                          <Typography mb={1}>※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정</Typography>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>공통지원자격</Typography>
+                          <Typography sx={{ fontSize: '16px' }} mb={1}>
+                            - 공통 필수사항 : 병역필 또는 면제자로, 해외여행에 결격 사유가 없는 자
+                          </Typography>
+                          <Typography sx={{ fontSize: '16px' }} mb={1}>
+                            - 공통 우대사항 : 학사 취득 후 4년이상 유관경력 보유자
+                          </Typography>
+                          <Typography sx={{ fontSize: '16px' }} mb={1}>
+                            ※ 석/박사 학위취득(예정)자의 경우 수학기간을 경력기간으로 인정
+                          </Typography>
+                        </Grid>
+                        <Grid item sx={{ fontSize: '16px' }} mb={2}>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>채용인원</Typography>
+                          <Typography sx={{ fontSize: '16px' }} mb={1}>
+                            {formData.hire_num}명
+                          </Typography>
                         </Grid>
                         <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>채용인원</Typography>
-                          <Typography mb={1}>{formData.hire_num}명</Typography>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>근무지</Typography>
+                          <Typography sx={{ fontSize: '16px' }} mb={1}>
+                            {formData.location}
+                          </Typography>
                         </Grid>
                         <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>근무지</Typography>
-                          <Typography mb={1}>{formData.location}</Typography>
-                        </Grid>
-                        <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>수행업무</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>수행업무</Typography>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8, fontSize: '16px' }}>
                             {formData.job_duties}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>지원자격</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>지원자격</Typography>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8, fontSize: '16px' }}>
                             {formData.qualification}
                           </Typography>
                         </Grid>
                         <Grid item mb={2}>
-                          <Typography sx={{ fontSize: '16px', fontWeight: 'bold', mt: 3, mb: 2 }}>우대사항</Typography>
-                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>
+                          <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 3, mb: 2 }}>우대사항</Typography>
+                          <Typography mb={1} sx={{ whiteSpace: 'pre-line', lineHeight: 1.8, fontSize: '16px' }}>
                             {formData.preferred}
                           </Typography>
                         </Grid>
@@ -471,7 +558,7 @@ const PostingDetailModal = ({
               </Grid>
               <Grid item mt={3}>
                 <Box sx={{ width: '1100px', height: '400px' }}>
-                  <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 4, mb: 2.5, ml: 3 }}>제출서류</Typography>
+                  <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 10, mb: 2.5, ml: 3 }}>제출서류</Typography>
                   <Box
                     sx={{
                       width: '1100px',
@@ -481,14 +568,28 @@ const PostingDetailModal = ({
                       p: 4
                     }}
                   >
-                    <Typography mb={1}>- 증빙서류는 이력서 작성시 제출합니다.</Typography>
-                    <Typography mb={1}>ㆍ졸업증명서(원본) / 성적증명서(원본) / 경력증명서(원본) 각 1부</Typography>
-                    <Typography mb={3}>ㆍ기타 자격증 및 확인서</Typography>
-                    <Typography mb={1}>※ 채용 서류 반환 관련 안내 (별도 안내 예정)</Typography>
-                    <Typography mb={1}>회사는 채용 전형 과정에서 지원자의 불편을 최소화하기 위해</Typography>
-                    <Typography mb={1}>입사지원서를 비롯하여 채용과 관련된 모든 서류는 채용 홈페이지를 통해</Typography>
-                    <Typography mb={1}>접수 받고 있습니다. 채용 과정에서 서류를 직접 제출 받은 경우,</Typography>
-                    <Typography mb={1}>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      - 증빙서류는 이력서 작성시 제출합니다.
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      ㆍ졸업증명서(원본) / 성적증명서(원본) / 경력증명서(원본) 각 1부
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={3}>
+                      ㆍ기타 자격증 및 확인서
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      ※ 채용 서류 반환 관련 안내 (별도 안내 예정)
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      회사는 채용 전형 과정에서 지원자의 불편을 최소화하기 위해
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      입사지원서를 비롯하여 채용과 관련된 모든 서류는 채용 홈페이지를 통해
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
+                      접수 받고 있습니다. 채용 과정에서 서류를 직접 제출 받은 경우,
+                    </Typography>
+                    <Typography sx={{ fontSize: '16px' }} mb={1}>
                       해당 서류를 반환해 드리고 있사오니 자세한 내용은 지원가이드 - 채용서류 반환신청을 참고해 주시기 바랍니다.
                     </Typography>
                   </Box>
@@ -497,10 +598,12 @@ const PostingDetailModal = ({
               <Grid item>
                 <Box sx={{ width: '1100px', height: '300px' }}>
                   <Typography sx={{ fontSize: '25px', fontWeight: 'bold', mt: 4, mb: 2, ml: 3 }}>첨부자료</Typography>
-                  <Typography ml={3} mb={1}>
+                  <Typography sx={{ fontSize: '16px' }} ml={3} mb={1}>
                     본 공고에 첨부된 자기소개서 다운로드후 작성하여 주시기 바랍니다.
                   </Typography>
-                  <Typography ml={3}>작성한 파일은 pdf 변환 후 &lsquo;이력서 첨부&rsquo;란에 등록하여 주시기 바랍니다.</Typography>
+                  <Typography sx={{ fontSize: '16px' }} ml={3}>
+                    작성한 파일은 pdf 변환 후 &lsquo;이력서 첨부&rsquo;란에 등록하여 주시기 바랍니다.
+                  </Typography>
                   <Box
                     sx={{
                       width: '1100px',

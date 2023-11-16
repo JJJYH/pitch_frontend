@@ -14,6 +14,8 @@ import Stack from '@mui/material/Stack';
 import Carousel from 'react-material-ui-carousel';
 import MainPageSearch from './components/MainPageSearch';
 import SearchIcon from '@mui/icons-material/Search';
+import { useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -28,11 +30,19 @@ const PostingListPage = () => {
     jobGroup: 'defaultValue',
     location: 'defaultValue',
     postingType: 'defaultValue',
-    search: ''
+    searchKey: ''
   });
-  // const [search, setSearch] = useState('');
+  const { jobType, jobGroup, location, postingType, searchKey } = filters;
 
-  const { jobType, jobGroup, location, postingType, search } = filters;
+  const loc = useLocation();
+  const { pathname, search } = loc;
+
+  const queryParams = new URLSearchParams(search);
+  const postNo = queryParams.get('post');
+  console.log(postNo);
+
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const postingList = async () => {
@@ -42,7 +52,7 @@ const PostingListPage = () => {
           jobGroup,
           location,
           postingType,
-          search,
+          searchKey,
           orderType: sortBy
         });
 
@@ -65,6 +75,14 @@ const PostingListPage = () => {
         const recommendResponse = await axios.get('http://localhost:8888/admin/hire/getRecommendList');
         const recommendData = recommendResponse.data;
         setRecommendedPostings(recommendData);
+
+        if (postNo) {
+          const selectedPosting = jobPostings.find((posting) => posting.job_posting_no === Number(postNo));
+          if (selectedPosting) {
+            setSelectedJobPosting(selectedPosting);
+            setShareModalOpen(true);
+          }
+        }
       } catch (error) {
         console.error(error);
       }
@@ -81,6 +99,10 @@ const PostingListPage = () => {
 
   const handleClose = () => {
     setOpen(false);
+
+    setShareModalOpen(false);
+
+    navigate('/main');
   };
 
   const handleToggle = (e, jobPostingNo) => {
@@ -143,7 +165,7 @@ const PostingListPage = () => {
   };
 
   const handleSearch = (value) => {
-    handleFilter('search', value);
+    handleFilter('searchKey', value);
   };
 
   const handleSort = async (orderType) => {
@@ -192,7 +214,7 @@ const PostingListPage = () => {
             <Box sx={{ height: '140px', pt: 10, pl: 12, pr: 12, display: 'flex', justifyContent: 'space-between' }}>
               <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>채용공고</Typography>
               <Box display="flex" justifyContent="center" alignItems="center">
-                <MainPageSearch value={filters.search} handleSearchInputChange={handleSearch} />
+                <MainPageSearch value={filters.searchKey} handleSearchInputChange={handleSearch} />
               </Box>
             </Box>
             <Divider sx={{ border: '1px solid', mb: 3, mx: 12 }} />
@@ -297,7 +319,7 @@ const PostingListPage = () => {
           <Grid item>
             <Box sx={{ height: '250px', ml: 12, mr: 12, mb: 2, borderRadius: '4px', backgroundColor: '#f2f2f2' }}>
               <Box sx={{ height: '50px', display: 'flex', alignItems: 'flex-end' }}>
-                <Typography sx={{ fontSize: '20px', fontWeight: 'bold', pl: 2 }}>추천공고1</Typography>
+                <Typography sx={{ fontSize: '22px', fontWeight: 'bold', pl: 2 }}>추천 공고</Typography>
               </Box>
 
               <Box sx={{ height: '200px' }}>
@@ -444,7 +466,8 @@ const PostingListPage = () => {
               </Grid>
               {selectedJobPosting && (
                 <PostingDetailModal
-                  open={open}
+                  //open={open}
+                  open={open || shareModalOpen}
                   close={handleClose}
                   page="postingList"
                   formData={selectedJobPosting.jobReq}
