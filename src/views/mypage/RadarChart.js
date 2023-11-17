@@ -19,6 +19,7 @@ const RadarChart = ({ user_nm }) => {
         pointHoverBorderColor: '#34c38f',
         data: [65, 59, 90, 81, 56, 55]
       },
+
       {
         label: user_nm + '님',
         backgroundColor: 'rgba(85, 110, 230, 0.2)',

@@ -14,6 +14,7 @@ const skillSlice = createSlice({
     },
     updateSkill: (state, action) => {
       const { index, value } = action.payload;
+
       state[index].skill_name = value;
     }
   }

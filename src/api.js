@@ -240,6 +240,9 @@ const cv = {
   getJobInfoList: (data) => {
     return instance.get('/admin/main/cv/job-info-list', { params: { job_posting_no: data } });
   },
+  getApply: (data) => {
+    return instance.get('/admin/main/cv/apply', { params: { cv_no: data } });
+  },
   postApply: (data) => {
     return instance.post('/admin/main/cv/send-apply', data);
   },
