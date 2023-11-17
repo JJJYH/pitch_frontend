@@ -20,6 +20,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import PostingDetailModal from 'views/posting/components/PostingDetailModal';
+import { reqPosting } from 'api';
+import { useSnackbar } from 'notistack';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -84,6 +86,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [copiedData, setCopiedData] = useState('');
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   // 공고 등록 모달
   const handleOpen = () => {
@@ -169,6 +173,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     console.log(copyData);
     setCopiedData(copyData);
     dispatch(resetSelectedRow());
+    enqueueSnackbar('복사 완료', { variant: 'info' });
   };
 
   // const handlePaste = () => {
@@ -184,12 +189,11 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
       console.log(jobPostingData);
 
-      await axios.post('http://localhost:8888/admin/hire/create-post', jobPostingData);
+      await reqPosting.createPost(jobPostingData);
 
       const updatedJobReqNo = jobPostingData.jobReq.job_req_no;
 
-      // 전체 데이터를 가져오기 위한 요청
-      const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${updatedJobReqNo}`);
+      const response = await reqPosting.jobReqOne(updatedJobReqNo);
 
       const newSelectedRowData = response.data;
       console.log(newSelectedRowData);
@@ -253,15 +257,16 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
       if (selectedRow) {
         if (status === '요청완료') {
           const job_req_no = selectedRow.job_req_no;
-          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
+          enqueueSnackbar('승인요청 완료', { variant: 'info' });
           dispatch(setSelectedRow(submitData));
           setSelectedChips([]);
           reqlisthandler();
         } else if (status === '승인') {
           const job_req_no = selectedRow.job_req_no;
-          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
           dispatch(setSelectedRow(submitData));
@@ -269,7 +274,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           // reqlisthandler();
         } else if (status === '반려') {
           const job_req_no = selectedRow.job_req_no;
-          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
           dispatch(setSelectedRow(submitData));
@@ -277,14 +282,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           // reqlisthandler();
         } else {
           const job_req_no = selectedRow.job_req_no;
-          const res = await axios.put(`http://localhost:8888/admin/hire/update/${job_req_no}`, submitData);
+          const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
+          enqueueSnackbar('업데이트 완료', { variant: 'info' });
           dispatch(setSelectedRow(submitData));
 
-          // const statusData = { selectedStatus: selectedChips };
-          // const responseData = await postStatusData(statusData);
-          // setRows(responseData);
           const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
           setRows(searchData);
         }
@@ -303,9 +306,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.error(error);
         }
 
-        // const statusData = { selectedStatus: selectedChips };
-        // const responseData = await postStatusData(statusData);
-        // setRows(responseData);
+        enqueueSnackbar('임시저장 완료', { variant: 'info' });
         reqlisthandler();
       }
     } catch (error) {
@@ -334,11 +335,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                   복사하기
                 </Button>
               )}
-            {/* {userId !== 'admin' && copiedData && !selectedRow && (
-              <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handlePaste}>
-                붙여넣기
-              </Button>
-            )} */}
           </Grid>
 
           <Divider sx={{ marginTop: '10px', marginLeft: '15px', borderColor: '#c0c0c0' }} />

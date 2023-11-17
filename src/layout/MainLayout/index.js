@@ -28,13 +28,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
     'margin',
     open
       ? {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      }
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen
+        }
       : {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      }
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen
+        }
   ),
   [theme.breakpoints.up('md')]: {
     marginLeft: open ? 0 : -(drawerWidth - 20),
@@ -79,7 +79,7 @@ const MainLayout = () => {
     channel.onmessage = (event) => {
       if (event.data.NoneApp) {
         console.log(event.data.NoneApp);
-        enqueueSnackbar("해당 계정은 승인 대기 중입니다.", { variant: "error" });
+        enqueueSnackbar('해당 계정은 승인 대기 중입니다.', { variant: 'error' });
       }
     };
 
@@ -88,7 +88,6 @@ const MainLayout = () => {
       channel.close();
     };
   }, []);
-
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -115,7 +114,6 @@ const MainLayout = () => {
         drawerOpen={!matchDownMd ? (isUser ? !leftDrawerOpened : leftDrawerOpened) : !leftDrawerOpened}
         drawerToggle={handleLeftDrawerToggle}
       />
-
 
       {/* main content */}
       <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened} sx={isMain ? { backgroundColor: '#ffffff' } : {}}>
