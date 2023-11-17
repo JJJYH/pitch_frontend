@@ -23,10 +23,19 @@ import SearchIcon from '@mui/icons-material/Search';
 import AMDataGrid from './components/AMDataGrid';
 import { useRef } from 'react';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { useState } from 'react';
+import AMModal from './components/AMModal';
 
 const AdminManagePage = () => {
-
+    const [open, setOpen] = useState(false);
     const ref = useRef();
+    const openModal = () => {
+        setOpen(true);
+    }
+
+    const closeModal = () => {
+        setOpen(false);
+    }
 
     const StyledBox = styled(Box)(() => ({
         margin: '10px',
@@ -47,67 +56,53 @@ const AdminManagePage = () => {
 
 
     return (
-        <Paper sx={{ height: 1 }}>
-            <Box sx={{ height: '140px' }}>
-                <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
-                    <ManageAccountsIcon /> 권한 관리
-                </Typography>
-                <Box sx={{ padding: '0px 20px' }}>
-                    <Grid container alignItems="center" justifyContent="space-between">
-                        <Grid item>
-                            <Grid container spacing={1}>
-                                <Grid item sx={{ marginLeft: '4px' }}>
-                                    <TextField
-                                        size='small'
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <Button
-                                        variant="contained"
-                                        style={{ height: '38px', minWidth: '40px', width: '40px', backgroundColor: '#38678f' }}
-                                    >
-                                        <SearchIcon fontSize="small" />
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-
-                        <Grid item>
-                            <Stack direction="row" spacing={1} marginRight={1}>
-                                <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => ref.current.addHandler()}>
-                                    추가
-                                </Button>
-                            </Stack>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Box>
-            <Grid container sx={{ padding: '0px 10px' }}>
-                <Grid item xs={12}>
-                    {/* <StyledBox>
-                        <Grid container direction="column">
-                            <Grid item p={2}>
-                                <Grid container justifyContent="space-between">
-                                    <Grid item pl={1}>
+        <>
+            <Paper sx={{ height: 1 }}>
+                <Box sx={{ height: '140px' }}>
+                    <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
+                        <ManageAccountsIcon /> 권한 관리
+                    </Typography>
+                    <Box sx={{ padding: '0px 20px' }}>
+                        <Grid container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                                <Grid container spacing={1}>
+                                    <Grid item sx={{ marginLeft: '4px' }}>
+                                        <TextField
+                                            size='small'
+                                        />
+                                    </Grid>
+                                    <Grid item>
+                                        <Button
+                                            variant="contained"
+                                            style={{ height: '38px', minWidth: '40px', width: '40px', backgroundColor: '#38678f' }}
+                                        >
+                                            <SearchIcon fontSize="small" />
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Grid>
+
                             <Grid item>
-                                <Box
-                                    sx={{
-                                        height: 590,
-                                        width: '96%',
-                                        margin: 'auto'
-                                    }}
-                                >
-                                </Box>
+                                <Stack direction="row" spacing={1} marginRight={1}>
+                                    <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => openModal()}>
+                                        승인
+                                    </Button>
+                                    <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => ref.current.addHandler()}>
+                                        생성
+                                    </Button>
+                                </Stack>
                             </Grid>
                         </Grid>
-                    </StyledBox> */}
-                    <AMDataGrid ref={ref} />
+                    </Box>
+                </Box>
+                <Grid container sx={{ padding: '0px 10px' }}>
+                    <Grid item xs={12}>
+                        <AMDataGrid ref={ref} />
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Paper>
+            </Paper>
+            <AMModal open={open} closeModal={closeModal} />
+        </>
     );
 }
 

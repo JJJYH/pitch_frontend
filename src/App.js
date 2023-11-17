@@ -159,7 +159,7 @@ const App = () => {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={themes(customization)}>
           <SnackbarProvider
-            autoHideDuration={2000}
+            autoHideDuration={3000}
             classes={{
               variantError: classes.variantError,
               variantSuccess: classes.variantSuccess,

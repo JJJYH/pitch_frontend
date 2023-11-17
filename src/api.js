@@ -134,6 +134,9 @@ const admin = {
   },
   hrDelete: (data) => {
     return instance.post('/auth/delete-hr-account', null, { params: { user_id: data } });
+  },
+  noneAppHrList: () => {
+    return instance.get('/admin/none-app-hr-list');
   }
 };
 
