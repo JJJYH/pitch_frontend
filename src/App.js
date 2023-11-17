@@ -21,8 +21,10 @@ import { useState } from 'react';
 
 // ==============================|| APP ||============================== //
 import { OpenCvProvider } from 'opencv-react';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import { ModalProvider, useModal } from 'layout/Common/ModalContext';
+import { useLocation } from 'react-router-dom';
+import { setMain } from 'store/customizationSlice';
 
 const App = () => {
 
@@ -112,7 +114,7 @@ const App = () => {
   };
   const classes = Styles();
   const { openModal, open, closeModal } = useModal();
-
+  const loaction = useLocation();
   let channel;
 
   useEffect(() => {
@@ -143,6 +145,14 @@ const App = () => {
   useEffect(() => {
     loginHandler(accessToken);
   }, [accessToken]);
+
+  useEffect(() => {
+    if (loaction.pathname === '/main' || loaction.pathname === '/') {
+      dispatch(setMain(true));
+    } else {
+      dispatch(setMain(false));
+    }
+  }, [loaction.pathname]);
 
   return (
     <OpenCvProvider openCvPath="/opencv/opencv.js">

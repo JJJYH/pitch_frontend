@@ -30,8 +30,15 @@ const GoogleRedirect = () => {
             window.close();
         }).catch((err) => {
             console.log(err);
-            channel.postMessage({ notFoundAccount: 'nfa', email: err.response.data.email });
-            window.close();
+            if (err.response.data.message === 'This Account is not approved') {
+                channel.postMessage({ NoneApp: 'noneApp' });
+                window.close();
+            } else {
+                channel.postMessage({ notFoundAccount: 'nfa', email: err.response.data.email });
+                window.close();
+            }
+
+            //window.close();
         })
     }, [])
     return <></>

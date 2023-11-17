@@ -186,8 +186,8 @@ const PostingListPage = () => {
   return (
     <Paper>
       <Grid container>
-        <Grid item xs={1.2}></Grid>
-        <Grid container direction="column" item xs={9.6}>
+        {/* <Grid item xs={1.2}></Grid> */}
+        <Grid container direction="column" item style={{ maxWidth: '1460px', margin: '0px auto' }}>
           <Grid item>
             <Box sx={{ height: '140px', pt: 10, pl: 12, pr: 12, display: 'flex', justifyContent: 'space-between' }}>
               <Typography sx={{ fontSize: '35px', fontWeight: 'bold' }}>채용공고</Typography>
@@ -458,7 +458,7 @@ const PostingListPage = () => {
             </Box>
           </Grid>
         </Grid>
-        <Grid item xs={1.2}></Grid>
+        {/* <Grid item xs={1.2}></Grid> */}
       </Grid>
     </Paper>
   );

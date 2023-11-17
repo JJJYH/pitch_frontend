@@ -176,6 +176,14 @@ const FirebaseLogin = ({ ...others }) => {
                 principal.setToken(res.headers.accesstoken)
                 channel.postMessage({ accesstoken: res.headers.accesstoken });
                 window.close();
+              }).catch((err) => {
+                console.log(err);
+                if (err.response.data === 'This Account is not approved') {
+                  setStatus({ success: false });
+                  setErrors({ submit: '해당 계정은 승인 대기 중입니다.' });
+                  setSubmitting(false);
+                }
+                //channel.postMessage({ error: err.response.data });
               })
               console.log(userInfo);
             }
