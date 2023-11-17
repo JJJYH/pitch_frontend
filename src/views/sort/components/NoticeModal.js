@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 
 /* mui components */
-import { Chip, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Chip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,19 +17,16 @@ import { Box, FormControlLabel, Grid, MenuItem, OutlinedInput, Radio, RadioGroup
 import { sort } from 'api';
 
 /* custom components */
+import { useSnackbar } from 'notistack';
 
-const NoticeModal = ({ postingNo, title }) => {
+const NoticeModal = ({ postingNo, title, isChanged, setIsChanged }) => {
   const [open, setOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState('pass');
   const [processType, setProcessType] = React.useState('');
   const [noticeArea, setNoticeArea] = React.useState();
+  const { enqueueSnackbar } = useSnackbar();
   const [cursorPos, setCursorPos] = React.useState(0);
   const noticeAreaRef = useRef(null);
-  const [alignment, setAlignment] = React.useState('pass');
-
-  const handleChange = (event, newAlignment) => {
-    setAlignment(newAlignment);
-  };
 
   const handleChangeSelect = (event) => {
     setProcessType(event.target.value);
@@ -63,7 +60,6 @@ const NoticeModal = ({ postingNo, title }) => {
     const prefix = noticeArea.substring(0, start);
     const suffix = noticeArea.substring(end);
     setNoticeArea(prefix + txt + suffix);
-    // 커서 위치 조정
     textarea.setSelectionRange(start + txt.length, start + txt.length);
     textarea.focus();
   };
@@ -78,6 +74,8 @@ const NoticeModal = ({ postingNo, title }) => {
         title: title
       })
       .then(() => {
+        enqueueSnackbar('합격 발표가 완료되었습니다.', { variant: 'info' });
+        setIsChanged(!isChanged);
         handleClose();
       });
   };
@@ -138,17 +136,6 @@ const NoticeModal = ({ postingNo, title }) => {
                   <MyRadio value="fail" control={<Radio />} label="불합격" />
                   <MyRadio value="all" control={<Radio />} label="자동" />
                 </RadioGroup>
-                {/* <ToggleButtonGroup size="large" value={alignment} onChange={handleChange} exclusive={true} aria-label="Large sizes">
-                  <ToggleButton value="pass" key="pass">
-                    합격발표
-                  </ToggleButton>
-                  <ToggleButton value="fail" key="fail">
-                    불합격발표
-                  </ToggleButton>
-                  <ToggleButton value="all" key="all">
-                    자동발표
-                  </ToggleButton>
-                </ToggleButtonGroup> */}
               </Grid>
             </Grid>
             <Grid item container sx={{ display: 'flex', alignItems: 'center' }}>
@@ -239,14 +226,30 @@ const NoticeModal = ({ postingNo, title }) => {
           </Grid>
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {/* <Button autoFocus onClick={handleClose}>
-            미리보기
-          </Button> */}
-          <Box>
-            <Button autoFocus onClick={onClickNotice}>
-              발표 등록
+          <Box sx={{ mt: '5px', mb: '5px' }}>
+            <Button
+              autoFocus
+              onClick={onClickNotice}
+              variant="contained"
+              size="medium"
+              style={{ marginRight: '5px', borderColor: '#38678f', background: '#38678f' }}
+            >
+              발표등록
             </Button>
-            <Button autoFocus onClick={handleClose}>
+            <Button
+              autoFocus
+              onClick={handleClose}
+              variant="outlined"
+              size="medium"
+              sx={{
+                borderColor: '#38678f',
+                color: '#38678f',
+                mr: '10px',
+                '&:hover': {
+                  borderColor: '#38678f'
+                }
+              }}
+            >
               취소
             </Button>
           </Box>
@@ -260,54 +263,54 @@ const NoticeModal = ({ postingNo, title }) => {
 
 const StatusChip1 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#FFD699',
+  borderColor: '#FFBD33',
   borderRadius: '8px',
   color: '#fff',
   fontWeight: 900,
-  backgroundColor: '#FFD699',
+  backgroundColor: '#FFBD33',
   minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
-    borderColor: '#FFD699',
+    borderColor: '#FFBD33',
     background: '#fff',
-    color: '#FFD699'
+    color: '#FFBD33'
   },
   cursor: 'pointer'
 }));
 
 const StatusChip2 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#E1BEE7',
+  borderColor: '#D18AC7',
   borderRadius: '8px',
   color: '#fff',
   fontWeight: 900,
-  backgroundColor: '#E1BEE7',
+  backgroundColor: '#D18AC7',
   minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
-    borderColor: '#E1BEE7',
+    borderColor: '#D18AC7',
     background: '#fff',
-    color: '#E1BEE7'
+    color: '#D18AC7'
   },
   cursor: 'pointer'
 }));
 
 const StatusChip5 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#90CAF9',
+  borderColor: '#5092E2',
   borderRadius: '8px',
   color: '#fff',
   fontWeight: 900,
-  backgroundColor: '#90CAF9',
+  backgroundColor: '#5092E2',
   minWidth: '82px',
   width: '82px',
   marginRight: '15px',
   ':hover': {
-    borderColor: '#90CAF9',
+    borderColor: '#5092E2',
     background: '#fff',
-    color: '#90CAF9'
+    color: '#5092E2'
   },
   cursor: 'pointer'
 }));
@@ -320,6 +323,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1)
   }
 }));
+FormControlLabel;
 
 const MySelect = styled(Select)(({ theme }) => ({
   border: `${theme.palette.grey[300]} 1px solid`,
@@ -333,10 +337,13 @@ const MyInput = styled(OutlinedInput)(({ theme }) => ({
 }));
 
 const MyRadio = styled((props) => <FormControlLabel {...props} />)(({ theme }) => ({
-  border: `${theme.palette.grey[300]} 1px solid`,
-  padding: '7px',
-  paddingRight: '70px',
-  borderRadius: '4px'
+  // border: `${theme.palette.grey[300]} 1px solid`,
+  // padding: '7px',
+  paddingRight: '10px'
+  // '&.Mui-checked': {
+  //   color: 'green'
+  // }
+  // borderRadius: '4px'
 }));
 
 const ITEM_HEIGHT = 48;
@@ -414,13 +421,9 @@ const noticeText = {
       
     %공고명% 채용 전형에 관심 갖고, 지원해주셔서 감사드립니다.
     기쁘게도 %이름% 님께 좋은 소식을 전해 드릴 수 있게 되었습니다.
-    이후의 일정은 추후 별도로 안내드릴 예정입니다.
-    <a href="https://example.com/perform-action">
-    <img src="https://example.com/button-image.png" alt="버튼 이미지">
-  </a>
-
-    감사합니다.\n
-    %회사명% 드림`,
+    인적성 검사 링크를 보내드리니 메일 발신일로부터 3일 안에 응시바랍니다.
+    감사합니다.
+    `,
     최종합격: `
     축하합니다! %이름% 님
       

@@ -100,6 +100,9 @@ const DownloadModal = ({ setChecked }) => {
           <Box>
             <Button
               autoFocus
+              variant="contained"
+              size="medium"
+              style={{ marginRight: '5px', borderColor: '#38678f', background: '#38678f' }}
               onClick={() => {
                 setChecked([...checkedValues]);
                 handleDownloadClose();
@@ -107,7 +110,20 @@ const DownloadModal = ({ setChecked }) => {
             >
               저장
             </Button>
-            <Button autoFocus onClick={handleDownloadClose}>
+            <Button
+              autoFocus
+              onClick={handleDownloadClose}
+              variant="outlined"
+              size="medium"
+              sx={{
+                borderColor: '#38678f',
+                color: '#38678f',
+                mr: '10px',
+                '&:hover': {
+                  borderColor: '#38678f'
+                }
+              }}
+            >
               취소
             </Button>
           </Box>

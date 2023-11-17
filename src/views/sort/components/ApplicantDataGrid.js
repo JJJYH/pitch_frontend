@@ -1,12 +1,8 @@
 import * as React from 'react';
-import { useState } from 'react';
-
-/* mui components */
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { sort } from '../../../api.js';
 import { useEffect } from 'react';
-import { template } from 'lodash';
 
 /* custom components */
 
@@ -15,7 +11,7 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnTyp
 
   useEffect(() => {
     const list = [];
-    rowSelectionModel.map((index) => {
+    rowSelectionModel.forEach((index) => {
       list.push(rows[index].apply_no);
     });
     sort.applicantHandle(btnType, list).then(() => {
@@ -25,7 +21,7 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnTyp
 
   useEffect(() => {
     const list = [];
-    rowSelectionModel.map((index) => {
+    rowSelectionModel.forEach((index) => {
       list.push(rows[index].apply_no);
     });
     sort.cvToExcel(list).then(() => {});
@@ -43,15 +39,26 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnTyp
   }, [rowSelectionModel]);
 
   return (
-    <Box sx={{ height: '620px', width: '1' }}>
+    <Box sx={{ height: '620px', width: '100%' }}>
       <DataGrid
+        sx={{
+          '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
+            outline: 'none !important'
+          },
+          [`& .${gridClasses.columnHeader}:focus, & .${gridClasses.columnHeader}:focus-within`]: {
+            outline: 'none'
+          },
+          '&.Mui-selected': {
+            background: 'rgba(56, 103, 143, 1)'
+          }
+        }}
         rowHeight={70}
         rows={rows}
         columns={columns}
         hideFooter
         checkboxSelection
         isRowSelectable={(params) => {
-          return params.row.status_type != '최종합격';
+          return params.row.status_type !== '최종합격';
         }}
         rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={(newRowSelectionModel) => {

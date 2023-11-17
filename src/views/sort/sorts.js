@@ -57,19 +57,19 @@ const evalSub = [
     description: '기술 점수 평가 기준 설명~~!@!@'
   },
   {
-    sub: '인성1',
+    sub: '협동',
     description: '인성1 점수 평가 기준 설명~~!@!@'
   },
   {
-    sub: '인성2',
+    sub: '열정',
     description: '인성2 점수 평가 기준 설명~~!@!@'
   },
   {
-    sub: '인성3',
+    sub: '태도',
     description: '인성3 점수 평가 기준 설명~~!@!@'
   },
   {
-    sub: '태도',
+    sub: '성장가능성',
     description: '태도 점수 평가 기준 설명~~!@!@'
   }
 ];

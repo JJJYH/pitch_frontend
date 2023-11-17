@@ -324,7 +324,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
           </Grid>
           <Grid item xs={6} container direction={'column'}>
             <Grid item container sx={{ borderBottom: '1px solid black' }}>
-              <Grid item xs={5} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
+              <Grid item xs={4} className={classNames.typeGrid} sx={{ borderRight: '1px solid black' }}>
                 <Typography variant="h4" className={classNames.type}>
                   자격/면허사항
                 </Typography>
@@ -334,7 +334,7 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                   취득일
                 </Typography>
               </Grid>
-              <Grid item xs={3} className={classNames.typeGrid}>
+              <Grid item xs={4} className={classNames.typeGrid}>
                 <Typography variant="h4" className={classNames.type}>
                   발행처
                 </Typography>
@@ -343,13 +343,13 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
             {applicantInfo['cv']?.['certifications'].map((cert, index) => {
               return (
                 <Grid item container key={index} sx={{ borderBottom: '1px solid black' }}>
-                  <Grid item xs={5}>
+                  <Grid item xs={4}>
                     <Typography variant="h4">{cert['cert_name']}</Typography>
                   </Grid>
                   <Grid item xs={4}>
                     <Typography variant="h4">{getFormattedDate(cert['acquisition_date'])}</Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <Typography variant="h4">{cert['publisher']}</Typography>
                   </Grid>
                 </Grid>

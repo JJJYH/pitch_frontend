@@ -194,9 +194,11 @@ const sort = {
   applicantScore: (postingNo, applyNo) => {
     return instance.get(`/admin/${postingNo}/sort/${applyNo}`);
   },
+  //평균점수 조회 api
   applicantAvg: (postingNo) => {
     return instance.get(`/admin/${postingNo}/average`);
   }
+  //열람여부 조회 api
 };
 
 const cv = {

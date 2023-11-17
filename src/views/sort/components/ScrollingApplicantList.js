@@ -17,7 +17,7 @@ import { Box } from '@mui/system';
 
 /* custom components */
 
-const ScrollingApplicantList = ({ height, width, itemSize, list, isBtnClicked, setIsBtnClicked, setCheckedList, setOpenModal }) => {
+const ScrollingApplicantList = ({ height, width, itemSize, list, isBtnClicked, setIsBtnClicked, total, setOpenModal }) => {
   const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
@@ -34,9 +34,16 @@ const ScrollingApplicantList = ({ height, width, itemSize, list, isBtnClicked, s
   };
 
   useEffect(() => {
-    const newChecked = Array.from({ length: list.length }, (_, index) => index);
-    setChecked(newChecked);
-  }, [list]);
+    if (total > 0) {
+      const sortedList = [...list];
+      sortedList.sort((a, b) => a.score - b.score);
+
+      const newChecked = sortedList.slice(0, total).map((applicant) => list.indexOf(applicant));
+      setChecked(newChecked);
+    } else {
+      setChecked([]);
+    }
+  }, [list, total]);
 
   useEffect(() => {
     const tempList = [];
@@ -78,6 +85,12 @@ const renderRow = ({ index, style }, list, handleToggle, checked) => {
               tabIndex={-1}
               disableRipple
               inputProps={{ 'aria-labelledby': labelId }}
+              sx={{
+                color: '#38678f',
+                '&.Mui-checked': {
+                  color: '#38678f'
+                }
+              }}
             />
           </ListItemIcon>
           <ListItemAvatar>
@@ -92,7 +105,9 @@ const renderRow = ({ index, style }, list, handleToggle, checked) => {
               }}
             />
           </ListItemAvatar>
-          <ListItemText primary={`${applicant['cv']?.user_nm}  ${applicant['cv']?.gender}, 만 ${getAge(applicant['cv']?.user_birth)}세`} />
+          <ListItemText
+            primary={`${applicant['cv']?.user_nm}  (${applicant['cv']?.gender.charAt(0)}), 만 ${getAge(applicant['cv']?.user_birth)}세`}
+          />
           <Box>
             <Typography
               sx={{ display: 'inline', mr: '3px' }}

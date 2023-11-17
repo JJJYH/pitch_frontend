@@ -19,12 +19,16 @@ import { Box, Grid, InputAdornment, Rating, TextField, Tooltip } from '@mui/mate
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 
+/* custom components */
+import { useSnackbar } from 'notistack';
+
 const InterviewEvalModal = ({ applyNo }) => {
-  const posting = useSelector((state) => state.posting);
   const userInfo = useSelector((state) => state.userInfo);
+  const posting = useSelector((state) => state.posting);
   const [open, setOpen] = useState(false);
   const [noteArea, setNoteArea] = useState('');
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
   const [evalScore, setEvalScore] = useState({
     sub1: 0,
     sub2: 0,
@@ -54,6 +58,7 @@ const InterviewEvalModal = ({ applyNo }) => {
     };
     sort.applicantEval(data).then((res) => {
       handleClose();
+      enqueueSnackbar('평가가 완료되었습니다.', { variant: 'info' });
     });
   };
 

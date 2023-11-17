@@ -24,13 +24,13 @@ import PrintIcon from '@mui/icons-material/Print';
 import ApplicantDataGrid from './components/ApplicantDataGrid';
 import FilteringModal from './components/FilteringModal';
 import NoticeModal from './components/NoticeModal';
-import InterviewDateModal from './components/InterviewDateModal';
 import InterviewEvalModal from './components/InterviewEvalModal';
 import MenuBtn from './components/MenuBtn';
 import classNames from './sort.module.scss';
-import { setPosting } from 'store/postingSlice.js';
+import { setPostingList, setPosting } from 'store/postingSlice.js';
 import CVToPrint from './components/CVToPrint.js';
 import DownloadModal from './components/DownloadModal.js';
+import { useSnackbar } from 'notistack';
 
 /*
  *
@@ -41,6 +41,7 @@ import DownloadModal from './components/DownloadModal.js';
 const SortingPage = () => {
   const { job_posting_no } = useParams();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const componentRef = useRef();
   const [value, setValue] = useState('F');
   const [rows, setRows] = useState([]);
@@ -49,7 +50,7 @@ const SortingPage = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isBtnClicked, setIsBtnClicked] = useState(false);
   const [isExcelClicked, setIsExcelClicked] = useState(false);
-  const [isInfoFetched, setIsInfoFetched] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
   const [btnType, setBtnType] = useState('');
   const [info, setInfo] = useState({
     hire_num: 0,
@@ -77,6 +78,11 @@ const SortingPage = () => {
   const handleBtnClick = (event, value) => {
     setIsBtnClicked(!isBtnClicked);
     setBtnType(value);
+    if (value == 'pass') {
+      enqueueSnackbar('합격 처리가 완료되었습니다.', { variant: 'info' });
+    } else {
+      enqueueSnackbar('불합격 처리가 완료되었습니다.', { variant: 'info' });
+    }
   };
 
   const handlePrint = useReactToPrint({
@@ -91,7 +97,7 @@ const SortingPage = () => {
         return { ...appl, id: index };
       });
       setRows(arr);
-      dispatch(setPosting({ list: arr }));
+      dispatch(setPostingList({ list: arr }));
     });
   };
 
@@ -140,9 +146,12 @@ const SortingPage = () => {
   }, [value]);
 
   useEffect(() => {
+    setList();
+  }, [isChanged]);
+
+  useEffect(() => {
     sort.postingInfo(job_posting_no).then((res) => {
       setInfo({ ...res.data });
-      setIsInfoFetched(true);
       dispatch(
         setPosting({
           postingNo: job_posting_no,
@@ -167,7 +176,7 @@ const SortingPage = () => {
         <Typography variant="h2" sx={{ marginBottom: 'none' }}>
           {`[${info.job_type}] ${info.req_title}`}
         </Typography>
-        {info.posting_end && (
+        {getDday(info.posting_end) < 2000000 && (
           <div className={classNames.statusRoot} style={{ marginLeft: '10px' }}>
             <div className={classNames.dDay}>
               <div>
@@ -201,11 +210,44 @@ const SortingPage = () => {
       <Box sx={{ flex: '1 1 auto', typography: 'body1', marginTop: '15px' }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChange} aria-label="sorting results tab">
-              <Tab label="1차" value="F" />
-              <Tab label="2차" value="S" />
-              <Tab label="최종" value="FL" />
-              <Tab label="종료" value="FH" />
+            <TabList
+              TabIndicatorProps={{
+                style: { background: '#38678f' }
+              }}
+              indicator={{ backgroundColor: '#38678f' }}
+              onChange={handleChange}
+              aria-label="sorting results tab"
+            >
+              <Tab
+                sx={{
+                  color: '#38678f',
+                  '&.Mui-selected': {
+                    color: 'rgba(56, 103, 143, 1)'
+                  }
+                }}
+                label="서류전형"
+                value="F"
+              />
+              <Tab
+                sx={{
+                  color: '#38678f',
+                  '&.Mui-selected': {
+                    color: 'rgba(56, 103, 143, 1)'
+                  }
+                }}
+                label="면접전형"
+                value="FL"
+              />
+              <Tab
+                sx={{
+                  color: '#38678f',
+                  '&.Mui-selected': {
+                    color: 'rgba(56, 103, 143, 1)'
+                  }
+                }}
+                label="종료"
+                value="FH"
+              />
             </TabList>
           </Box>
           <Box
@@ -225,7 +267,10 @@ const SortingPage = () => {
                     sx={{
                       borderColor: '#38678f',
                       background: '#38678f',
-                      mr: '5px'
+                      mr: '5px',
+                      '&:hover': {
+                        background: '#38678f'
+                      }
                     }}
                     onClick={(event) => handleBtnClick(event, 'pass')}
                   >
@@ -237,7 +282,10 @@ const SortingPage = () => {
                     sx={{
                       borderColor: '#38678f',
                       color: '#38678f',
-                      mr: '5px'
+                      mr: '5px',
+                      '&:hover': {
+                        borderColor: '#38678f'
+                      }
                     }}
                     onClick={(event) => handleBtnClick(event, 'fail')}
                   >
@@ -251,16 +299,28 @@ const SortingPage = () => {
               {isSelected ? (
                 <>
                   <DownloadModal setChecked={setChecked} />
-                  <Button variant="outlined" onClick={handlePrint} size="medium" sx={{ borderColor: '#38678f', color: '#38678f' }}>
+                  <Button
+                    variant="outlined"
+                    onClick={handlePrint}
+                    size="medium"
+                    sx={{
+                      borderColor: '#38678f',
+                      color: '#38678f',
+                      '&:hover': {
+                        borderColor: '#38678f'
+                      }
+                    }}
+                  >
                     <PrintIcon />
                     인쇄하기
                   </Button>
                 </>
               ) : (
                 <>
-                  {isInfoFetched && value == 'F' && <FilteringModal postingNo={job_posting_no} postingInfo={info} />}
-                  {value == 'S' && <InterviewDateModal />}
-                  <NoticeModal postingNo={job_posting_no} title={info.req_title} />
+                  {value == 'F' && (
+                    <FilteringModal postingNo={job_posting_no} postingInfo={info} setIsChanged={setIsChanged} isChanged={isChanged} />
+                  )}
+                  <NoticeModal isChanged={isChanged} setIsChanged={setIsChanged} postingNo={job_posting_no} title={info.req_title} />
                 </>
               )}
             </Box>
@@ -269,18 +329,6 @@ const SortingPage = () => {
             <MyTabPanel value="F">
               <ApplicantDataGrid
                 columns={fColumns}
-                rows={rows}
-                btnType={btnType}
-                isBtnClicked={isBtnClicked}
-                setList={setList}
-                setIsSelected={setIsSelected}
-                setSelectedRows={setSelectedRows}
-                isExcelClicked={isExcelClicked}
-              />
-            </MyTabPanel>
-            <MyTabPanel value="S">
-              <ApplicantDataGrid
-                columns={sColumns}
                 rows={rows}
                 btnType={btnType}
                 isBtnClicked={isBtnClicked}
@@ -336,9 +384,9 @@ const RenderAvatar = (data) => {
 
 const StatusChip3 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#A5D6A7',
+  borderColor: 'rgb(126, 191, 111)',
   borderRadius: '8px',
-  background: '#A5D6A7',
+  background: 'rgb(126, 191, 111)',
   color: 'white',
   fontWeight: 900,
   '&.Mui-selected': {
@@ -351,8 +399,8 @@ const StatusChip3 = styled(Chip)(() => ({
 
 const StatusChip4 = styled(Chip)(() => ({
   border: '3px solid',
-  borderColor: '#F48FB1',
-  background: '#F48FB1',
+  borderColor: '#EC5C87',
+  background: '#EC5C87',
   borderRadius: '8px',
   color: 'white',
   fontWeight: 900,
@@ -416,90 +464,6 @@ const RenderName = (data) => {
 /* data grid column setting */
 
 const fColumns = [
-  {
-    field: 'apply_no',
-    headerName: '채용지원번호'
-  },
-  {
-    field: 'cv_no',
-    headerName: '이력서번호'
-  },
-  {
-    field: 'picture',
-    headerName: ' ',
-    sortable: false,
-    width: 120,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: RenderAvatar
-  },
-  {
-    field: 'user_nm',
-    headerName: '이름',
-    width: 140,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: RenderName
-  },
-  {
-    field: 'user_birth',
-    headerName: '생년월일',
-    width: 200,
-    align: 'center',
-    headerAlign: 'center',
-    valueGetter: (params) => `${getAge(params.row.user_birth)}세 (${params.row.user_birth})`
-  },
-  {
-    field: 'career',
-    headerName: '경력구분',
-    width: 120,
-    align: 'center',
-    headerAlign: 'center',
-    valueGetter: (params) => `${params.row.career == 'y' ? '경력' : '신입'}`
-  },
-  {
-    field: 'apply_date',
-    headerName: '지원일',
-    width: 140,
-    align: 'center',
-    headerAlign: 'center',
-    valueGetter: (params) => `${getFormattedDate(params.row.apply_date)}`
-  },
-  {
-    field: 'eval',
-    headerName: '평가',
-    sortable: false,
-    width: 230,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => RenderEval(params.row.score)
-  },
-  {
-    field: 'status_type',
-    headerName: '상태',
-    width: 140,
-    align: 'center',
-    headerAlign: 'center'
-  },
-  {
-    field: 'read_status',
-    headerName: '열람여부',
-    align: 'center',
-    headerAlign: 'center',
-    width: 140
-  },
-  {
-    field: 'tools',
-    headerName: ' ',
-    sortable: false,
-    width: 210,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: MenuBtn
-  }
-];
-
-const sColumns = [
   {
     field: 'apply_no',
     headerName: '채용지원번호'
@@ -729,7 +693,7 @@ const fhColumns = [
     width: 160,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => RenderStar(params.row.evals)
+    renderCell: (params) => RenderStar(params.row.evals, params.row.apply_no)
   },
   {
     field: 'note',
