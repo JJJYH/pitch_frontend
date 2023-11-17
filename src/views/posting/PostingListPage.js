@@ -331,7 +331,7 @@ const PostingListPage = () => {
               </Box>
 
               <Box sx={{ height: '200px' }}>
-                <Carousel autoPlay={true} cycleNavigation={true} navButtonsAlwaysVisible={true} interval={3000}>
+                <Carousel autoPlay={true} cycleNavigation={true} navButtonsAlwaysVisible={true} interval={5000}>
                   {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
                     <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
                       {recommendedPostings

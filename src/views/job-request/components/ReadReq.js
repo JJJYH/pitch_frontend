@@ -22,6 +22,7 @@ import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/sel
 import PostingDetailModal from 'views/posting/components/PostingDetailModal';
 import { reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
+import FileDropDown from './FileDropDown';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -552,6 +553,10 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               onChange={(e) => setFormData({ ...formData, job_duties: e.target.value })}
               disabled={formData.req_status !== '작성중'}
             />
+          </Grid>
+          <Grid item xs={12}>
+            <FormTypo>파일첨부</FormTypo>
+            <FileDropDown />
           </Grid>
           <Divider sx={{ marginTop: '40px' }} />
           <Grid item container justifyContent="center">
