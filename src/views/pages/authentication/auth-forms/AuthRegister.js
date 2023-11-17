@@ -397,7 +397,22 @@ const FirebaseRegister = ({ ...others }) => {
                 )} */}
               </FormControl>
             </LocalizationProvider>
+            <Grid container alignItems="center" justifyContent="end">
+              <Grid item>
+                <FormControlLabel
 
+                  label={
+                    <Typography variant="subtitle1">
+                      인사담당자 체크
+                    </Typography>
+                  }
+                  labelPlacement='start'
+                  control={
+                    <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
+                  }
+                />
+              </Grid>
+            </Grid>
 
 
 
