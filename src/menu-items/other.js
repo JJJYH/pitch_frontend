@@ -10,7 +10,7 @@ const maIcon = ManageAccountsIcon;
 
 const other = {
   id: 'sample-docs-roadmap',
-  title: 'Admin',
+  title: '관리자',
   type: 'group',
   children: [
     {

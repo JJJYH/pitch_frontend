@@ -242,6 +242,9 @@ const cv = {
   getJobInfoList: (data) => {
     return instance.get('/admin/main/cv/job-info-list', { params: { job_posting_no: data } });
   },
+  getApply: (data) => {
+    return instance.get('/admin/main/cv/apply', { params: { cv_no: data } });
+  },
   postApply: (data) => {
     return instance.post('/admin/main/cv/send-apply', data);
   },
@@ -271,6 +274,30 @@ const cv = {
   }
 };
 
+const reqPosting = {
+  // 채용요청서 리스트
+  jobReqList: () => {
+    return instance.get('/admin/hire/reqlist');
+  },
+  // 상태필터링
+  statusList: (data) => {
+    return instance.post('/admin/hire/statuslist', data);
+  },
+  // 요청서 모든 필터링
+  search: (data) => {
+    return instance.post('/admin/hire/search', data);
+  },
+  // 공고등록
+  createPost: (data) => {
+    return instance.post('/admin/hire/create-post', data);
+  },
+  jobReqOne: (jobReqNo) => {
+    return instance.get(`/admin/hire/jobreq/${jobReqNo}`);
+  },
+  updateReq: (jobReqNo, data) => {
+    return instance.put(`/admin/hire/update/${jobReqNo}`, data);
+  }
+};
 // 사용방법
 // 각 파일에 import api from api.js 작성
 // api.get.userList().then() ~~~
@@ -289,4 +316,4 @@ const languages = {
     grade4: [{ jpt: 650 }, { hsk: 5 }]
   }
 };
-export { get, post, principal, sort, cv, admin };
+export { get, post, principal, sort, cv, admin, reqPosting };

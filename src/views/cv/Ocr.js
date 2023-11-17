@@ -212,7 +212,9 @@ const Ocr = ({ text }) => {
                   if (match !== null) {
                     const acq_date = match[0] ? match[0].substr(0, 8) : '';
                     var dateFormat = acq_date ? acq_date.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3') : '';
-                    ocr_acq_date = dateFormat;
+
+                    ocr_acq_date = Date.parse(dateFormat);
+
                     console.log(ocr_acq_date);
                   }
                 }

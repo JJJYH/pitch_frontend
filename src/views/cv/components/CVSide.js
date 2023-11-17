@@ -26,7 +26,20 @@ import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import { updateCVNO } from 'store/cvSlice';
 import JSZip from 'jszip';
 
-const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selectedFiles, endPath, componentRef, setSelectedFiles }) => {
+const CVSide = ({
+  reverseFuction,
+  currentTab,
+  scrollToTab,
+  tabRef,
+  cvData,
+  selectedFiles,
+  endPath,
+  componentRef,
+  setSelectedFiles,
+  userInfo,
+  isSelectCV,
+  dialog_open
+}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
   const [location_point, set_location_point] = useState('');
@@ -34,16 +47,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
 
-  const [missingValues, setMissingValues] = useState({
-    edu: 0,
-    career: 0,
-    advantage: 0,
-    cert: 0,
-    lang: 0,
-    activity: 0
-  });
-
-  const [isWritten, setIsWritten] = useState();
+  // const [isWritten, setIsWritten] = useState();
   const dispatch = useDispatch();
   //인쇄 하기 기능
   const handlePrint = useReactToPrint({
@@ -120,11 +124,10 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
     cv.getList(cvData.cv.cv_no).then((data) => {
       if (data.data === '') {
         console.log('IS Empty');
-        setIsWritten(false);
       } else {
         // console.log('LIST GET : ' + JSON.stringify(data));
         console.log(data);
-        setIsWritten(true);
+
         dispatch(updateProfile({ index: 0, name: 'user_id', value: data.data.user_id }));
         dispatch(updateProfile({ index: 0, name: 'address', value: data.data.address }));
         dispatch(updateProfile({ index: 0, name: 'gender', value: data.data.gender }));
@@ -191,7 +194,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           }
           console.log(data.data['educations'].length);
           console.log(cvData);
-          if (key !== 0 && data.data['educations'].length > cvData.cv.educations.length) {
+          if (key !== 0 && !cvData.cv.educations.some((edu) => edu.edu_type === item.edu_type)) {
             console.log(item);
             dispatch(addEducation(item));
           }
@@ -213,14 +216,16 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           console.log(item);
         });
         data.data['careers'].map((item, key) => {
-          if (data.data['careers'].length > cvData.cv.careers.length && item.career_no !== 0) {
+          if (!cvData.cv.careers.some((career) => career.company_name === item.company_name) && item.career_no !== 0) {
             dispatch(addCareer(item));
           }
           console.log(key);
           console.log(item);
         });
         data.data['certifications'].map((item, key) => {
-          if (data.data['certifications'].length > cvData.cv.certifications.length && item.cert_no !== 0) {
+          if (!cvData.cv.certifications.some((cert) => cert.cert_name === item.cert_name) && item.cert_no !== 0) {
+            console.log(data.data['certifications'].length);
+            console.log(cvData.cv.certifications.length);
             console.log('들어옴');
             dispatch(addCert(item));
           }
@@ -229,14 +234,14 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
           console.log(cvData.cv.certifications);
         });
         data.data['languages'].map((item, key) => {
-          if (data.data['languages'].length > cvData.cv.languages.length && item.language_no !== 0) {
+          if (!cvData.cv.languages.some((lang) => lang.exam_type === item.exam_type) && item.language_no !== 0) {
             dispatch(addLang(item));
           }
           console.log(key);
           console.log(item);
         });
         data.data['activities'].map((item, key) => {
-          if (data.data['activities'].length > cvData.cv.activities.length && item.activity_no !== 0) {
+          if (!cvData.cv.activities.some((activity) => activity.activity_type === item.activity_type) && item.activity_no !== 0) {
             dispatch(addActivity(item));
           }
           console.log(key);
@@ -454,6 +459,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
   let missingCertValueCount = 0;
   let missingLangValueCount = 0;
   let missingActivityValueCount = 0;
+
   const checkEmptyValue = (cvData) => {
     // console.log(JSON.stringify(cvData.cv));
 
@@ -539,12 +545,12 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
       });
     });
 
-    console.log(`Advantage 누락된 값의 개수: ${missingAdvantageValueCount}`);
-    console.log(`Activity 누락된 값의 개수: ${missingActivityValueCount}`);
-    console.log(`Language 누락된 값의 개수: ${missingLangValueCount}`);
-    console.log(`Certification 누락된 값의 개수: ${missingCertValueCount}`);
-    console.log(`Edu 누락된 값의 개수: ${missingEduValuesCount}`);
-    console.log(`Career 누락된 값의 개수: ${missingCareerValueCount}`);
+    // console.log(`Advantage 누락된 값의 개수: ${missingAdvantageValueCount}`);
+    // console.log(`Activity 누락된 값의 개수: ${missingActivityValueCount}`);
+    // console.log(`Language 누락된 값의 개수: ${missingLangValueCount}`);
+    // console.log(`Certification 누락된 값의 개수: ${missingCertValueCount}`);
+    // console.log(`Edu 누락된 값의 개수: ${missingEduValuesCount}`);
+    // console.log(`Career 누락된 값의 개수: ${missingCareerValueCount}`);
   };
 
   // 색상 계산 함수
@@ -737,7 +743,7 @@ const CVSide = ({ reverseFuction, currentTab, scrollToTab, tabRef, cvData, selec
       </div>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <Button
-          onClick={loadCV}
+          onClick={(e) => loadCV()}
           sx={{
             width: '100%',
             fontSize: '16px',

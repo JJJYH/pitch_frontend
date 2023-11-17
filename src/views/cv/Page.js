@@ -1,4 +1,19 @@
-import { Box, Button, Card, CardHeader, Divider, Grid, IconButton, Modal, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Grid,
+  IconButton,
+  Modal,
+  Typography
+} from '@mui/material';
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
@@ -35,6 +50,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import { addSkill, updateSkill } from 'store/skillSlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
+import { flushSync } from 'react-dom';
 const CV = ({ isMainCV, sendData }) => {
   const profileInfo = useSelector((state) => state.profile);
   const params = useParams().job_posting_no;
@@ -52,9 +68,10 @@ const CV = ({ isMainCV, sendData }) => {
   const cvSkill = useSelector((state) => state.skill);
   const cvCertification = useSelector((state) => state.cert);
   const dispatch = useDispatch();
+  const [isSelectCV, setIsSelectCV] = useState();
+  const userInfo = useSelector((state) => state.userInfo);
 
   //CV 데이터 포집 기능
-
   let cvData = {
     cv: {
       cv_no: cv_no.cv_no,
@@ -74,78 +91,13 @@ const CV = ({ isMainCV, sendData }) => {
     }
   };
 
-  useEffect(() => {
-    cv.getInit().then((res) => {
-      dispatch(
-        updateProfile({
-          index: 0,
-          name: 'user_id',
-          value: res.data.user_id || ''
-        })
-      );
-      dispatch(
-        updateProfile({
-          index: 0,
-          name: 'user_nm',
-          value: res.data.user_nm || ''
-        })
-      );
-      dispatch(
-        updateProfile({
-          index: 0,
-          name: 'user_phone',
-          value: res.data.user_phone || ''
-        })
-      );
-      dispatch(
-        updateProfile({
-          index: 0,
-          name: 'user_email',
-          value: res.data.user_email || ''
-        })
-      );
-      dispatch(
-        updateProfile({
-          index: 0,
-          name: 'user_birth',
-          value: res.data.user_birth || ''
-        })
-      );
-      console.log('Init Profile Data : ' + JSON.stringify(profileInfo));
-    });
-    {
-      isMainCV === 'MainCV'
-        ? cv.getMainCVNO().then((res) => {
-            dispatch(updateCVNO(res.data));
-            console.log(cvData.cv.cv_no);
-            loadMainCV(res.data);
-          })
-        : cv.getCVNO(job_posting_no).then((res) => {
-            dispatch(updateCVNO(res.data));
-            console.log(cv_no);
-          });
-    }
-    {
-      isMainCV === 'MainCV'
-        ? ''
-        : cv.getPosition(job_posting_no).then((res) => {
-            dispatch(
-              updateProfile({
-                index: 0,
-                name: 'position',
-                value: res.data
-              })
-            );
-          });
-    }
-  }, []);
   /**APPLY PAGE 대표이력서 불러오기 시 APPLY CV_NO로 SETTING*/
   const setting_cv_no = async () => {
     return cv.getCVNO(job_posting_no);
   };
 
   const loadMainCV = (cv_no) => {
-    cv.getList(cv_no).then((data) => {
+    cv.getList(cv_no).then(async (data) => {
       if (data.data === '') {
         console.log('IS Empty');
       } else {
@@ -235,10 +187,6 @@ const CV = ({ isMainCV, sendData }) => {
           console.log(cvData.cv.educations);
         });
 
-        // {isMainCV !== 'MainCV'?
-        //   ''
-        //   :
-        //   ''}
         data.data['skills'].map((item, key) => {
           const new_skill_arr = { skill_no: item.skill_no, skill_name: item.skill_name, skill_domain: item.skill_domain };
           {
@@ -344,13 +292,10 @@ const CV = ({ isMainCV, sendData }) => {
       }
     });
   };
-
   //대표 이력서 불러오기
-  const MainToApplyCV = () => {
-    cv.getMainCVNO().then((res) => {
-      console.log(cvData.cv.cv_no);
-
-      loadMainCV(res.data);
+  const MainToApplyCV = async () => {
+    await cv.getMainCVNO().then((res) => {
+      return loadMainCV(res.data);
     });
   };
 
@@ -395,14 +340,45 @@ const CV = ({ isMainCV, sendData }) => {
     }
   };
 
-  console.log('CV_NO : ' + cv_no.cv_no);
   const [selectedFiles, setSelectedFiles] = useState({
     Portfolio: [], // 초기에 빈 배열로 설정
     Career: [], // 초기에 빈 배열로 설정
     Statement: [], // 초기에 빈 배열로 설정
     etcDocs: [] // 초기에 빈 배열로 설정
   });
-
+  const noReset = (data) => {
+    cv.getList(data).then((res) => {
+      console.log(res);
+      res.data['educations'].map((edu) => {
+        const { edu_no, ...edu_no_reset } = edu;
+        dispatch(updateEducation(edu_no_reset));
+      });
+      res.data['careers'].map((career) => {
+        const { career_no, ...career_no_reset } = career;
+        dispatch(updateCareer(career_no_reset));
+      });
+      res.data['certifications'].map((cert) => {
+        const { cert_no, ...cert_no_reset } = cert;
+        dispatch(updateCert(cert_no_reset));
+      });
+      res.data['skills'].map((skill) => {
+        const { skill_no, ...skill_no_reset } = skill;
+        dispatch(updateSkill(skill_no_reset));
+      });
+      res.data['languages'].map((lang) => {
+        const { language_no, ...lang_no_reset } = lang;
+        dispatch(updateLang(lang_no_reset));
+      });
+      res.data['activities'].map((activity) => {
+        const { activity_no, ...activity_no_reset } = activity;
+        dispatch(updateActivity(activity_no_reset));
+      });
+      res.data['advantages'].map((advantage) => {
+        const { advantage_no, ...advantage_no_reset } = advantage;
+        dispatch(updateAdvantage(advantage_no_reset));
+      });
+    });
+  };
   useEffect(() => {}, [selectedFiles]);
   const eduAddFields = () => {
     const new_edu_arr = {
@@ -483,9 +459,299 @@ const CV = ({ isMainCV, sendData }) => {
     boxShadow: 24,
     p: 4
   };
+  const [dialog_open, set_dialogOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    set_dialogOpen(true);
+  };
+
+  const handleClose = (e) => {
+    set_dialogOpen(false);
+    if (e.target.name === 'loadCVDial') {
+      console.log('불러오기');
+
+      const sync = async () => {
+        await setIsSelectCV(true);
+      };
+      sync;
+    }
+  };
+
+  const loadCV = async (res) => {
+    //이력서 불러오기 요청 시 이력서가 없을 경우 Written false
+
+    try {
+      const { data } = await cv.getFileInfos(cvData.cv.cv_no);
+      console.log(data);
+      data.forEach((res) => {
+        const { type } = res;
+        setSelectedFiles((prevSelectedFiles) => ({
+          ...prevSelectedFiles,
+          [type]: [...(prevSelectedFiles[type] || []), res]
+        }));
+      });
+    } catch (error) {
+      console.error('Error loading CV files:', error);
+    }
+
+    cv.getList(cvData.cv.cv_no).then((data) => {
+      if (data.data === '') {
+        console.log('IS Empty');
+      } else {
+        // console.log('LIST GET : ' + JSON.stringify(data));
+        console.log(data);
+      }
+    });
+  };
+  const handleUpdate = (data) => {
+    console.log(data);
+    dispatch(updateProfile({ index: 0, name: 'user_id', value: data.user_id }));
+    dispatch(updateProfile({ index: 0, name: 'address', value: data.address }));
+    dispatch(updateProfile({ index: 0, name: 'gender', value: data.gender }));
+
+    data['educations'].map((item, key) => {
+      if (key == 0) {
+        // console.log(item);
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'edu_no',
+            value: item.edu_no
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'edu_type',
+            value: item.edu_type
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'enter_date',
+            value: item.enter_date
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'graduate_date',
+            value: item.graduate_date
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'major',
+            value: item.major
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'graduate_type',
+            value: item.graduate_type
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'total_score',
+            value: item.total_score
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: 0,
+            name: 'score',
+            value: item.score
+          })
+        );
+      }
+      console.log(data['educations'].length);
+      console.log(cvData);
+      if (key !== 0 && !cvData.cv.educations.some((edu) => edu.edu_type === item.edu_type)) {
+        console.log(item);
+        dispatch(addEducation(item));
+      }
+      console.log('Key: ' + key);
+      console.log(item);
+      console.log(cvData.cv.educations);
+    });
+    data['skills'].map((item, key) => {
+      const new_skill_arr = { skill_no: item.skill_no, skill_name: item.skill_name, skill_domain: item.skill_domain };
+      if (
+        data['skills'].length > cvData.cv.skills.length &&
+        !cvData.cv.skills.some((skill) => skill.skill_name === item.skill_name) &&
+        item.skill_no !== 0
+      ) {
+        dispatch(addSkill(item));
+      } else if (item.skill_no !== 0) {
+        dispatch(updateSkill({ index: key, value: item.skill_name }));
+      }
+      console.log(item);
+    });
+    data['careers'].map((item, key) => {
+      if (!cvData.cv.careers.some((career) => career.company_name === item.company_name) && item.career_no !== 0) {
+        dispatch(addCareer(item));
+      }
+      console.log(key);
+      console.log(item);
+    });
+    data['certifications'].map((item, key) => {
+      if (!cvData.cv.certifications.some((cert) => cert.cert_name === item.cert_name) && item.cert_no !== 0) {
+        console.log(data['certifications'].length);
+        console.log(cvData.cv.certifications.length);
+        console.log('들어옴');
+        dispatch(addCert(item));
+      }
+      console.log(key);
+      console.log(item);
+      console.log(cvData.cv.certifications);
+    });
+    data['languages'].map((item, key) => {
+      if (!cvData.cv.languages.some((lang) => lang.exam_type === item.exam_type) && item.language_no !== 0) {
+        dispatch(addLang(item));
+      }
+      console.log(key);
+      console.log(item);
+    });
+    data['activities'].map((item, key) => {
+      if (!cvData.cv.activities.some((activity) => activity.activity_type === item.activity_type) && item.activity_no !== 0) {
+        dispatch(addActivity(item));
+      }
+      console.log(key);
+      console.log(item);
+    });
+    data['advantages'].map((item, key) => {
+      if (data['advantages'].length > cvData.cv.advantages.length && item.advantage_no !== 0) {
+        dispatch(addAdvantage(item));
+      }
+      console.log(key);
+      console.log(item);
+      console.log(cvData.cv.advantages);
+    });
+  };
+
+  const sequentialProcess = async () => {
+    await MainToApplyCV();
+    await cv
+      .getList(cv_no.cv_no)
+      .then((res) => {
+        if (cv_no.cv_no > 0) {
+          console.log(res);
+          handleClickOpen();
+
+          return res.data;
+        }
+      })
+      .then(async (res) => {
+        console.log(!dialog_open);
+        console.log(isSelectCV);
+        if (!dialog_open) {
+          console.log(res);
+          handleUpdate(res);
+          console.log(cvData);
+        }
+      });
+  };
+
+  const initData = async () => {
+    await cv.getInit().then((res) => {
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'user_id',
+          value: res.data.user_id || ''
+        })
+      );
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'user_nm',
+          value: res.data.user_nm || ''
+        })
+      );
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'user_phone',
+          value: res.data.user_phone || ''
+        })
+      );
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'user_email',
+          value: res.data.user_email || ''
+        })
+      );
+      dispatch(
+        updateProfile({
+          index: 0,
+          name: 'user_birth',
+          value: res.data.user_birth || ''
+        })
+      );
+      console.log('Init Profile Data : ' + JSON.stringify(profileInfo));
+    });
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      await initData();
+      // await sequentialProcess();
+
+      console.log(cvData);
+    };
+    //대표이력서 작성 이력이 있는 경우 자동 불러오기
+    //APPLY CV에서 호출시 CV_NO를 APPLY CV_NO로 설정
+    //이 부분에서 각 컴포넌트의 no 초기화 진행
+    // MainToApplyCV();
+    fetchData();
+
+    {
+      isMainCV === 'MainCV'
+        ? cv.getMainCVNO().then((res) => {
+            dispatch(updateCVNO(res.data));
+            console.log(cvData.cv.cv_no);
+            loadMainCV(res.data);
+          })
+        : cv.getCVNO(job_posting_no).then((res) => {
+            dispatch(updateCVNO(res.data));
+            console.log(cv_no);
+          });
+    }
+    {
+      isMainCV === 'MainCV'
+        ? ''
+        : cv.getPosition(job_posting_no).then((res) => {
+            dispatch(
+              updateProfile({
+                index: 0,
+                name: 'position',
+                value: res.data
+              })
+            );
+          });
+    }
+    //기존 작성 이력서 있는지 확인 Dialog로 선택가능
+  }, []);
 
   return (
     <Grid container spacing={2.5}>
+      <Dialog open={dialog_open} onClose={handleClose}>
+        <DialogTitle>이력서 선택</DialogTitle>
+        <DialogContent>
+          <DialogContentText>작성중이던 이력서가 존재합니다. 불러오시겠습니까?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>취소</Button>
+          <Button name="loadCVDial" onClick={(e) => handleClose(e)}>
+            불러오기
+          </Button>
+        </DialogActions>
+      </Dialog>
       {isMainCV === 'MainCV' ? (
         <Grid item xs={12}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -802,6 +1068,9 @@ const CV = ({ isMainCV, sendData }) => {
                   selectedFiles={selectedFiles}
                   componentRef={componentRef}
                   setSelectedFiles={setSelectedFiles}
+                  dialog_open={dialog_open}
+                  isSelectCV={isSelectCV}
+                  userInfo={userInfo}
                 />
               </Grid>
               <Grid item xs={1} />

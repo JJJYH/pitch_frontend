@@ -8,6 +8,7 @@ import ControlledComponent from '../ControlledComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import { addEducation, removeEducation, updateEducation } from 'store/educationSlice';
 import ClearIcon from '@mui/icons-material/Clear';
+
 const Education = () => {
   /**Default Setting Values */
   const graduate_type_arr = ['졸업', '졸업예정', '재학중', '중퇴', '수료', '휴학', '편입'];
@@ -51,7 +52,7 @@ const Education = () => {
             <Grid item xs={2}>
               <TextField
                 fullWidth
-                label={field.edu_type? (field.edu_type.includes('대학교') ? '전공' : '계열'):'계열'}
+                label={field.edu_type ? (field.edu_type.includes('대학교') ? '전공' : '계열') : '계열'}
                 color="primary"
                 type="text"
                 placeholder={education_data[index].major}
@@ -62,47 +63,51 @@ const Education = () => {
                 size="small"
               />
             </Grid>
-            {field.edu_type?field.edu_type.includes('대학교') ? (
-              <>
-                <Grid item xs={1}>
-                  <TextField
-                    fullWidth
-                    label="점수"
-                    color="primary"
-                    type="text"
-                    variant="standard"
-                    name="score"
-                    value={field.score}
-                    onChange={(e) => handleEduChange(e, index)}
-                    size="small"
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Box>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">총점</InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        label="총점"
-                        id="demo-simple-select"
-                        variant="standard"
-                        name="total_score"
-                        value={field.total_score}
-                        onChange={(e) => handleEduChange(e, index)}
-                      >
-                        {score_arr.map((type, index) => (
-                          <MenuItem key={index} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </Grid>
-              </>
+            {field.edu_type ? (
+              field.edu_type.includes('대학교') ? (
+                <>
+                  <Grid item xs={1}>
+                    <TextField
+                      fullWidth
+                      label="점수"
+                      color="primary"
+                      type="text"
+                      variant="standard"
+                      name="score"
+                      value={field.score}
+                      onChange={(e) => handleEduChange(e, index)}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Box>
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">총점</InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          label="총점"
+                          id="demo-simple-select"
+                          variant="standard"
+                          name="total_score"
+                          value={field.total_score}
+                          onChange={(e) => handleEduChange(e, index)}
+                        >
+                          {score_arr.map((type, index) => (
+                            <MenuItem key={index} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                </>
+              ) : (
+                ''
+              )
             ) : (
               ''
-            ):''}
+            )}
 
             <Grid item xs={2}>
               <ControlledComponent

@@ -59,7 +59,7 @@ const MainPageSearch = ({ value, handleSearchInputChange }) => {
           {...params}
           placeholder="직군, 직무 검색"
           variant="outlined"
-          name="search"
+          name="searchKey"
           InputProps={{
             ...params.InputProps,
             endAdornment: (

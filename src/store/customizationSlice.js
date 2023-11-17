@@ -10,6 +10,7 @@ const initialState = {
   fontFamily: config.fontFamily,
   borderRadius: config.borderRadius,
   opened: true,
+  isMain: true,
 };
 
 const customizationSlice = createSlice({
@@ -28,11 +29,14 @@ const customizationSlice = createSlice({
     setBorderRadius: (state, action) => {
       state.borderRadius = action.payload;
     },
+    setMain: (state, action) => {
+      state.isMain = action.payload;
+    }
   },
 });
 
 //export const { actions, reducer } = customizationSlice;
 
 
-export const { menuOpen, setMenu, setFontFamily, setBorderRadius } = customizationSlice.actions;
+export const { menuOpen, setMenu, setFontFamily, setBorderRadius, setMain } = customizationSlice.actions;
 export default customizationSlice.reducer;

@@ -16,6 +16,8 @@ import { drawerWidth } from 'store/constant';
 import { IconChevronRight } from '@tabler/icons';
 import { useState } from 'react';
 import { setMenu } from 'store/customizationSlice';
+import { useSnackbar } from 'notistack';
+import { useEffect } from 'react';
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
@@ -26,13 +28,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
     'margin',
     open
       ? {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      }
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen
+        }
       : {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      }
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen
+        }
   ),
   [theme.breakpoints.up('md')]: {
     marginLeft: open ? 0 : -(drawerWidth - 20),
@@ -62,10 +64,30 @@ const MainLayout = () => {
   const handleLeftDrawerToggle = () => {
     dispatch(setMenu(!leftDrawerOpened));
   };
-
-  const isUser = useSelector((state) => state.userInfo.isUser)
+  const { enqueueSnackbar } = useSnackbar();
+  const isMain = useSelector((state) => state.customization.isMain);
+  const isUser = useSelector((state) => state.userInfo.isUser);
   //이거로 권한 잠깐 쓰세요 일반사용자 : true    관리자, 인사담당자:false
   //const [isUser, setUser] = useState(false);
+
+  let channel;
+
+  useEffect(() => {
+    // 채널 생성
+    channel = new BroadcastChannel('token_channel');
+
+    channel.onmessage = (event) => {
+      if (event.data.NoneApp) {
+        console.log(event.data.NoneApp);
+        enqueueSnackbar('해당 계정은 승인 대기 중입니다.', { variant: 'error' });
+      }
+    };
+
+    return () => {
+      // 컴포넌트가 언마운트되면 채널을 닫음
+      channel.close();
+    };
+  }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -93,9 +115,8 @@ const MainLayout = () => {
         drawerToggle={handleLeftDrawerToggle}
       />
 
-
       {/* main content */}
-      <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened}>
+      <Main theme={theme} open={isUser ? !leftDrawerOpened : leftDrawerOpened} sx={isMain ? { backgroundColor: '#ffffff' } : {}}>
         {/* breadcrumb */}
         <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
         <Outlet />

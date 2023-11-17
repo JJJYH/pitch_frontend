@@ -1,6 +1,7 @@
 // assets
 import { IconTypography, IconPalette, IconShadow, IconWindmill } from '@tabler/icons';
-
+import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
+import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 // constant
 const icons = {
   IconTypography,
@@ -13,7 +14,7 @@ const icons = {
 
 const utilities = {
   id: 'utilities',
-  title: 'Utilities',
+  title: '요청/관리',
   type: 'group',
   children: [
     {
@@ -21,7 +22,7 @@ const utilities = {
       title: '채용요청',
       type: 'item',
       url: '/manage/req',
-      icon: icons.IconTypography,
+      icon: TaskOutlinedIcon,
       breadcrumbs: false
     },
     {
@@ -29,7 +30,7 @@ const utilities = {
       title: '공고관리',
       type: 'item',
       url: '/manage/posts',
-      icon: icons.IconPalette,
+      icon: SupervisorAccountOutlinedIcon,
       breadcrumbs: false
     },
   ]
