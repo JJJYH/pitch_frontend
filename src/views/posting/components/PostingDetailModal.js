@@ -407,7 +407,7 @@ const PostingDetailModal = ({
                       >
                         <MenuItem onClick={handleCloseMenu}>d</MenuItem>
                         <MenuItem onClick={handleCloseMenu}>
-                          <SharePosting />
+                          <SharePosting postingNo={job_posting_no} jobPosting={jobPosting} />
                         </MenuItem>
                       </Menu>
                       <Typography ml={1}>공유</Typography>

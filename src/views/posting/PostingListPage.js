@@ -16,6 +16,8 @@ import MainPageSearch from './components/MainPageSearch';
 import SearchIcon from '@mui/icons-material/Search';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -25,6 +27,7 @@ const PostingListPage = () => {
   const [recommendedPostings, setRecommendedPostings] = useState([]);
   const userId = useSelector((state) => state.userInfo.user_id);
   const [sortBy, setSortBy] = useState('latest');
+  const [isLoding, setLoding] = useState(false);
   const [filters, setFilters] = useState({
     jobType: 'defaultValue',
     jobGroup: 'defaultValue',
@@ -38,10 +41,9 @@ const PostingListPage = () => {
   const { pathname, search } = loc;
 
   const queryParams = new URLSearchParams(search);
-  const postNo = queryParams.get('post');
-  console.log(postNo);
+  const postNo = queryParams.get('get');
+  //console.log(postNo);
 
-  const [shareModalOpen, setShareModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,21 +77,27 @@ const PostingListPage = () => {
         const recommendResponse = await axios.get('http://localhost:8888/admin/hire/getRecommendList');
         const recommendData = recommendResponse.data;
         setRecommendedPostings(recommendData);
-
-        if (postNo) {
-          const selectedPosting = jobPostings.find((posting) => posting.job_posting_no === Number(postNo));
-          if (selectedPosting) {
-            setSelectedJobPosting(selectedPosting);
-            setShareModalOpen(true);
-          }
-        }
+        setLoding(true);
       } catch (error) {
         console.error(error);
       }
     };
 
     postingList();
-  }, [userId, filters, sortBy]);
+  }, [userId, filters, sortBy, postNo]);
+
+  useEffect(() => {
+    if (isLoding) {
+      //console.log('testes');
+      if (postNo) {
+        const selectedPosting = jobPostings.find((posting) => posting.job_posting_no === Number(postNo));
+        if (selectedPosting) {
+          setSelectedJobPosting(selectedPosting);
+          setOpen(true);
+        }
+      }
+    }
+  }, [isLoding]);
 
   const handleJobPostingClick = (jobPosting) => {
     setSelectedJobPosting(jobPosting);
@@ -100,9 +108,9 @@ const PostingListPage = () => {
   const handleClose = () => {
     setOpen(false);
 
-    setShareModalOpen(false);
-
-    navigate('/main');
+    if (postNo) {
+      navigate('/main');
+    }
   };
 
   const handleToggle = (e, jobPostingNo) => {
@@ -323,7 +331,7 @@ const PostingListPage = () => {
               </Box>
 
               <Box sx={{ height: '200px' }}>
-                <Carousel autoPlay={false} cycleNavigation={true} navButtonsAlwaysVisible={true}>
+                <Carousel autoPlay={true} cycleNavigation={true} navButtonsAlwaysVisible={true} interval={3000}>
                   {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
                     <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
                       {recommendedPostings
@@ -466,8 +474,7 @@ const PostingListPage = () => {
               </Grid>
               {selectedJobPosting && (
                 <PostingDetailModal
-                  //open={open}
-                  open={open || shareModalOpen}
+                  open={open}
                   close={handleClose}
                   page="postingList"
                   formData={selectedJobPosting.jobReq}

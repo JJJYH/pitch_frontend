@@ -20,6 +20,7 @@ import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/sel
 import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
 import { reqPosting } from 'api';
+import { useSnackbar } from 'notistack';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -29,6 +30,8 @@ const JobReqPage = () => {
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const userId = useSelector((state) => state.userInfo.user_id);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
 

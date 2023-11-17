@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 
-const SharePosting = () => {
+const SharePosting = ({ postingNo, jobPosting }) => {
   useEffect(() => {
     window.Kakao.init(process.env.REACT_APP_KAKAO_SHARE_KEY);
 
@@ -18,12 +18,12 @@ const SharePosting = () => {
       container: '#kakaotalk-sharing-btn',
       objectType: 'feed',
       content: {
-        title: '오늘의 디저트',
-        description: '아메리카노, 빵, 케익',
-        imageUrl: 'https://mud-kage.kakao.com/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg',
+        title: jobPosting.jobReq.req_title,
+        description: '당신을 기다립니다.',
+        imageUrl: 'https://ifh.cc/g/wRzrPF.png',
         link: {
-          mobileWebUrl: 'http://localhost:3000/main?post=33',
-          webUrl: 'http://localhost:3000/main?post=33'
+          mobileWebUrl: `http://localhost:3000/main?get=${postingNo}`,
+          webUrl: `http://localhost:3000/main?get=${postingNo}`
         }
       },
 
@@ -31,8 +31,8 @@ const SharePosting = () => {
         {
           title: '공고 보러가기',
           link: {
-            mobileWebUrl: 'http://localhost:3000/main?post=33',
-            webUrl: 'http://localhost:3000/main?post=33'
+            mobileWebUrl: `http://localhost:3000/main?get=${postingNo}`,
+            webUrl: `http://localhost:3000/main?get=${postingNo}`
           }
         }
       ]

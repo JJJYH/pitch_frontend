@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import PostingDetailModal from 'views/posting/components/PostingDetailModal';
 import { reqPosting } from 'api';
+import { useSnackbar } from 'notistack';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -85,6 +86,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [copiedData, setCopiedData] = useState('');
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   // 공고 등록 모달
   const handleOpen = () => {
@@ -170,6 +173,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     console.log(copyData);
     setCopiedData(copyData);
     dispatch(resetSelectedRow());
+    enqueueSnackbar('복사 완료', { variant: 'info' });
   };
 
   // const handlePaste = () => {
@@ -256,6 +260,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
+          enqueueSnackbar('승인요청 완료', { variant: 'info' });
           dispatch(setSelectedRow(submitData));
           setSelectedChips([]);
           reqlisthandler();
@@ -280,6 +285,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           const res = await reqPosting.updateReq(job_req_no, submitData);
           console.log(res);
 
+          enqueueSnackbar('업데이트 완료', { variant: 'info' });
           dispatch(setSelectedRow(submitData));
 
           const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
@@ -300,6 +306,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.error(error);
         }
 
+        enqueueSnackbar('임시저장 완료', { variant: 'info' });
         reqlisthandler();
       }
     } catch (error) {
