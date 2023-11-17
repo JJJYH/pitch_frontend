@@ -29,6 +29,7 @@ const Profile = ({ isMainCV }) => {
   const dispatch = useDispatch();
 
   const handleProfileChange = (e, index) => {
+    // e.preventDefault();
     const { name, value } = e.target;
 
     dispatch(updateProfile({ index, name, value }));
@@ -50,6 +51,11 @@ const Profile = ({ isMainCV }) => {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Enter 키 기본 동작 막기(새로고침 방지)
+    }
   };
 
   return profile_data.map((field, index) => (
@@ -104,6 +110,9 @@ const Profile = ({ isMainCV }) => {
                   value={field.user_email}
                   onChange={(e) => handleProfileChange(e, index)}
                   inputProps={{ readOnly: false }}
+                  onSubmit={(e) => {
+                    return false;
+                  }}
                 />
               </Grid>
               {isMainCV === 'MainCV' ? (
@@ -164,6 +173,7 @@ const Profile = ({ isMainCV }) => {
                     value={field.address}
                     onChange={(e) => handleProfileChange(e, index)}
                     variant="standard"
+                    onKeyPress={handleKeyPress}
                   />
                   <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                   <IconButton color="primary" sx={{ p: '10px' }} onClick={handleOpen}>
