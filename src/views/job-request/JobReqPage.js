@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
 import { reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
+import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -72,7 +73,7 @@ const JobReqPage = () => {
   const handleCreate = async () => {
     const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
     setRows(searchData);
-
+    dispatch(resetUploadedFiles());
     dispatch(resetSelectedRow());
   };
 
@@ -161,7 +162,12 @@ const JobReqPage = () => {
                 {/* <Typography sx={{ marginTop: '20px', marginLeft: '20px' }}>신청일자</Typography> */}
                 <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={startDate} onChange={handleStartDateChange} />
+                    <DatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                      format="YYYY/MM/DD"
+                    />
                   </LocalizationProvider>
                 </Grid>
                 <Grid item>
@@ -169,7 +175,12 @@ const JobReqPage = () => {
                 </Grid>
                 <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={endDate} onChange={handleEndDateChange} />
+                    <DatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                      format="YYYY/MM/DD"
+                    />
                   </LocalizationProvider>
                 </Grid>
                 <Grid item sx={{ marginLeft: '20px' }}>

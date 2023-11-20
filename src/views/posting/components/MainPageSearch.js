@@ -49,6 +49,7 @@ const MainPageSearch = ({ value, handleSearchInputChange }) => {
       freeSolo
       options={[...groups, ...roles]}
       getOptionLabel={(option) => option}
+      isOptionEqualToValue={(option, value) => option === value}
       value={value}
       onChange={(event, value) => {
         console.log(value);

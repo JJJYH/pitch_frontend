@@ -23,6 +23,7 @@ import PostingDetailModal from 'views/posting/components/PostingDetailModal';
 import { reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
 import FileDropDown from './FileDropDown';
+import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -61,6 +62,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
   const userId = useSelector((state) => state.userInfo.user_id);
+  const uploadedFiles = useSelector(uploadedFilesSelector);
 
   const [formData, setFormData] = useState({
     job_req_no: '',
@@ -87,6 +89,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [copiedData, setCopiedData] = useState('');
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [uploadFiles, setUploadFiles] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -208,44 +211,59 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }
   };
 
+  const handleFiles = (files) => {
+    //dispatch(setUploadedFiles((prevData) => [...prevData, ...files.map((file) => ({ file, size: file.size }))]));
+    setUploadFiles((prevData) => [...prevData, ...files.map((file) => ({ file, size: file.size }))]);
+  };
+
   const scrollToTop = () => {
     contentRef.current.scrollTo(0, 0);
   };
 
   useEffect(() => {
-    scrollToTop();
-    if (selectedRow) {
-      setFormData(selectedRow);
+    const fetchData = async () => {
+      scrollToTop();
+      if (selectedRow) {
+        setFormData(selectedRow);
 
-      //console.log(selectedRow);
-    } else {
-      if (copiedData) {
-        setFormData(copiedData);
-        setCopiedData('');
+        const fileReqNo = selectedRow.job_req_no;
+        const filesResponse = await axios.get(`http://localhost:8888/admin/hire/${fileReqNo}/files`);
+
+        dispatch(setUploadedFiles(filesResponse.data));
+        //setUploadedFiles(filesResponse.data);
+
+        console.log(filesResponse.data);
       } else {
-        setFormData({
-          job_req_no: '',
-          users: { user_id: userId },
-          req_title: '',
-          job_req_date: new Date(),
-          job_group: '',
-          job_role: '',
-          location: '',
-          hire_num: '',
-          education: '',
-          job_type: '신입',
-          job_year: '',
-          posting_type: '수시채용',
-          posting_period: '',
-          posting_start: '',
-          posting_end: '',
-          qualification: '',
-          preferred: '',
-          job_duties: '',
-          req_status: '작성중'
-        });
+        if (copiedData) {
+          setFormData(copiedData);
+          setCopiedData('');
+        } else {
+          setFormData({
+            job_req_no: '',
+            users: { user_id: userId },
+            req_title: '',
+            job_req_date: new Date(),
+            job_group: '',
+            job_role: '',
+            location: '',
+            hire_num: '',
+            education: '',
+            job_type: '신입',
+            job_year: '',
+            posting_type: '수시채용',
+            posting_period: '',
+            posting_start: '',
+            posting_end: '',
+            qualification: '',
+            preferred: '',
+            job_duties: '',
+            req_status: '작성중'
+          });
+        }
       }
-    }
+    };
+
+    fetchData(); // fetchData 함수를 호출
   }, [selectedRow]);
 
   const onSubmit = async (e, status) => {
@@ -307,6 +325,33 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.error(error);
         }
 
+        console.log(uploadFiles);
+        if (uploadFiles.length > 0) {
+          const fileData = new FormData();
+          uploadFiles.forEach((file) => {
+            //fileData.append('file', file);
+            console.log(file.file);
+            console.log(`Name: ${file.file.name}`);
+            console.log(`Type: ${file.file.type}`);
+            fileData.append('files', file.file);
+          });
+          fileData.append('jobReqNo', res.data);
+          console.log(res.data);
+
+          console.log(fileData);
+
+          try {
+            const fileUploadResponse = await axios.post('http://localhost:8888/admin/hire/upload', fileData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            console.log(fileUploadResponse);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        //dispatch(resetUploadedFiles());
         enqueueSnackbar('임시저장 완료', { variant: 'info' });
         reqlisthandler();
       }
@@ -370,6 +415,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                     console.log(data);
                     setFormData({ ...formData, job_req_date: data.$d });
                   }}
+                  format="YYYY/MM/DD"
                   disabled={formData.req_status !== '작성중'}
                   slotProps={{ textField: { size: 'small' } }}
                 />
@@ -556,7 +602,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           </Grid>
           <Grid item xs={12}>
             <FormTypo>파일첨부</FormTypo>
-            <FileDropDown />
+            <FileDropDown handleFiles={handleFiles} />
           </Grid>
           <Divider sx={{ marginTop: '40px' }} />
           <Grid item container justifyContent="center">

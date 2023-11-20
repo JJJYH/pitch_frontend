@@ -52,6 +52,7 @@ const ReqPageSearch = ({ value, handleSearchInputChange }) => {
         console.log(value);
         handleSearchInputChange(value);
       }}
+      isOptionEqualToValue={(option, value) => option === value}
       renderInput={(params) => <TextField {...params} placeholder="직군, 직무 검색" variant="outlined" name="search" />}
       filterOptions={(options, params) => {
         const filteredOptions = options.filter(
