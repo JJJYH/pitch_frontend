@@ -18,6 +18,7 @@ import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -328,6 +329,7 @@ const PostingListPage = () => {
             <Box sx={{ height: '250px', ml: 12, mr: 12, mb: 2, borderRadius: '4px', backgroundColor: '#f2f2f2' }}>
               <Box sx={{ height: '50px', display: 'flex', alignItems: 'flex-end' }}>
                 <Typography sx={{ fontSize: '22px', fontWeight: 'bold', pl: 2 }}>추천 공고</Typography>
+                <ThumbUpIcon sx={{ mb: 0.5, ml: 1 }} />
               </Box>
 
               <Box sx={{ height: '200px' }}>

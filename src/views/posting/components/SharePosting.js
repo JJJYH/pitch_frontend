@@ -3,7 +3,10 @@ import { Helmet } from 'react-helmet';
 
 const SharePosting = ({ postingNo, jobPosting }) => {
   useEffect(() => {
-    window.Kakao.init(process.env.REACT_APP_KAKAO_SHARE_KEY);
+    //window.Kakao.init(process.env.REACT_APP_KAKAO_SHARE_KEY);
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(process.env.REACT_APP_KAKAO_SHARE_KEY);
+    }
 
     // window.Kakao.Share.createCustomButton({
     //   container: '#kakaotalk-sharing-btn',
@@ -51,7 +54,7 @@ const SharePosting = ({ postingNo, jobPosting }) => {
 
       <a id="kakaotalk-sharing-btn" href="#">
         <img
-          src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+          src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_small.png"
           alt="카카오톡 공유 보내기 버튼"
         />
       </a>

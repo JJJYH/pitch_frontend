@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-const JobRole = ({ onSelect, disabled, formData }) => {
+const JobRole = ({ onSelect, disabled, formData, validationErrors }) => {
   //   console.log('v:' + value);
   //   console.log('d:' + disabled);
 
@@ -51,9 +51,19 @@ const JobRole = ({ onSelect, disabled, formData }) => {
       disableClearable
       options={jobRoles}
       isOptionEqualToValue={(option, value) => option.label === value}
-      renderInput={(params) => <TextField {...params} placeholder="직무 선택" variant="outlined" name="job_role" size="small" />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder="직무 선택"
+          variant="outlined"
+          name="job_role"
+          size="small"
+          error={validationErrors.job_role}
+          helperText={validationErrors.job_role && '직무를 선택해주세요.'}
+        />
+      )}
       onChange={(event, value) => onSelect(value)}
-      disabled={disabled} // Autocomplete를 비활성화
+      disabled={disabled}
     />
   );
 };

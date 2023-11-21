@@ -31,6 +31,7 @@ const JobReqPage = () => {
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const userId = useSelector((state) => state.userInfo.user_id);
+  const [val, setVal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -75,6 +76,7 @@ const JobReqPage = () => {
     setRows(searchData);
     dispatch(resetUploadedFiles());
     dispatch(resetSelectedRow());
+    updateVal();
   };
 
   const handleReset = () => {
@@ -149,11 +151,15 @@ const JobReqPage = () => {
     setRows(searchData);
   };
 
+  const updateVal = () => {
+    setVal(true);
+  };
+
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
         <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
-          <TaskOutlinedIcon /> 채용 요청 관리
+          <TaskOutlinedIcon sx={{ mb: 0.5 }} /> 채용 요청 관리
         </Typography>
         <Box sx={{ padding: '0px 20px' }}>
           <Grid container alignItems="center" justifyContent="space-between">
@@ -283,6 +289,7 @@ const JobReqPage = () => {
             endDate={endDate}
             searchKeyword={searchKeyword}
             handleCombinedSearch={handleCombinedSearch}
+            updateVal={updateVal}
           />
         </Grid>
       </Grid>

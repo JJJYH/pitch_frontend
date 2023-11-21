@@ -27,7 +27,7 @@ import procedure from './procedure.png';
 import SharePosting from './SharePosting';
 import { useDispatch, useSelector } from 'react-redux';
 import { resetUploadedFiles, setUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
-import { file } from 'jszip';
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -454,7 +454,9 @@ const PostingDetailModal = ({
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                       >
-                        <MenuItem onClick={handleCloseMenu}>d</MenuItem>
+                        <MenuItem onClick={handleCloseMenu}>
+                          <InsertLinkIcon />
+                        </MenuItem>
                         <MenuItem onClick={handleCloseMenu}>
                           <SharePosting postingNo={job_posting_no} jobPosting={jobPosting} />
                         </MenuItem>

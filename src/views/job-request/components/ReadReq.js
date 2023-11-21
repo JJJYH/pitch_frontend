@@ -57,7 +57,17 @@ const SelectBox = styled(Select)(({ value }) => ({
   }
 }));
 
-const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelectedChips, setRows, startDate, endDate, searchKeyword }) => {
+const ReadReq = ({
+  reqlisthandler,
+  handleCombinedSearch,
+  selectedChips,
+  setSelectedChips,
+  setRows,
+  startDate,
+  endDate,
+  searchKeyword,
+  updateVal
+}) => {
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
@@ -90,6 +100,11 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [uploadFiles, setUploadFiles] = useState([]);
+  const [validationErrors, setValidationErrors] = useState({
+    job_role: false,
+    location: false,
+    hire_num: false
+  });
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -180,11 +195,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     enqueueSnackbar('복사 완료', { variant: 'info' });
   };
 
-  // const handlePaste = () => {
-  //   setFormData(copiedData);
-  //   setCopiedData('');
-  // };
-
   const handlePosting = async () => {
     try {
       const jobPostingData = {
@@ -266,8 +276,29 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     fetchData(); // fetchData 함수를 호출
   }, [selectedRow]);
 
+  useEffect(() => {
+    setValidationErrors('');
+  }, [updateVal]);
+
   const onSubmit = async (e, status) => {
     e.preventDefault();
+
+    if (status === '요청완료') {
+      // Validation
+      const errors = {
+        job_role: formData.job_role.trim() === '',
+        location: formData.location.trim() === '',
+        hire_num: formData.hire_num.trim() === ''
+      };
+
+      setValidationErrors(errors);
+      scrollToTop();
+
+      if (Object.values(errors).some((error) => error)) {
+        console.log('Validation');
+        return;
+      }
+    }
 
     const submitData = { ...formData, req_status: status };
     console.log(submitData);
@@ -424,7 +455,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           </Grid>
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={6}>
-              <FormTypo>직무</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 직무
+              </FormTypo>
 
               <JobRole
                 onSelect={handleJobRoleSelect}
@@ -433,25 +466,35 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 // selectedRow={selectedRow}
                 //value={formData.job_role}
                 disabled={formData.req_status !== '작성중'}
+                validationErrors={validationErrors}
               />
             </Grid>
             <Grid item xs={6}>
-              <FormTypo>근무지</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 근무지
+              </FormTypo>
 
               <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중'}>
-                <SelectBox value={formData.location || 'defaultLocation'} onChange={handleLocation}>
+                <SelectBox value={formData.location || 'defaultLocation'} onChange={handleLocation} error={validationErrors.location}>
                   <MenuItem value="defaultLocation" disabled>
                     근무지 선택
                   </MenuItem>
                   <MenuItem value="근무지1">근무지1</MenuItem>
                   <MenuItem value="근무지2">근무지2</MenuItem>
                 </SelectBox>
+                {validationErrors.location && (
+                  <Typography style={{ color: '#f44336', marginLeft: '14px', fontSize: '12px', marginTop: '4px' }}>
+                    근무지를 선택해주세요.
+                  </Typography>
+                )}
               </FormControl>
             </Grid>
           </Grid>
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={6}>
-              <FormTypo>채용인원</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 채용인원
+              </FormTypo>
               <TextField
                 fullWidth
                 placeholder="숫자만 입력하세요"
@@ -463,6 +506,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 onChange={(e) => {
                   setFormData({ ...formData, hire_num: e.target.value });
                 }}
+                error={validationErrors.hire_num}
+                helperText={validationErrors.hire_num && '채용인원을 선택해주세요.'}
               />
             </Grid>
             <Grid item xs={6}>
