@@ -152,7 +152,7 @@ const Mypage = () => {
                   지원수
                 </Typography>
                 <Typography fontWeight={'bold'} fontSize={'16px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                  45회
+                  2회
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>

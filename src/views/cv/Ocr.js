@@ -8,11 +8,20 @@ import { useRef } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch } from 'react-redux';
 import { addCert } from 'store/certSlice';
-const Ocr = ({ text }) => {
+import { useEffect } from 'react';
+const Ocr = ({ ocrImage, setOcrImage, dialogOpen, dialogClose, setOcrProgress }) => {
   const { loaded, cv } = useOpenCv();
   const [progress, setProgress] = useState(0);
   const [ocrText, setOcrText] = useState('');
   const dispatch = useDispatch();
+  useEffect(() => {
+    console.log(progress);
+    setOcrProgress(progress);
+    if (progress > 99.5) {
+      console.log(progress);
+      dialogClose();
+    }
+  }, [progress]);
   // 유클리드 거리 계산 함수
   const calculateDistance = (box1, box2) => {
     const center1 = {
@@ -31,7 +40,9 @@ const Ocr = ({ text }) => {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-
+    //ocrImage 등록
+    setOcrImage(file);
+    dialogOpen();
     if (file) {
       if (loaded) {
         const canvasOutput = document.querySelector('#canvasOutput');
@@ -234,11 +245,16 @@ const Ocr = ({ text }) => {
             });
           });
         };
-
         img.src = URL.createObjectURL(file);
+        console.log(img.src);
+        setOcrImage(img.src);
+        if (ocrImage) {
+          console.log(img.src);
+        }
       }
     }
   };
+
   console.log(ocrText);
 
   const ocrRef = useRef(null);

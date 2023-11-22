@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardHeader,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -50,7 +51,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import { addSkill, updateSkill } from 'store/skillSlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
-import { flushSync } from 'react-dom';
+import LoaderStyle from './Loader.module.scss';
+
 const CV = ({ isMainCV, sendData }) => {
   const profileInfo = useSelector((state) => state.profile);
   const params = useParams().job_posting_no;
@@ -70,6 +72,11 @@ const CV = ({ isMainCV, sendData }) => {
   const dispatch = useDispatch();
   const [isSelectCV, setIsSelectCV] = useState();
   const userInfo = useSelector((state) => state.userInfo);
+
+  window.addEventListener('beforeunload', (event) => {
+    // 페이지가 새로 고쳐질 때 실행할 코드
+    // 예를 들어, 쿠키를 설정하거나 로컬 스토리지에 값을 저장하는 등의 작업을 수행할 수 있습니다.
+  });
 
   //CV 데이터 포집 기능
   let cvData = {
@@ -93,11 +100,12 @@ const CV = ({ isMainCV, sendData }) => {
 
   /**APPLY PAGE 대표이력서 불러오기 시 APPLY CV_NO로 SETTING*/
   const setting_cv_no = async () => {
-    return cv.getCVNO(job_posting_no);
+    const res = cv.getCVNO(job_posting_no);
+    return res;
   };
 
   const loadMainCV = (cv_no) => {
-    cv.getList(cv_no).then(async (data) => {
+    cv.getList(cv_no).then((data) => {
       if (data.data === '') {
         console.log('IS Empty');
       } else {
@@ -379,6 +387,7 @@ const CV = ({ isMainCV, sendData }) => {
       });
     });
   };
+
   useEffect(() => {}, [selectedFiles]);
   const eduAddFields = () => {
     const new_edu_arr = {
@@ -459,7 +468,6 @@ const CV = ({ isMainCV, sendData }) => {
     boxShadow: 24,
     p: 4
   };
-  const [dialog_open, set_dialogOpen] = useState(false);
 
   const handleClickOpen = () => {
     set_dialogOpen(true);
@@ -469,11 +477,7 @@ const CV = ({ isMainCV, sendData }) => {
     set_dialogOpen(false);
     if (e.target.name === 'loadCVDial') {
       console.log('불러오기');
-
-      const sync = async () => {
-        await setIsSelectCV(true);
-      };
-      sync;
+      setIsSelectCV(true);
     }
   };
 
@@ -503,7 +507,8 @@ const CV = ({ isMainCV, sendData }) => {
       }
     });
   };
-  const handleUpdate = (data) => {
+
+  const handleUpdate = async (data) => {
     console.log(data);
     dispatch(updateProfile({ index: 0, name: 'user_id', value: data.user_id }));
     dispatch(updateProfile({ index: 0, name: 'address', value: data.address }));
@@ -511,7 +516,6 @@ const CV = ({ isMainCV, sendData }) => {
 
     data['educations'].map((item, key) => {
       if (key == 0) {
-        // console.log(item);
         dispatch(
           updateEducation({
             index: 0,
@@ -571,10 +575,71 @@ const CV = ({ isMainCV, sendData }) => {
       }
       console.log(data['educations'].length);
       console.log(cvData);
+      console.log(item);
       if (key !== 0 && !cvData.cv.educations.some((edu) => edu.edu_type === item.edu_type)) {
         console.log(item);
         dispatch(addEducation(item));
+      } else {
+        console.log(item);
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'edu_no',
+            value: item.edu_no
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'edu_type',
+            value: item.edu_type
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'enter_date',
+            value: item.enter_date
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'graduate_date',
+            value: item.graduate_date
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'major',
+            value: item.major
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'graduate_type',
+            value: item.graduate_type
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'total_score',
+            value: item.total_score
+          })
+        );
+        dispatch(
+          updateEducation({
+            index: key,
+            name: 'score',
+            value: item.score
+          })
+        );
       }
+      //재랜더링
+      console.log(cvEducation);
       console.log('Key: ' + key);
       console.log(item);
       console.log(cvData.cv.educations);
@@ -595,6 +660,15 @@ const CV = ({ isMainCV, sendData }) => {
     data['careers'].map((item, key) => {
       if (!cvData.cv.careers.some((career) => career.company_name === item.company_name) && item.career_no !== 0) {
         dispatch(addCareer(item));
+      } else {
+        dispatch(updateCareer({ index: key, name: 'company_name', value: item.company_name }));
+        dispatch(updateCareer({ index: key, name: 'career_no', value: item.career_no }));
+        dispatch(updateCareer({ index: key, name: 'cv_dept_name', value: item.cv_dept_name }));
+        dispatch(updateCareer({ index: key, name: 'position', value: item.position }));
+        dispatch(updateCareer({ index: key, name: 'salary', value: item.salary }));
+        dispatch(updateCareer({ index: key, name: 'job', value: item.job }));
+        dispatch(updateCareer({ index: key, name: 'join_date', value: item.join_date }));
+        dispatch(updateCareer({ index: key, name: 'quit_date', value: item.quit_date }));
       }
       console.log(key);
       console.log(item);
@@ -605,6 +679,11 @@ const CV = ({ isMainCV, sendData }) => {
         console.log(cvData.cv.certifications.length);
         console.log('들어옴');
         dispatch(addCert(item));
+      } else {
+        dispatch(updateCert({ index: key, name: 'cert_name', vlaue: item.cert_name }));
+        dispatch(updateCert({ index: key, name: 'cert_no', vlaue: item.cert_no }));
+        dispatch(updateCert({ index: key, name: 'publisher', vlaue: item.publisher }));
+        dispatch(updateCert({ index: key, name: 'acquisition_date', vlaue: item.acquisition_date }));
       }
       console.log(key);
       console.log(item);
@@ -635,25 +714,35 @@ const CV = ({ isMainCV, sendData }) => {
   };
 
   const sequentialProcess = async () => {
-    await MainToApplyCV();
     await cv
-      .getList(cv_no.cv_no)
+      .getMainCVNO()
       .then((res) => {
-        if (cv_no.cv_no > 0) {
-          console.log(res);
-          handleClickOpen();
-
-          return res.data;
-        }
+        return loadMainCV(res.data);
       })
-      .then(async (res) => {
-        console.log(!dialog_open);
-        console.log(isSelectCV);
-        if (!dialog_open) {
-          console.log(res);
-          handleUpdate(res);
-          console.log(cvData);
-        }
+      .then(async () => {
+        await cv
+          .getList(cv_no.cv_no)
+          .then((res) => {
+            console.log(cv_no.cv_no);
+            if (cv_no.cv_no > 0) {
+              console.log(res);
+              handleClickOpen();
+
+              return res.data;
+            }
+          })
+          .then(async (res) => {
+            console.log(!dialog_open);
+            console.log(isSelectCV);
+            if (!isSelectCV) {
+              console.log('UNDEFINED USER ID');
+            }
+            if (!dialog_open && isSelectCV) {
+              console.log(res);
+              await handleUpdate(res);
+              console.log(cvData);
+            }
+          });
       });
   };
 
@@ -697,19 +786,46 @@ const CV = ({ isMainCV, sendData }) => {
       console.log('Init Profile Data : ' + JSON.stringify(profileInfo));
     });
   };
+
   useEffect(() => {
     const fetchData = async () => {
       await initData();
       // await sequentialProcess();
+      cv.getMainCVNO()
+        .then((res) => {
+          return loadMainCV(res.data);
+        })
+        .then(async () => {
+          await cv
+            .getList(cv_no.cv_no)
+            .then(async (res) => {
+              console.log(cv_no.cv_no);
+              if (cv_no.cv_no > 0) {
+                console.log(res);
+                handleClickOpen();
 
+                return res.data;
+              }
+            })
+            .then(async (res) => {
+              console.log(!dialog_open);
+              console.log(isSelectCV);
+              // if (!isSelectCV) {
+              //   console.log('UNDEFINED USER ID');
+              // }
+              if (!dialog_open && isSelectCV) {
+                console.log(res);
+                await handleUpdate(res);
+                console.log(cvData);
+              }
+            });
+        });
       console.log(cvData);
     };
     //대표이력서 작성 이력이 있는 경우 자동 불러오기
     //APPLY CV에서 호출시 CV_NO를 APPLY CV_NO로 설정
     //이 부분에서 각 컴포넌트의 no 초기화 진행
     // MainToApplyCV();
-    fetchData();
-
     {
       isMainCV === 'MainCV'
         ? cv.getMainCVNO().then((res) => {
@@ -717,9 +833,11 @@ const CV = ({ isMainCV, sendData }) => {
             console.log(cvData.cv.cv_no);
             loadMainCV(res.data);
           })
-        : cv.getCVNO(job_posting_no).then((res) => {
+        : cv.getCVNO(job_posting_no).then(async (res) => {
             dispatch(updateCVNO(res.data));
+            console.log(job_posting_no);
             console.log(cv_no);
+            await fetchData();
           });
     }
     {
@@ -738,8 +856,67 @@ const CV = ({ isMainCV, sendData }) => {
     //기존 작성 이력서 있는지 확인 Dialog로 선택가능
   }, []);
 
+  const [ocrImage, setOcrImage] = useState(); // OCR IMAGE SETTING
+  const [dialog_open, set_dialogOpen] = useState(false); //불러오기 Dialog
+  const [ocr_dialog_open, set_dialog_open] = useState(false); //OCR Dialog
+  const [ocr_progress, set_ocr_progress] = useState(); //OCR PROGRESS
+  console.log(ocrImage);
+
+  const handle_ocr_open = (e) => {
+    set_dialog_open(true);
+  };
+
+  const handle_ocr_close = (e) => {
+    set_dialog_open(false);
+  };
+
   return (
     <Grid container spacing={2.5}>
+      <Dialog open={ocr_dialog_open} onClose={handle_ocr_close}>
+        <DialogTitle>OCR 진행 중</DialogTitle>
+        <DialogContent>
+          <DialogContentText>OCR이 진행중입니다. 잠시만 기다려주세요.</DialogContentText>
+
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'inline-block',
+                width: 'fit-content'
+              }}
+            >
+              <img src={ocrImage} alt="" style={{ width: '100%', height: 'auto', opacity: 0.4 }} />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+              >
+                <CircularProgress variant="determinate" size={200} value={parseInt(ocr_progress)} />
+                <Box
+                  sx={{
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Typography variant="caption" component="div" fontSize={25} color="text.secondary">
+                    {`${Math.round(ocr_progress)}%`}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={dialog_open} onClose={handleClose}>
         <DialogTitle>이력서 선택</DialogTitle>
         <DialogContent>
@@ -812,7 +989,13 @@ const CV = ({ isMainCV, sendData }) => {
                     자격증
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                    <Ocr />
+                    <Ocr
+                      ocrImage={ocrImage}
+                      setOcrImage={setOcrImage}
+                      dialogOpen={handle_ocr_open}
+                      dialogClose={handle_ocr_close}
+                      setOcrProgress={set_ocr_progress}
+                    />
                     <IconButton onClick={() => certAddFields()}>
                       <AddIcon />
                     </IconButton>
@@ -905,7 +1088,7 @@ const CV = ({ isMainCV, sendData }) => {
             <MainCard>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <CardHeader title={<Typography sx={{ fontSize: '25px', fontWeight: 'bold' }}>이력서 작성</Typography>} />
-                <Button onClick={MainToApplyCV}>대표 이력서 불러오기</Button>
+                {/* <Button onClick={MainToApplyCV}>대표 이력서 불러오기</Button> */}
               </div>
               <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <Grid item xs={12}>
@@ -965,7 +1148,13 @@ const CV = ({ isMainCV, sendData }) => {
                         자격증
                       </Typography>
                       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-                        <Ocr />
+                        <Ocr
+                          ocrImage={ocrImage}
+                          setOcrImage={setOcrImage}
+                          dialogOpen={handle_ocr_open}
+                          dialogClose={handle_ocr_close}
+                          setOcrProgress={set_ocr_progress}
+                        />
                         <IconButton onClick={() => certAddFields()}>
                           <AddIcon />
                         </IconButton>
@@ -1071,6 +1260,7 @@ const CV = ({ isMainCV, sendData }) => {
                   dialog_open={dialog_open}
                   isSelectCV={isSelectCV}
                   userInfo={userInfo}
+                  selectCV={isSelectCV}
                 />
               </Grid>
               <Grid item xs={1} />

@@ -25,7 +25,10 @@ import { addActivity } from 'store/activitySlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import { updateCVNO } from 'store/cvSlice';
 import JSZip from 'jszip';
-
+import style from '../Loader.module.scss';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 const CVSide = ({
   reverseFuction,
   currentTab,
@@ -38,7 +41,8 @@ const CVSide = ({
   setSelectedFiles,
   userInfo,
   isSelectCV,
-  dialog_open
+  dialog_open,
+  selectCV
 }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
@@ -46,6 +50,11 @@ const CVSide = ({
   for (const key in tabRef.current) {
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
+
+  useEffect(() => {
+    loadCV();
+    console.log('들어옴');
+  }, [selectCV]);
 
   // const [isWritten, setIsWritten] = useState();
   const dispatch = useDispatch();
@@ -537,7 +546,7 @@ const CVSide = ({
     });
 
     cvData.cv.activities.forEach((item) => {
-      const requrieActivityFields = ['activity_type', 'organiztion', 'start_date', 'end_date', 'activity_detail'];
+      const requrieActivityFields = ['activity_type', 'organization', 'start_date', 'end_date', 'activity_detail'];
       requrieActivityFields.forEach((field) => {
         if (!item[field] || item[field].length === 0) {
           missingActivityValueCount++;
@@ -573,8 +582,13 @@ const CVSide = ({
   return (
     <Box sx={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', position: 'sticky', top: 90, width: '150px' }}>
       <MainCard sx={{ width: '100%' }}>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingEduValuesCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingEduValuesCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
+
           <Typography
             variant="h4"
             color={location_point === 'education' ? 'primary' : 'default'}
@@ -587,6 +601,7 @@ const CVSide = ({
           </Typography>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <LightbulbIcon fontSize="medium" style={{ color: '#4682B4', marginRight: '8px' }} />
           <Typography
             variant="h4"
             color={location_point === 'skills' ? 'primary' : 'default'}
@@ -598,8 +613,13 @@ const CVSide = ({
             보유 스킬
           </Typography>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingCareerValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingCareerValueCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
+
           <Typography
             variant="h4"
             color={location_point === 'career' ? 'primary' : 'default'}
@@ -611,8 +631,13 @@ const CVSide = ({
             경력 사항
           </Typography>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingCertValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingCertValueCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
+
           <Typography
             variant="h4"
             color={location_point === 'cert' ? 'primary' : 'default'}
@@ -624,8 +649,13 @@ const CVSide = ({
             자격증
           </Typography>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingLangValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingLangValueCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
+
           <Typography
             variant="h4"
             color={location_point === 'lang' ? 'primary' : 'default'}
@@ -638,8 +668,10 @@ const CVSide = ({
           </Typography>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
           {/* <CircleIcon fontSize="16px" style={{ color: '#D18AC7', marginRight: '8px' }} /> */}
+          <DescriptionIcon fontSize="medium" style={{ color: '#4682B4', marginRight: '8px' }} />
+          {/* <CircleIcon fontSize="medium" style={{ visibility: 'hidden', color: '#D18AC7', marginRight: '8px' }} /> */}
           <Typography
             variant="h4"
             color={location_point === 'activity' ? 'primary' : 'default'}
@@ -652,8 +684,13 @@ const CVSide = ({
           </Typography>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingActivityValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingActivityValueCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
+
           <Typography
             variant="h4"
             color={location_point === 'docs' ? 'primary' : 'default'}
@@ -665,8 +702,12 @@ const CVSide = ({
             대외 활동
           </Typography>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <CircleIcon fontSize="16px" style={{ color: missingAdvantageValueCount === 0 ? '#4682B4' : '#D18AC7', marginRight: '8px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          {missingAdvantageValueCount === 0 ? (
+            <CheckCircleIcon style={{ color: '#4682B4', marginRight: '8px' }} />
+          ) : (
+            <CircleIcon fontSize="medium" style={{ color: '#D18AC7', marginRight: '8px' }} />
+          )}
           <Typography
             variant="h4"
             color={location_point === 'advantage' ? 'primary' : 'default'}
@@ -742,7 +783,7 @@ const CVSide = ({
         </Button>
       </div>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <Button
+        {/* <Button
           onClick={(e) => loadCV()}
           sx={{
             width: '100%',
@@ -759,7 +800,7 @@ const CVSide = ({
         >
           <FileCopyIcon />
           불러오기
-        </Button>
+        </Button> */}
       </div>
     </Box>
   );
