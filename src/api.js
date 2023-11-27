@@ -248,6 +248,14 @@ const cv = {
   getApply: (data) => {
     return instance.get('/admin/main/cv/apply', { params: { cv_no: data } });
   },
+  getChartData: (data) => {
+    return instance.get('/admin/main/cv/req-count', {
+      params: {
+        job_posting_no: data.job_posting_no,
+        cv_no: data.cv_no
+      }
+    });
+  },
   postApply: (data) => {
     return instance.post('/admin/main/cv/send-apply', data);
   },

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from '../cv/Page';
 import { cv } from 'api';
 import { useEffect } from 'react';
+import icon from '../../man.png';
 const Mypage = () => {
   const [reqBtn, setReqBtn] = useState('reqList');
   const userInfo = useSelector((state) => state.userInfo);
@@ -101,6 +102,60 @@ const Mypage = () => {
   }, []);
 
   console.log(jobInfoList);
+  const initialChartData = {
+    data: [
+      {
+        avg_score: 0,
+        cert_count: 0,
+        career_count: 0,
+        lang_count: 0,
+        advantage_count: 0,
+        skill_count: 0
+      },
+      {
+        avg_score: 0,
+        cert_count: 0,
+        career_count: 0,
+        lang_count: 0,
+        advantage_count: 0,
+        skill_count: 0
+      }
+    ]
+  };
+
+  useEffect(() => {
+    // jobInfoList 배열의 첫 번째 요소를 가져옴
+    if (jobInfoList.length > 0) {
+      console.log(jobInfoList[0]);
+      const sendParams = {
+        job_posting_no: jobInfoList[0].job_posting_no,
+        cv_no: jobInfoList[0].cv_no
+      };
+      cv.getChartData(sendParams)
+        .then((res) => {
+          setChartData(res);
+          console.log(chartData);
+        })
+        .catch((error) => {
+          // 에러 핸들링
+          console.error('Error fetching chart data:', error);
+        });
+    }
+  }, [jobInfoList]); // jobInfoList가 변경될 때마다 실행
+
+  const [chartData, setChartData] = useState(initialChartData);
+  const handleClickList = async (index) => {
+    console.log(jobInfoList[index]);
+    const sendParmas = {
+      job_posting_no: jobInfoList[index].job_posting_no,
+      cv_no: jobInfoList[index].cv_no
+    };
+    await cv.getChartData(sendParmas).then((res) => {
+      setChartData(res);
+
+      console.log(chartData);
+    });
+  };
 
   return (
     <Grid container>
@@ -112,6 +167,8 @@ const Mypage = () => {
           {/* profile */}
           <Avatar
             className={styles.avatarStyle}
+            alt="User Image"
+            src={icon}
             sx={{
               zIndex: 2,
               height: '100px',
@@ -152,7 +209,7 @@ const Mypage = () => {
                   지원수
                 </Typography>
                 <Typography fontWeight={'bold'} fontSize={'16px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                  2회
+                  {jobInfoList.length}회
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
@@ -160,7 +217,7 @@ const Mypage = () => {
                   onClick={(e) => setReqBtn('CVWrite')}
                   fontWeight={'bold'}
                   fontSize={'20px'}
-                  sx={{ '&:hover': { color: '#4682b4' } }}
+                  sx={{ color: reqBtn === 'CVWrite' ? '#4682b4' : 'black', '&:hover': { color: '#4682b4' } }}
                 >
                   이력서 관리
                 </Typography>
@@ -168,7 +225,7 @@ const Mypage = () => {
                   onClick={(e) => setReqBtn('reqList')}
                   fontWeight={'bold'}
                   fontSize={'20px'}
-                  sx={{ '&:hover': { color: '#4682b4' } }}
+                  sx={{ color: reqBtn === 'reqList' ? '#4682b4' : 'black', '&:hover': { color: '#4682b4' } }}
                 >
                   지원 공고
                 </Typography>
@@ -194,9 +251,9 @@ const Mypage = () => {
                     {reqBtn === 'reqList' && (
                       <>
                         <Typography fontWeight={'bold'} fontSize={'20px'} sx={{ '&:hover': { color: '#4682b4' } }}>
-                          지원자 평균 스펙
+                          지원자 평균 역량
                         </Typography>
-                        <RadarChart user_nm={userInfo.user_nm} />
+                        <RadarChart user_nm={userInfo.user_nm} chartData={chartData} />
                       </>
                     )}
                   </Grid>
@@ -207,7 +264,13 @@ const Mypage = () => {
                     <div style={{ overflow: 'auto', maxHeight: '500px' }}>
                       {jobInfoList.length !== 0
                         ? jobInfoList.map((info, index) => (
-                            <Card key={index} sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}>
+                            <Card
+                              key={index}
+                              sx={{ padding: '10px', '&:hover': { border: '2px solid #4682b4' } }}
+                              onClick={() => {
+                                handleClickList(index);
+                              }}
+                            >
                               <CardHeader
                                 sx={{ padding: '10px' }}
                                 title={

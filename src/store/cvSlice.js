@@ -6,6 +6,7 @@ const cvSlice = createSlice({
   initialState: { cv_no: 0 },
   reducers: {
     updateCVNO: (state, action) => {
+      console.log('cv_no 변경 진행', action.payload);
       state.cv_no = action.payload;
     }
   }

@@ -29,6 +29,7 @@ import style from '../Loader.module.scss';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import { useSnackbar } from 'notistack';
 const CVSide = ({
   reverseFuction,
   currentTab,
@@ -42,11 +43,14 @@ const CVSide = ({
   userInfo,
   isSelectCV,
   dialog_open,
-  selectCV
+  selectCV,
+  applyCheck,
+  setApplyCheck
 }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const locationState = [];
   const [location_point, set_location_point] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
   for (const key in tabRef.current) {
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
@@ -720,28 +724,35 @@ const CVSide = ({
           </Typography>
         </div>
       </MainCard>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <Button
-          onClick={() => {
-            sendApply();
-          }}
-          sx={{
-            width: '100%',
-            fontSize: '16px',
-            backgroundColor: '#4682b4',
-            color: 'white',
-            justifyContent: 'space-between',
-            '&:hover': {
-              color: '#4682b4',
-              backgroundColor: 'white',
-              border: '1px solid #4682b4'
-            }
-          }}
-        >
-          <SendIcon />
-          지원하기
-        </Button>
-      </div>
+      {applyCheck ? (
+        ''
+      ) : (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <Button
+            onClick={() => {
+              sendApply();
+              setApplyCheck(true);
+              enqueueSnackbar('지원하기 성공', { variant: 'success' });
+            }}
+            sx={{
+              width: '100%',
+              fontSize: '16px',
+              backgroundColor: '#4682b4',
+              color: 'white',
+              justifyContent: 'space-between',
+              '&:hover': {
+                color: '#4682b4',
+                backgroundColor: 'white',
+                border: '1px solid #4682b4'
+              }
+            }}
+          >
+            <SendIcon />
+            지원하기
+          </Button>
+        </div>
+      )}
+
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <Button
           onClick={handlePrint}
@@ -762,26 +773,34 @@ const CVSide = ({
           인쇄하기
         </Button>
       </div>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <Button
-          onClick={(e) => sendCVData(cvData)}
-          sx={{
-            width: '100%',
-            fontSize: '16px',
-            backgroundColor: '#4682b4',
-            color: 'white',
-            justifyContent: 'space-between',
-            '&:hover': {
-              color: '#4682b4',
-              backgroundColor: 'white',
-              border: '1px solid #4682b4'
-            }
-          }}
-        >
-          <SaveIcon />
-          임시저장
-        </Button>
-      </div>
+      {applyCheck ? (
+        ''
+      ) : (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <Button
+            onClick={(e) => {
+              sendCVData(cvData);
+              enqueueSnackbar('임시저장 성공', { variant: 'success' });
+            }}
+            sx={{
+              width: '100%',
+              fontSize: '16px',
+              backgroundColor: '#4682b4',
+              color: 'white',
+              justifyContent: 'space-between',
+              '&:hover': {
+                color: '#4682b4',
+                backgroundColor: 'white',
+                border: '1px solid #4682b4'
+              }
+            }}
+          >
+            <SaveIcon />
+            임시저장
+          </Button>
+        </div>
+      )}
+
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         {/* <Button
           onClick={(e) => loadCV()}

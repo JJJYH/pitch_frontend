@@ -46,12 +46,13 @@ import { updateProfile } from 'store/profileSlice';
 import { useEffect } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { updateCVNO } from 'store/cvSlice';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import { addSkill, updateSkill } from 'store/skillSlice';
 import { addAdvantage, updateAdvantage } from 'store/advantageSlice';
 import LoaderStyle from './Loader.module.scss';
+import { useSnackbar } from 'notistack';
 
 const CV = ({ isMainCV, sendData }) => {
   const profileInfo = useSelector((state) => state.profile);
@@ -59,6 +60,7 @@ const CV = ({ isMainCV, sendData }) => {
   //공고 상세에서 넘어온 job_posting_no 세팅
   let job_posting_no = params;
   const [ocrText, setOcrText] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
   /**State Selector 모음 */
   const cv_no = useSelector((state) => state.cv_no);
   const cvProfile = useSelector((state) => state.profile);
@@ -98,13 +100,14 @@ const CV = ({ isMainCV, sendData }) => {
     }
   };
 
+  const [cvNoChanged, setCvNoChanged] = useState(false);
   /**APPLY PAGE 대표이력서 불러오기 시 APPLY CV_NO로 SETTING*/
   const setting_cv_no = async () => {
     const res = cv.getCVNO(job_posting_no);
     return res;
   };
 
-  const loadMainCV = (cv_no) => {
+  const loadMainCV = async (cv_no) => {
     cv.getList(cv_no).then((data) => {
       if (data.data === '') {
         console.log('IS Empty');
@@ -478,6 +481,7 @@ const CV = ({ isMainCV, sendData }) => {
     if (e.target.name === 'loadCVDial') {
       console.log('불러오기');
       setIsSelectCV(true);
+      enqueueSnackbar('기존이력서 불러오기 성공', { variant: 'success' });
     }
   };
 
@@ -788,44 +792,6 @@ const CV = ({ isMainCV, sendData }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      await initData();
-      // await sequentialProcess();
-      cv.getMainCVNO()
-        .then((res) => {
-          return loadMainCV(res.data);
-        })
-        .then(async () => {
-          await cv
-            .getList(cv_no.cv_no)
-            .then(async (res) => {
-              console.log(cv_no.cv_no);
-              if (cv_no.cv_no > 0) {
-                console.log(res);
-                handleClickOpen();
-
-                return res.data;
-              }
-            })
-            .then(async (res) => {
-              console.log(!dialog_open);
-              console.log(isSelectCV);
-              // if (!isSelectCV) {
-              //   console.log('UNDEFINED USER ID');
-              // }
-              if (!dialog_open && isSelectCV) {
-                console.log(res);
-                await handleUpdate(res);
-                console.log(cvData);
-              }
-            });
-        });
-      console.log(cvData);
-    };
-    //대표이력서 작성 이력이 있는 경우 자동 불러오기
-    //APPLY CV에서 호출시 CV_NO를 APPLY CV_NO로 설정
-    //이 부분에서 각 컴포넌트의 no 초기화 진행
-    // MainToApplyCV();
     {
       isMainCV === 'MainCV'
         ? cv.getMainCVNO().then((res) => {
@@ -833,13 +799,27 @@ const CV = ({ isMainCV, sendData }) => {
             console.log(cvData.cv.cv_no);
             loadMainCV(res.data);
           })
-        : cv.getCVNO(job_posting_no).then(async (res) => {
-            dispatch(updateCVNO(res.data));
-            console.log(job_posting_no);
-            console.log(cv_no);
-            await fetchData();
-          });
+        : cv
+            .getCVNO(job_posting_no)
+            .then(async (res) => {
+              console.log(res);
+
+              console.log(job_posting_no);
+              console.log(cv_no);
+              return dispatch(updateCVNO(res.data));
+            })
+            .then(async (cvNoData) => {
+              console.log(cv_no);
+              console.log(cv_no.cv_no);
+              console.log(cvNoData);
+            });
     }
+
+    //대표이력서 작성 이력이 있는 경우 자동 불러오기
+    //APPLY CV에서 호출시 CV_NO를 APPLY CV_NO로 설정
+    //이 부분에서 각 컴포넌트의 no 초기화 진행
+    // MainToApplyCV();
+
     {
       isMainCV === 'MainCV'
         ? ''
@@ -855,6 +835,79 @@ const CV = ({ isMainCV, sendData }) => {
     }
     //기존 작성 이력서 있는지 확인 Dialog로 선택가능
   }, []);
+
+  const [delayCompleted, setDelayCompleted] = useState(false);
+
+  useEffect(() => {
+    // cv_no가 변경되면 cvNoChanged 상태를 토글하여 렌더링을 일으킴
+    console.log(cv_no);
+    const timer = setTimeout(() => {
+      console.log('0.5초가 지났습니다.');
+      if (cv_no && isMainCV !== 'MainCV') {
+        setDelayCompleted(true);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [cv_no]);
+  const [applyCheck, setApplyCheck] = useState(false);
+
+  const ealryCheck = async () => {
+    //지원 이력 확인
+    console.log(cv_no.cv_no);
+    const boolCheck = await cv.getApply(cv_no.cv_no);
+    console.log(boolCheck.data);
+    if (boolCheck.data > 0) {
+      setApplyCheck(true);
+    }
+  };
+
+  useEffect(() => {
+    // delayCompleted 상태가 변경될 때 추가 작업 실행
+    initData();
+    ealryCheck();
+    if (delayCompleted) {
+      console.log('작업을 수행합니다.');
+      const fetchData = async () => {
+        // await sequentialProcess();
+        cv.getMainCVNO()
+          .then(async (res) => {
+            console.log(res);
+            await loadMainCV(res.data);
+            enqueueSnackbar('대표이력서 불러오기 성공', { variant: 'success' });
+          })
+          .then(() => {
+            console.log(cv_no.cv_no);
+            cv.getList(cv_no.cv_no)
+              .then(async (res) => {
+                console.log(cv_no.cv_no);
+                if (cv_no.cv_no > 0) {
+                  console.log(res);
+                  handleClickOpen();
+
+                  return res.data;
+                }
+              })
+              .then(async (res) => {
+                console.log(!dialog_open);
+                console.log(isSelectCV);
+
+                // if (!isSelectCV) {
+                //   console.log('UNDEFINED USER ID');
+                // }
+                if (!dialog_open && isSelectCV) {
+                  console.log(res);
+
+                  await handleUpdate(res);
+                  console.log(cvData);
+                }
+              });
+          });
+        console.log(cvData);
+      };
+      // 여기서 원하는 작업을 수행
+      fetchData();
+    }
+  }, [delayCompleted]);
 
   const [ocrImage, setOcrImage] = useState(); // OCR IMAGE SETTING
   const [dialog_open, set_dialogOpen] = useState(false); //불러오기 Dialog
@@ -1261,6 +1314,8 @@ const CV = ({ isMainCV, sendData }) => {
                   isSelectCV={isSelectCV}
                   userInfo={userInfo}
                   selectCV={isSelectCV}
+                  applyCheck={applyCheck}
+                  setApplyCheck={setApplyCheck}
                 />
               </Grid>
               <Grid item xs={1} />

@@ -19,7 +19,9 @@ import {
 import React from 'react';
 
 import { useEffect } from 'react';
+
 import DaumPostcode from 'react-daum-postcode';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from 'store/profileSlice';
 import TitlebarImageList from '../TitlebarImageList';
@@ -158,7 +160,7 @@ const Profile = ({ isMainCV }) => {
           </Grid>
           <Grid item xs={12}>
             <Box display={'flex'} flexDirection={'row'} sx={{ gap: 2.5 }}>
-              <Grid item xs={12}>
+              <Grid item xs={10}>
                 <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}>
                   <TextField
                     fullWidth
@@ -228,7 +230,6 @@ const Profile = ({ isMainCV }) => {
           <Grid item sx={{ flex: '0 0 auto' }}>
             <Grid item xs={12}>
               <TitlebarImageList isMainCV={isMainCV} />
-              {/* <Card sx={{ width: '128px', height: '135px', background: 'light-grey' }}></Card> */}
             </Grid>
           </Grid>
         )}

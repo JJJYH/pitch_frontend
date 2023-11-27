@@ -71,12 +71,15 @@ const Education = () => {
                       fullWidth
                       label="점수"
                       color="primary"
-                      type="text"
+                      type="number"
                       variant="standard"
                       name="score"
                       value={field.score}
                       onChange={(e) => handleEduChange(e, index)}
                       size="small"
+                      inputProps={{
+                        step: '0.01'
+                      }}
                     />
                   </Grid>
                   <Grid item xs={1}>
