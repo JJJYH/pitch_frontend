@@ -43,8 +43,12 @@ const ReqDataGrid = forwardRef(
     const userId = useSelector((state) => state.userInfo.user_id);
 
     useEffect(() => {
-      if (userId === 'admin') dispatch(setSelectedRow(defaultRow));
-    }, [userId, dispatch.defaultRow]);
+      if (userId === 'admin') {
+        dispatch(setSelectedRow(defaultRow));
+      } else {
+        dispatch(resetSelectedRow());
+      }
+    }, []);
 
     const getRowClassName = (params) => {
       const isSelected = selectedRow && selectedRow.job_req_no === params.row.job_req_no;

@@ -26,6 +26,7 @@ const JobPostingPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [defaultRow, setDefaultRow] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -50,7 +51,9 @@ const JobPostingPage = () => {
     try {
       const response = await axios.get('http://localhost:8888/admin/hire/getAllJobPostingList');
       setRows(response.data);
-      console.log(jobPostingNo);
+      const defaultRow = response.data[0];
+      console.log(defaultRow);
+      setDefaultRow(defaultRow);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -184,6 +187,7 @@ const JobPostingPage = () => {
                     endDate={endDate}
                     searchKeyword={searchKeyword}
                     handleCombinedSearch={handleCombinedSearch}
+                    defaultRow={defaultRow}
                   />
                 </Box>
               </Grid>

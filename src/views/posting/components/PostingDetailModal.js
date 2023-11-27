@@ -184,25 +184,29 @@ const PostingDetailModal = ({
   }, [formData.job_req_no, open]);
 
   useEffect(() => {
-    if (formData.posting_period === '15일') {
-      const postingEndDate = dayjs(formData.posting_start).add(15, 'day');
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: postingEndDate.toDate()
-      }));
-    } else if (formData.posting_period === '30일') {
-      const postingEndDate = dayjs(formData.posting_start).add(30, 'day');
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: postingEndDate.toDate()
-      }));
-    } else if (formData.posting_period === '기타') {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: prevFormData.posting_end || new Date()
-      }));
+    if (open) {
+      if (formData.posting_period === '15일') {
+        const postingEndDate = dayjs(formData.posting_start).add(15, 'day');
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+
+          posting_end: postingEndDate.toDate()
+        }));
+      } else if (formData.posting_period === '30일') {
+        const postingEndDate = dayjs(formData.posting_start).add(30, 'day');
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+
+          posting_end: postingEndDate.toDate()
+        }));
+      } else if (formData.posting_period === '기타') {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          posting_end: prevFormData.posting_end || new Date()
+        }));
+      }
     }
-  }, [formData.posting_start, formData.posting_period]);
+  }, [open, formData.posting_start, formData.posting_end, formData.posting_period]);
 
   const handleInterviewers = (list) => {
     setInterviewers(list);
@@ -363,7 +367,7 @@ const PostingDetailModal = ({
                     .map(
                       (interviewer) => ` ${interviewer.department.dept_name} ${interviewer.users.user_nm} ${interviewer.users.user_email}`
                     )
-                    .join('\n')}
+                    .join('\n\n')}
                 />
                 <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} handleInterviewers={handleInterviewers} />
               </Grid>

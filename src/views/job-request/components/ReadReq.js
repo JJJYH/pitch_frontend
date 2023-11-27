@@ -234,6 +234,7 @@ const ReadReq = ({
     const fetchData = async () => {
       scrollToTop();
       if (selectedRow) {
+        console.log(selectedRow);
         setFormData(selectedRow);
 
         const fileReqNo = selectedRow.job_req_no;
@@ -349,6 +350,7 @@ const ReadReq = ({
 
         try {
           const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${res.data}`);
+
           dispatch(setSelectedRow(response.data));
           setSelectedChips([]);
           console.log(response.data);
@@ -479,8 +481,9 @@ const ReadReq = ({
                   <MenuItem value="defaultLocation" disabled>
                     근무지 선택
                   </MenuItem>
-                  <MenuItem value="근무지1">근무지1</MenuItem>
-                  <MenuItem value="근무지2">근무지2</MenuItem>
+                  <MenuItem value="춘천(강촌)">춘천(강촌)</MenuItem>
+                  <MenuItem value="서울(을지로)">서울(을지로)</MenuItem>
+                  <MenuItem value="부산">부산</MenuItem>
                 </SelectBox>
                 {validationErrors.location && (
                   <Typography style={{ color: '#f44336', marginLeft: '14px', fontSize: '12px', marginTop: '4px' }}>
@@ -671,7 +674,7 @@ const ReadReq = ({
                 <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '승인')}>
                   승인
                 </Button>
-                <Button variant="outlined" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '반려')}>
+                <Button variant="outlined" style={{ color: '#38678f', borderColor: '#38678f' }} onClick={(e) => onSubmit(e, '반려')}>
                   반려
                 </Button>
               </Stack>

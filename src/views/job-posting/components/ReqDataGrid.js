@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
@@ -36,10 +36,14 @@ const StyledDataGrid = styled(DataGrid)(() => ({
 }));
 
 const ReqDataGrid = forwardRef(
-  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword }, ref) => {
+  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword, defaultRow }, ref) => {
     const dispatch = useDispatch();
     const selectedRow = useSelector(selectedRowSelector);
     const jobReqNo = useSelector(jobReqNoSelector);
+
+    useEffect(() => {
+      dispatch(setSelectedRow(defaultRow.jobReq));
+    }, []);
 
     const getRowClassName = (params) => {
       const isSelected = selectedRow && selectedRow.job_req_no === params.row.jobReq.job_req_no;
