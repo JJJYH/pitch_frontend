@@ -20,7 +20,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import PostingDetailModal from 'views/posting/components/PostingDetailModal';
-import { reqPosting } from 'api';
+import { principal, reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
 import FileDropDown from './FileDropDown';
 import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
@@ -288,8 +288,8 @@ const ReadReq = ({
       // Validation
       const errors = {
         job_role: formData.job_role.trim() === '',
-        location: formData.location.trim() === '',
-        hire_num: formData.hire_num.trim() === ''
+        location: formData.location.trim() === ''
+        //hire_num: formData.hire_num.trim() === ''
       };
 
       setValidationErrors(errors);
@@ -312,6 +312,12 @@ const ReadReq = ({
           console.log(res);
 
           enqueueSnackbar('승인요청 완료', { variant: 'info' });
+          const noti = {
+            userIds: ['admin'],
+            message: '승인 대기중인 채용요청서가 있습니다.',
+            url: '/manage/req'
+          };
+          principal.createNoti(noti);
           dispatch(setSelectedRow(submitData));
           setSelectedChips([]);
           reqlisthandler();

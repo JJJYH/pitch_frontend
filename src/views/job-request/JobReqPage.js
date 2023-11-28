@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
-import { Paper } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from '@mui/material';
 import ReqDataGrid from './components/ReqDataGrid';
 import ReadReq from './components/ReadReq';
 import axios from 'axios';
@@ -22,6 +22,8 @@ import ReqPageSearch from './components/ReqPageSearch';
 import { reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
 import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
+import { checkedDeleteSelector, setCheckedDelete } from 'store/checkedDeleteSlice';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -32,6 +34,7 @@ const JobReqPage = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const userId = useSelector((state) => state.userInfo.user_id);
   const [val, setVal] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -108,8 +111,16 @@ const JobReqPage = () => {
     setRows(searchData);
   };
 
+  const alertDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const closeDelete = () => {
+    setOpenDelete(false);
+  };
   const handleDataGrid = () => {
     dataGridRef.current.handleCheckedRowsDelete();
+    setOpenDelete(false);
   };
 
   const handleDataGridUpdate = (reqStatus) => {
@@ -219,7 +230,7 @@ const JobReqPage = () => {
                   <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                     등록
                   </Button>
-                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
+                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={alertDelete}>
                     삭제
                   </Button>
                 </Stack>
@@ -239,6 +250,29 @@ const JobReqPage = () => {
                 </Stack>
               )}
             </Grid>
+            <Dialog open={openDelete} onClose={closeDelete} aria-labelledby="alert-delete-title" aria-describedby="alert-delete-content">
+              <DialogContent>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
+                >
+                  <InfoOutlinedIcon sx={{ color: '#38678f', fontSize: 70 }} />
+                  <DialogContentText
+                    id="alert-delete-content"
+                    sx={{ fontSize: '17px', marginTop: '24px', width: '300px', color: '#000000', fontWeight: 'bold' }}
+                  >
+                    {`선택 항목을 삭제하시겠습니까?`}
+                  </DialogContentText>
+                </div>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: 'center' }}>
+                <Button onClick={handleDataGrid} sx={{ color: 'red', fontWeight: 'bold', fontSize: '17px' }}>
+                  삭제
+                </Button>
+                <Button onClick={closeDelete} sx={{ color: '#38678f', fontWeight: 'bold', fontSize: '17px' }}>
+                  취소
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
         </Box>
       </Box>

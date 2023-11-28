@@ -14,6 +14,9 @@ import CircleIcon from '@mui/icons-material/Circle';
 import { Typography } from '@mui/material';
 import { typography } from '@mui/system';
 import { async } from 'q';
+import { principal } from 'api';
+import { useSnackbar } from 'notistack';
+import { setCheckedDelete } from 'store/checkedDeleteSlice';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   border: '1px solid #c0c0c0',
@@ -42,11 +45,13 @@ const ReqDataGrid = forwardRef(
     const jobReqNo = useSelector(jobReqNoSelector);
     const userId = useSelector((state) => state.userInfo.user_id);
 
+    const { enqueueSnackbar } = useSnackbar();
+
     useEffect(() => {
       if (userId === 'admin') {
         dispatch(setSelectedRow(defaultRow));
-      } else {
-        dispatch(resetSelectedRow());
+        // } else {
+        //   dispatch(resetSelectedRow());
       }
     }, []);
 
@@ -78,6 +83,7 @@ const ReqDataGrid = forwardRef(
         const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
         setRows(searchData);
         dispatch(resetSelectedRow());
+        enqueueSnackbar('삭제가 완료되었습니다.', { variant: 'error' });
       } catch (error) {
         console.error(error);
       }
@@ -100,6 +106,13 @@ const ReqDataGrid = forwardRef(
         const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
         setRows(searchData);
         dispatch(resetSelectedRow());
+        enqueueSnackbar('요청이 처리되었습니다.', { variant: 'info' });
+        const noti = {
+          userIds: ['rnd1'],
+          message: '승인완료된 채용요청서가 있습니다.',
+          url: '/manage/req'
+        };
+        principal.createNoti(noti);
       } catch (error) {
         console.error(error);
       }
@@ -217,6 +230,7 @@ const ReqDataGrid = forwardRef(
           onRowSelectionModelChange={(rows) => {
             console.log(rows);
             dispatch(setJobReqNo(rows));
+            dispatch(setCheckedDelete(rows));
           }}
         />
       </div>

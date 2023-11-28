@@ -18,6 +18,8 @@ import userInfoReducer from './userInfoSlice';
 import cvReducer from './cvSlice';
 import jobPostingNoReducer from './jobPostingNoSlice';
 import uploadedFilesReducer from './uploadedFilesSlice';
+import jobReqDMReducer from './jobReqDMSlice';
+import checkedDeleteReducer from './checkedDeleteSlice';
 
 const toolkitStore = configureStore({
   reducer: {
@@ -37,7 +39,9 @@ const toolkitStore = configureStore({
     posting: postingReducer,
     cv_no: cvReducer,
     jobPostingNo: jobPostingNoReducer,
-    uploadedFiles: uploadedFilesReducer
+    uploadedFiles: uploadedFilesReducer,
+    deleteOpen: jobReqDMReducer,
+    checkedDelete: checkedDeleteReducer
   }
 });
 

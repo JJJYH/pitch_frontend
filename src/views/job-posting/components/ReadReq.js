@@ -29,6 +29,7 @@ import { Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { reqPosting } from 'api';
 import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -69,6 +70,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [tabValue, setTabValue] = useState(0);
   const [genderData, setGenderData] = useState([]);
   const [ageData, setAgeData] = useState([]);
+  const [certData, setCertData] = useState([]);
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -158,8 +160,18 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
         console.log(error);
       }
     };
+    const getCertData = async () => {
+      try {
+        const certRes = await reqPosting.getCert(jobPostingNo);
+        console.log(certRes.data);
+        setCertData(certRes.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     getGenderData();
     getAgeData();
+    getCertData();
   }, [jobPostingNo]);
 
   const genders = genderData.map((item) => item.gender);
@@ -173,10 +185,10 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const femaleCount = genderCounts['여성'] || 0;
 
   const doughnutData = {
-    labels: Object.keys(genderCounts),
+    labels: ['남성', '여성'],
     datasets: [
       {
-        data: Object.values(genderCounts),
+        data: [maleCount, femaleCount],
         backgroundColor: ['#36A2EB', '#FF6384'],
         hoverBackgroundColor: ['#36A2EB', '#FF6384'],
         order: [0, 1]
@@ -207,32 +219,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }
   };
 
-  const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'My First Dataset',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        fill: false,
-        pointRadius: 5,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }
-    ]
-  };
-
-  const lineOptions = {
-    scales: {
-      x: {
-        display: true
-      },
-      y: {
-        type: 'linear',
-        position: 'left'
-      }
-    }
-  };
-
   function calculateAge(birthDate) {
     const today = new Date();
     const birth = new Date(birthDate);
@@ -256,7 +242,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     const age = calculateAge(item.user_birth);
     return age;
   });
-  console.log(agesAvg);
+  //console.log(agesAvg);
 
   const averageAge = calculateAverageAge(agesAvg);
 
@@ -336,30 +322,87 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }
   };
 
+  const certs = certData.map((item) => item.certifications);
+  console.log(certs);
+  const flattenedCerts = certs.flat();
+  const certNames = flattenedCerts.map((cert) => cert.cert_name);
+  const uniqueCertNames = [...new Set(flattenedCerts.map((cert) => cert.cert_name))];
+  const formattedLabels = uniqueCertNames.map((label) => {
+    if (label.length > 8) {
+      return label === 'TensorFlow Developer Certificate' ? 'TensorFlow' : label.substring(0, 5) + '...';
+    } else {
+      // 그렇지 않으면 그대로 사용
+      return label;
+    }
+  });
+
+  console.log(certNames);
+  console.log(uniqueCertNames);
+
+  const certCounts = certNames.reduce((acc, certName) => {
+    acc[certName] = (acc[certName] || 0) + 1;
+    return acc;
+  }, {});
+
+  const countCertificationsByUserId = (certifications) => {
+    const counts = {};
+    certifications.forEach((cert) => {
+      const userId = cert.user_id;
+      counts[userId] = (counts[userId] || 0) + 1;
+    });
+    return counts;
+  };
+
+  const userCertCounts = countCertificationsByUserId(flattenedCerts);
+  console.log(userCertCounts);
+
+  const userCertCountsArray = Object.values(userCertCounts);
+
+  const averageCertCount = (userCertCountsArray.reduce((acc, count) => acc + count, 0) / userCertCountsArray.length).toFixed(1);
+  console.log('평균 자격증 개수:', averageCertCount);
+
+  const maxCertName = Object.keys(certCounts).reduce(
+    (a, b) => {
+      return certCounts[a] > certCounts[b] ? a : b;
+    },
+    Object.keys(certCounts)[0] || ''
+  );
+
+  console.log('가장 많은 지원자가 가지고 있는 자격증:', maxCertName);
+
   const barData2 = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: formattedLabels,
     datasets: [
       {
-        label: 'My First Dataset',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
-        borderWidth: 1
+        data: Object.values(certCounts),
+        backgroundColor: '#38678f',
+        borderColor: 'black',
+        borderWidth: 1,
+        barThickness: 30
       }
     ]
   };
 
   const barOptions2 = {
+    indexAxis: 'y',
     scales: {
       x: {
         grid: {
           display: false
+        },
+        ticks: {
+          stepSize: 1
         }
       },
       y: {
         grid: {
           display: false
         }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
       }
     }
   };
@@ -617,7 +660,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                         <Typography>(양식)입사지원서</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography>여기에 파일 들어가고</Typography>
+                        <Typography>입사지원서</Typography>
                       </Grid>
                       <Grid item xs={2}>
                         <Button>다운로드</Button>
@@ -625,16 +668,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                     </Grid>
                   </Box>
                 </Box>
-              </Grid>
-              <Grid item>
-                <Box sx={{ width: '650px', height: '400px' }}>
-                  <Typography sx={{ fontSize: '20px', fontWeight: 'bold', mt: 3, mb: 2, ml: 3 }}>채용절차</Typography>
-                  <Box sx={{ border: '1px solid', p: 2, height: '350px' }}>채용절차 사진 넣겠음</Box>
-                </Box>
-              </Grid>
-
-              <Grid item mb={3}>
-                <Box sx={{ width: '650px', height: '400px', border: '1px solid' }}>지원 안내, 기타사항</Box>
               </Grid>
             </Grid>
           )}
@@ -645,9 +678,18 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', width: '650px', pt: 4 }}>
                   <Box sx={{ height: '300px', mb: 4, ml: 5 }}>
                     {totalApplicants === 0 ? (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px', height: '300px' }}>
-                        <DataSaverOffIcon sx={{ fontSize: '40px' }} />
-                        <Typography ml={1} sx={{ fontSize: '18px' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          width: '550px',
+                          height: '300px'
+                        }}
+                      >
+                        <DataSaverOffIcon sx={{ fontSize: '150px', mb: 2, color: '#38678f' }} />
+                        <Typography ml={1} sx={{ fontSize: '20px' }}>
                           지원자가 없습니다.
                         </Typography>
                       </Box>
@@ -655,40 +697,87 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                       <Doughnut data={doughnutData} options={doughnutOptions} />
                     )}
                   </Box>
-                  <Box sx={{ ml: 10, pb: 4 }}>
-                    <Typography sx={{ fontSize: '16px', mb: 1 }}>
-                      총 지원자 수: <span style={{ fontWeight: 'bold', paddingLeft: 5 }}>{totalApplicants}</span> 명
-                    </Typography>
-                    <Typography sx={{ fontSize: '16px', mb: 1 }}>
-                      남성 : <span style={{ fontWeight: 'bold', paddingLeft: 5 }}>{maleCount}</span> 명
-                    </Typography>
-                    <Typography sx={{ fontSize: '16px', mb: 1 }}>
-                      여성 : <span style={{ fontWeight: 'bold', paddingLeft: 5 }}>{femaleCount}</span> 명
-                    </Typography>
-                  </Box>
+                  {totalApplicants > 0 && (
+                    <Box sx={{ ml: 10, pb: 4 }}>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>
+                        총 지원자 수: <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '22px' }}>{totalApplicants}</span> 명
+                      </Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>
+                        남성 : <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '22px' }}>{maleCount}</span> 명
+                      </Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>
+                        여성 : <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '22px' }}>{femaleCount}</span> 명
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
 
               <Grid item xs={12}>
                 <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 5, mb: 2 }}>지원자 연령</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', width: '650px', pt: 4 }}>
-                  <Box sx={{ height: '300px', mb: 4, width: '415px', pl: 3 }}>
-                    <Bar data={barData1} options={barOptions1} height={250} />
+                  <Box sx={{ height: '290px', mb: 4, width: '415px', pl: 3 }}>
+                    {totalApplicants === 0 ? (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          width: '580px',
+                          height: '300px'
+                        }}
+                      >
+                        <BarChartIcon sx={{ fontSize: '150px', color: '#38678f' }} />
+                        <Typography ml={1} sx={{ fontSize: '20px' }}>
+                          지원자가 없습니다.
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Bar data={barData1} options={barOptions1} height={250} />
+                    )}
                   </Box>
-                  <Box>
-                    <Typography sx={{ fontSize: '16px', mb: 1 }}>
-                      평균 연령: <span style={{ fontWeight: 'bold', paddingLeft: 5 }}>{averageAge}</span> 세
-                    </Typography>
-                    <Typography sx={{ fontSize: '16px', mb: 6 }}>
-                      주요 연령대: <span style={{ fontWeight: 'bold', paddingLeft: 5 }}>{mainAgeCategory}</span>세
-                    </Typography>
-                  </Box>
+                  {totalApplicants > 0 && (
+                    <Box>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>평균 연령:</Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 2 }}>
+                        <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '25px' }}>{averageAge}</span> 세
+                      </Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>주요 연령대:</Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 6 }}>
+                        <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '25px' }}>{mainAgeCategory}</span>세
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '16px', fontWeight: 'bold', my: 3 }}>지원자 평균 스펙</Typography>
-                <Box sx={{ height: '300px', mb: 5 }}>
-                  <Bar data={barData2} options={barOptions2} />
+                <Typography sx={{ fontSize: '18px', fontWeight: 'bold', mt: 5, mb: 2 }}>자격증 분포</Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    border: '1px solid #e0e0e0',
+                    width: '650px',
+                    pt: 4
+                  }}
+                >
+                  <Box sx={{ height: '350px', mb: 4, width: '600px', pl: 3 }}>
+                    <Bar data={barData2} options={barOptions2} height={250} />
+                  </Box>
+                  {totalApplicants > 0 && (
+                    <Box width={550}>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>지원자 평균 자격증 수:</Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 2 }}>
+                        <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '25px' }}>{averageCertCount}</span> 개
+                      </Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 1 }}>최다 보유 자격증:</Typography>
+                      <Typography sx={{ fontSize: '18px', mb: 5 }}>
+                        <span style={{ fontWeight: 'bold', paddingLeft: 5, fontSize: '25px' }}>{maxCertName}</span>
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
             </Grid>

@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetSelectedRow } from 'store/selectedRowSlice';
 import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
+import { reqPosting } from 'api';
 
 const JobPostingPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -49,7 +50,8 @@ const JobPostingPage = () => {
 
   const reqlisthandler = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/admin/hire/getAllJobPostingList');
+      const response = await reqPosting.getByIdPostList();
+      console.log(response);
       setRows(response.data);
       const defaultRow = response.data[0];
       console.log(defaultRow);

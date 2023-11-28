@@ -250,7 +250,9 @@ const PostingListPage = () => {
                         </MenuItem>
                         <MenuItem value="전체">전체</MenuItem>
                         <MenuItem value="개발">개발</MenuItem>
-                        <MenuItem value="직군2">직군2</MenuItem>
+                        <MenuItem value="영업/마케팅">영업/마케팅</MenuItem>
+                        <MenuItem value="경영">경영</MenuItem>
+                        <MenuItem value="회계">회계</MenuItem>
                       </Select>
                     </Grid>
                     <Grid item>
@@ -259,8 +261,9 @@ const PostingListPage = () => {
                           근무지
                         </MenuItem>
                         <MenuItem value="전체">전체</MenuItem>
-                        <MenuItem value="근무지1">근무지1</MenuItem>
-                        <MenuItem value="근무지2">근무지2</MenuItem>
+                        <MenuItem value="춘천(강촌)">춘천(강촌)</MenuItem>
+                        <MenuItem value="서울(을지로)">서울(을지로)</MenuItem>
+                        <MenuItem value="부산">부산</MenuItem>
                       </Select>
                     </Grid>
                     <Grid item>
@@ -403,73 +406,71 @@ const PostingListPage = () => {
                   const postingEndDate = dayjs(jobPosting.jobReq.posting_end);
                   const daysRemaining = postingEndDate.diff(today, 'day') + 1;
 
-                  if (postingStart <= today) {
+                  if (postingStart <= today && jobPosting.jobReq.req_status !== '공고종료') {
                     return (
                       <Grid item xs={4} key={jobPosting.job_posting_no}>
-                        {jobPosting.jobReq.req_status !== '공고종료' && (
-                          <Card
-                            sx={{ border: '1px solid', cursor: 'pointer', height: '250px' }}
-                            onClick={() => handleJobPostingClick(jobPosting)}
-                          >
-                            <CardContent>
-                              <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
-                                <Grid item>
-                                  <IconButton
-                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
-                                    sx={{ display: jobPosting.isLiked ? 'block' : 'none', p: 0 }}
-                                  >
-                                    <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
-                                    sx={{
-                                      display: !jobPosting.isLiked ? 'block' : 'none',
-                                      p: 0
-                                    }}
-                                  >
-                                    <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} />
-                                  </IconButton>
-                                </Grid>
-                                <Grid item>
-                                  <IconButton sx={{ p: 0 }}>
-                                    <ShareRoundedIcon style={{ fontSize: 20 }} />
-                                  </IconButton>
-                                </Grid>
+                        <Card
+                          sx={{ border: '1px solid', cursor: 'pointer', height: '250px' }}
+                          onClick={() => handleJobPostingClick(jobPosting)}
+                        >
+                          <CardContent>
+                            <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
+                              <Grid item>
+                                <IconButton
+                                  onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                  sx={{ display: jobPosting.isLiked ? 'block' : 'none', p: 0 }}
+                                >
+                                  <FavoriteIcon style={{ fontSize: 20, color: '#FF6F6F' }} />
+                                </IconButton>
+                                <IconButton
+                                  onClick={(e) => handleToggle(e, jobPosting.job_posting_no)}
+                                  sx={{
+                                    display: !jobPosting.isLiked ? 'block' : 'none',
+                                    p: 0
+                                  }}
+                                >
+                                  <FavoriteBorderIcon style={{ fontSize: 20, color: ' #666666' }} />
+                                </IconButton>
                               </Grid>
+                              <Grid item>
+                                <IconButton sx={{ p: 0 }}>
+                                  <ShareRoundedIcon style={{ fontSize: 20 }} />
+                                </IconButton>
+                              </Grid>
+                            </Grid>
 
-                              <Typography sx={{ fontSize: '22px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
-                              <Grid container mt={1}>
-                                <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
-                                <Typography mr={1}>|</Typography>
-                                <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_start).format('YYYY-MM-DD')}</Typography>
-                                <Typography mr={1}>~</Typography>
-                                {jobPosting.jobReq.posting_type === '수시채용' ? (
-                                  <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
-                                ) : (
-                                  <Typography mr={1}> 채용시</Typography>
-                                )}
+                            <Typography sx={{ fontSize: '22px', fontWeight: 'bold' }}>{jobPosting.jobReq.req_title}</Typography>
+                            <Grid container mt={1}>
+                              <Typography mr={1}>{jobPosting.jobReq.job_type}</Typography>
+                              <Typography mr={1}>|</Typography>
+                              <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_start).format('YYYY-MM-DD')}</Typography>
+                              <Typography mr={1}>~</Typography>
+                              {jobPosting.jobReq.posting_type === '수시채용' ? (
+                                <Typography mr={1}>{dayjs(jobPosting.jobReq.posting_end).format('YYYY-MM-DD')}</Typography>
+                              ) : (
+                                <Typography mr={1}> 채용시</Typography>
+                              )}
+                            </Grid>
+                            <Grid container mt={4} direction="column">
+                              <Grid item>
+                                <Stack direction="row" spacing={1}>
+                                  <Chip
+                                    label={jobPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
+                                    sx={{ backgroundColor: '#38678f', color: '#fff' }}
+                                  />
+                                  <Chip label={jobPosting.jobReq.job_group} />
+                                  <Chip label={jobPosting.jobReq.job_role} />
+                                </Stack>
                               </Grid>
-                              <Grid container mt={4} direction="column">
-                                <Grid item>
-                                  <Stack direction="row" spacing={1}>
-                                    <Chip
-                                      label={jobPosting.jobReq.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
-                                      sx={{ backgroundColor: '#38678f', color: '#fff' }}
-                                    />
-                                    <Chip label={jobPosting.jobReq.job_group} />
-                                    <Chip label={jobPosting.jobReq.job_role} />
-                                  </Stack>
-                                </Grid>
-                                <Grid item mt={1}>
-                                  <Stack direction="row" spacing={1}>
-                                    <Chip label={jobPosting.jobReq.location} />
-                                    <Chip label={jobPosting.jobReq.education} />
-                                  </Stack>
-                                </Grid>
+                              <Grid item mt={1}>
+                                <Stack direction="row" spacing={1}>
+                                  <Chip label={jobPosting.jobReq.location} />
+                                  <Chip label={jobPosting.jobReq.education} />
+                                </Stack>
                               </Grid>
-                            </CardContent>
-                          </Card>
-                        )}
+                            </Grid>
+                          </CardContent>
+                        </Card>
                       </Grid>
                     );
                   }

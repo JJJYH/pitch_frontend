@@ -13,7 +13,6 @@ import { setJobPostingNo, jobPostingNoSelector } from 'store/jobPostingNoSlice';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Typography } from '@mui/material';
-import { typography } from '@mui/system';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   border: '1px solid #c0c0c0',
@@ -42,7 +41,9 @@ const ReqDataGrid = forwardRef(
     const jobReqNo = useSelector(jobReqNoSelector);
 
     useEffect(() => {
+      //console.log(defaultRow);
       dispatch(setSelectedRow(defaultRow.jobReq));
+      dispatch(setJobPostingNo(defaultRow.job_posting_no));
     }, []);
 
     const getRowClassName = (params) => {
