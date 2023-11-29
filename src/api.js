@@ -137,6 +137,12 @@ const admin = {
   },
   noneAppHrList: () => {
     return instance.get('/admin/none-app-hr-list');
+  },
+  updateAppHr: (data) => {
+    return instance.put('/admin/app-hr', data);
+  },
+  deleteRejHr: (data) => {
+    return instance.post('/admin/rej-hr', data);
   }
 };
 

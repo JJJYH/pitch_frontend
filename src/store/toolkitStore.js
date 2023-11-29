@@ -20,6 +20,7 @@ import jobPostingNoReducer from './jobPostingNoSlice';
 import uploadedFilesReducer from './uploadedFilesSlice';
 import jobReqDMReducer from './jobReqDMSlice';
 import checkedDeleteReducer from './checkedDeleteSlice';
+import adminReducer from './adminSlice';
 
 const toolkitStore = configureStore({
   reducer: {
@@ -41,7 +42,8 @@ const toolkitStore = configureStore({
     jobPostingNo: jobPostingNoReducer,
     uploadedFiles: uploadedFilesReducer,
     deleteOpen: jobReqDMReducer,
-    checkedDelete: checkedDeleteReducer
+    checkedDelete: checkedDeleteReducer,
+    admin: adminReducer,
   }
 });
 

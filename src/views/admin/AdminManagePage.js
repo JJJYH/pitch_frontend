@@ -16,6 +16,7 @@ import {
     useMediaQuery,
     Paper,
     Stack,
+    Badge,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
@@ -25,6 +26,7 @@ import { useRef } from 'react';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useState } from 'react';
 import AMModal from './components/AMModal';
+import { useSelector } from 'react-redux';
 
 const AdminManagePage = () => {
     const [open, setOpen] = useState(false);
@@ -32,9 +34,14 @@ const AdminManagePage = () => {
     const openModal = () => {
         setOpen(true);
     }
-
+    const admin = useSelector((state) => state.admin)
     const closeModal = () => {
         setOpen(false);
+    }
+    const [app, setApp] = useState(false);
+
+    const handleApp = () => {
+        setApp(!app);
     }
 
     const StyledBox = styled(Box)(() => ({
@@ -84,9 +91,15 @@ const AdminManagePage = () => {
 
                             <Grid item>
                                 <Stack direction="row" spacing={1} marginRight={1}>
-                                    <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => openModal()}>
-                                        승인
-                                    </Button>
+                                    <Badge badgeContent='!' color='error' invisible={admin.isBadge}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'left'
+                                        }}>
+                                        <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => openModal()}>
+                                            승인 대기
+                                        </Button>
+                                    </Badge>
                                     <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={() => ref.current.addHandler()}>
                                         생성
                                     </Button>
@@ -97,11 +110,11 @@ const AdminManagePage = () => {
                 </Box>
                 <Grid container sx={{ padding: '0px 10px' }}>
                     <Grid item xs={12}>
-                        <AMDataGrid ref={ref} />
+                        <AMDataGrid ref={ref} app={app} />
                     </Grid>
                 </Grid>
             </Paper>
-            <AMModal open={open} closeModal={closeModal} />
+            <AMModal open={open} closeModal={closeModal} handleApp={handleApp} />
         </>
     );
 }

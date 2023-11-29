@@ -65,6 +65,7 @@ const PostingDetailModal = ({
   const openAnchorEl = Boolean(anchorEl);
   const dispatch = useDispatch();
   const uploadedFiles = useSelector(uploadedFilesSelector);
+  const userInfo = useSelector((state) => state.userInfo);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
@@ -291,7 +292,11 @@ const PostingDetailModal = ({
                       fontWeight: 'bold'
                     }}
                     onClick={() => {
-                      navigate(`/main/cv/${job_posting_no}`);
+                      if (userInfo.isLogin) {
+                        navigate(`/main/cv/${job_posting_no}`);
+                      } else {
+                        window.open('/pages/login/login3', '_blank', 'width=600,height=700');
+                      }
                     }}
                   >
                     지원서 작성
@@ -318,7 +323,7 @@ const PostingDetailModal = ({
                         setFormData({ ...formData, posting_start: data.$d });
                       }}
                       format="YYYY/MM/DD"
-                      // slotProps={{ textField: { size: 'small' } }}
+                    // slotProps={{ textField: { size: 'small' } }}
                     />
                   </LocalizationProvider>
                 </Grid>
@@ -335,7 +340,7 @@ const PostingDetailModal = ({
                           setFormData({ ...formData, posting_end: data.$d });
                         }}
                         format="YYYY/MM/DD"
-                        // slotProps={{ textField: { size: 'small' } }}
+                      // slotProps={{ textField: { size: 'small' } }}
                       />
                     </LocalizationProvider>
                   ) : (
