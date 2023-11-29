@@ -3,12 +3,12 @@ import { styled as muiStyled } from '@mui/material/styles';
 import { useEffect, useState, useRef } from 'react';
 import { sort } from 'api.js';
 import styled from 'styled-components';
-import { Link, useParams } from 'react-router-dom';
-import { getAge, getFormattedDate, getDday, getFileNameFromContentDisposition } from './sorts.js';
+import { Link, useParams, useLocation } from 'react-router-dom';
+import { getAge, getFormattedDate, getDday } from './sorts.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import { getImage } from './sorts.js';
-
+import { setPostingList, setPosting, setLoading } from 'store/postingSlice.js';
 /* mui components */
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -27,7 +27,6 @@ import NoticeModal from './components/NoticeModal';
 import InterviewEvalModal from './components/InterviewEvalModal';
 import MenuBtn from './components/MenuBtn';
 import classNames from './sort.module.scss';
-import { setPostingList, setPosting } from 'store/postingSlice.js';
 import CVToPrint from './components/CVToPrint.js';
 import DownloadModal from './components/DownloadModal.js';
 import { useSnackbar } from 'notistack';
@@ -40,10 +39,11 @@ import { useSnackbar } from 'notistack';
  */
 const SortingPage = () => {
   const { job_posting_no } = useParams();
+  const { state } = useLocation();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const componentRef = useRef();
-  const [value, setValue] = useState('F');
+  const [value, setValue] = useState(state && ['F', 'FL', 'FH'].includes(state.type) ? state.type : 'F');
   const [rows, setRows] = useState([]);
   const [checked, setChecked] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -68,7 +68,8 @@ const SortingPage = () => {
     posting_type: '',
     req_title: '',
     education: '',
-    total_applicants: 0
+    total_applicants: 0,
+    isFetched: false
   });
 
   const handleChange = (event, newValue) => {
@@ -92,13 +93,19 @@ const SortingPage = () => {
   });
 
   const setList = () => {
-    sort.applicantList(job_posting_no, value).then((res) => {
-      const arr = res.data.map((appl, index) => {
-        return { ...appl, id: index };
+    dispatch(setLoading({ isLoading: true }));
+    sort
+      .applicantList(job_posting_no, value)
+      .then((res) => {
+        const arr = res.data.map((appl, index) => {
+          return { ...appl, id: index };
+        });
+        setRows(arr);
+        dispatch(setPostingList({ list: arr }));
+      })
+      .finally(() => {
+        dispatch(setLoading({ isLoading: false }));
       });
-      setRows(arr);
-      dispatch(setPostingList({ list: arr }));
-    });
   };
 
   useEffect(() => {
@@ -111,26 +118,22 @@ const SortingPage = () => {
       };
 
       sort
-        .fileDownload(data)
+        .filesDownload(data)
         .then((res) => {
           if (res.status === 200) {
-            const header = res.headers['content-disposition'];
-
-            const fileName = getFileNameFromContentDisposition(header);
-
             const blob = new Blob([res.data], { type: 'application/zip' });
 
-            return { fileName, blob };
+            return { blob };
           } else {
             console.error('파일 다운로드 실패');
             throw new Error('파일 다운로드 실패');
           }
         })
-        .then(({ fileName, blob }) => {
+        .then(({ blob }) => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = fileName;
+          a.download = info.req_title;
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
@@ -143,20 +146,18 @@ const SortingPage = () => {
 
   useEffect(() => {
     setList();
-  }, [value]);
-
-  useEffect(() => {
-    setList();
-  }, [isChanged]);
+  }, [value, isChanged]);
 
   useEffect(() => {
     sort.postingInfo(job_posting_no).then((res) => {
-      setInfo({ ...res.data });
+      setInfo({ ...res.data, isFetched: true });
       dispatch(
         setPosting({
           postingNo: job_posting_no,
           reqNo: res.data.job_req_no,
-          title: res.data.req_title
+          title: res.data.req_title,
+          qualification: res.data.qualification,
+          preferred: res.data.preferred
         })
       );
     });
@@ -176,15 +177,15 @@ const SortingPage = () => {
         <Typography variant="h2" sx={{ marginBottom: 'none' }}>
           {`[${info.job_type}] ${info.req_title}`}
         </Typography>
-        {getDday(info.posting_end) < 2000000 && (
-          <div className={classNames.statusRoot} style={{ marginLeft: '10px' }}>
-            <div className={classNames.dDay}>
-              <div>
-                <b>{`D-${getDday(info.posting_end)}`}</b>
-              </div>
+        {/* {getDday(info.posting_end) < 2000000 && ( */}
+        <div className={classNames.statusRoot} style={{ marginLeft: '10px' }}>
+          <div className={classNames.dDay}>
+            <div>
+              <b>{info.posting_type == '수시채용' ? `D-${getDday(info.posting_end)}` : '~ 채용 시'}</b>
             </div>
           </div>
-        )}
+        </div>
+        {/* )} */}
         <div style={{ flex: '1 1 auto' }} />
         <div className={classNames.statusRoot}>
           <div className={[classNames.status, classNames.badge].join(' ')}>
@@ -220,7 +221,6 @@ const SortingPage = () => {
             >
               <Tab
                 sx={{
-                  color: '#38678f',
                   '&.Mui-selected': {
                     color: 'rgba(56, 103, 143, 1)'
                   }
@@ -230,7 +230,6 @@ const SortingPage = () => {
               />
               <Tab
                 sx={{
-                  color: '#38678f',
                   '&.Mui-selected': {
                     color: 'rgba(56, 103, 143, 1)'
                   }
@@ -240,7 +239,6 @@ const SortingPage = () => {
               />
               <Tab
                 sx={{
-                  color: '#38678f',
                   '&.Mui-selected': {
                     color: 'rgba(56, 103, 143, 1)'
                   }
@@ -317,7 +315,7 @@ const SortingPage = () => {
                 </>
               ) : (
                 <>
-                  {value == 'F' && (
+                  {value == 'F' && info.isFetched && (
                     <FilteringModal postingNo={job_posting_no} postingInfo={info} setIsChanged={setIsChanged} isChanged={isChanged} />
                   )}
                   <NoticeModal isChanged={isChanged} setIsChanged={setIsChanged} postingNo={job_posting_no} title={info.req_title} />
@@ -413,7 +411,7 @@ const StatusChip4 = styled(Chip)(() => ({
 }));
 
 const RenderEval = (score) => {
-  let isQualified = score >= 60 ? true : false;
+  let isQualified = score >= 50 ? true : false;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -450,6 +448,12 @@ const RenderStar = (evals, apply_no) => {
 };
 
 const RenderName = (data) => {
+  const clickName = () => {
+    if (data.row.read_status == '미열람' && data.row.applicant_status == 'first') {
+      sort.readStatus(data.row.apply_no);
+    }
+  };
+
   return (
     <Link
       style={{ textDecoration: 'under-line', color: 'black' }}
@@ -457,6 +461,7 @@ const RenderName = (data) => {
       sx={{
         color: 'black'
       }}
+      onClick={clickName}
     >{`${data.row.user_nm} (${data.row.gender.charAt(0)})`}</Link>
   );
 };
