@@ -354,6 +354,18 @@ const ReadReq = ({
 
         console.log(res.data);
 
+        if (status === '작성중') {
+          enqueueSnackbar('임시저장 완료', { variant: 'info' });
+        } else {
+          enqueueSnackbar('승인요청 완료', { variant: 'info' });
+          const noti = {
+            userIds: ['admin'],
+            message: '승인 대기중인 채용요청서가 있습니다.',
+            url: '/manage/req'
+          };
+          principal.createNoti(noti);
+        }
+
         try {
           const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${res.data}`);
 
@@ -391,7 +403,7 @@ const ReadReq = ({
           }
         }
         //dispatch(resetUploadedFiles());
-        enqueueSnackbar('임시저장 완료', { variant: 'info' });
+
         reqlisthandler();
       }
     } catch (error) {

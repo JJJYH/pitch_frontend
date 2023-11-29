@@ -489,13 +489,14 @@ const CVSide = ({
       const requiredUnivFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major', 'score', 'total_score'];
       const requiredHighFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major'];
 
-      if (item.edu_type.includes('고등학교') || !item.edu_type) {
+      if ((item.edu_type && item.edu_type.includes('고등학교')) || !item.edu_type) {
         requiredHighFields.forEach((field) => {
           if (!item[field] || item[field].length === 0) {
+            console.log('들어옴');
             missingEduValuesCount++;
           }
         });
-      } else if (item.edu_type.includes('대학교')) {
+      } else if (item.edu_type && item.edu_type.includes('대학교')) {
         requiredUnivFields.forEach((field) => {
           if (!item[field] || item[field].length === 0) {
             missingEduValuesCount++;
@@ -762,7 +763,7 @@ const CVSide = ({
                     resolve(); // 성공적으로 실행되었다고 가정하고 resolve 호출
                   })
                     .then(() => {
-                      navigate('/main');
+                      navigate('/main/mypage');
                     })
                     .catch((error) => {
                       // 작업이 실패한 경우에 대한 처리

@@ -377,6 +377,7 @@ const ProfileSection = () => {
                                   updatedNotifications.splice(index, 1);
                                   setNotifications(updatedNotifications);
                                   handleToggle();
+                                  window.location.reload();
                                 }}
                               >
                                 <Stack>
