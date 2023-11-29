@@ -25,6 +25,7 @@ import InterviewerListModal from 'views/posting/components/InterviewerListModal'
 import { useNavigate } from 'react-router';
 import procedure from './procedure.png';
 import SharePosting from './SharePosting';
+import { useSelector } from 'react-redux';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -60,6 +61,7 @@ const PostingDetailModal = ({
   const [interviewers, setInterviewers] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openAnchorEl = Boolean(anchorEl);
+  const userInfo = useSelector((state) => state.userInfo);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
@@ -240,7 +242,11 @@ const PostingDetailModal = ({
                       fontWeight: 'bold'
                     }}
                     onClick={() => {
-                      navigate(`/main/cv/${job_posting_no}`);
+                      if (userInfo.isLogin) {
+                        navigate(`/main/cv/${job_posting_no}`);
+                      } else {
+                        window.open('/pages/login/login3', '_blank', 'width=600,height=700');
+                      }
                     }}
                   >
                     지원서 작성
@@ -266,7 +272,7 @@ const PostingDetailModal = ({
 
                         setFormData({ ...formData, posting_start: data.$d });
                       }}
-                      // slotProps={{ textField: { size: 'small' } }}
+                    // slotProps={{ textField: { size: 'small' } }}
                     />
                   </LocalizationProvider>
                 </Grid>
@@ -282,7 +288,7 @@ const PostingDetailModal = ({
                           console.log(data);
                           setFormData({ ...formData, posting_end: data.$d });
                         }}
-                        // slotProps={{ textField: { size: 'small' } }}
+                      // slotProps={{ textField: { size: 'small' } }}
                       />
                     </LocalizationProvider>
                   ) : (

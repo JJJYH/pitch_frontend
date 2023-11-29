@@ -23,6 +23,10 @@ import {
 } from '@mui/x-data-grid';
 import { DialogContentText } from '@mui/material';
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setBadge } from "store/adminSlice";
+import { useSnackbar } from 'notistack';
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
         padding: theme.spacing(2)
@@ -37,6 +41,9 @@ const AMModal = (props) => {
     const { open, closeModal } = props;
     const [rows, setRows] = useState([]);
     const [selectedRow, setSelectedRow] = useState([]);
+    const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
+    const { handleApp } = props;
 
     const columns = [
         {
@@ -66,13 +73,28 @@ const AMModal = (props) => {
         admin.noneAppHrList().then((res) => {
             console.log(res);
             setRows(res.data);
+            if (res.data.length == 0) {
+                dispatch(setBadge(true));
+            } else {
+                dispatch(setBadge(false));
+            }
         });
     }, []);
+
+    useEffect(() => {
+        if (rows.length == 0) {
+            dispatch(setBadge(true));
+        } else {
+            dispatch(setBadge(false));
+        }
+    }, [rows])
 
     const appHandler = () => {
         admin.updateAppHr(selectedRow).then((res) => {
             admin.noneAppHrList().then((res) => {
                 setRows(res.data);
+                enqueueSnackbar("승인이 완료되었습니다.", { variant: "info" });
+                handleApp();
             });
         });
     }
@@ -81,6 +103,7 @@ const AMModal = (props) => {
         admin.deleteRejHr(selectedRow).then((res) => {
             admin.noneAppHrList().then((res) => {
                 setRows(res.data);
+                enqueueSnackbar("반려가 완료되었습니다.", { variant: "error" });
             })
         })
     }

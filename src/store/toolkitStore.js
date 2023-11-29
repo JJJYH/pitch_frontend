@@ -17,6 +17,7 @@ import postingReducer from './postingSlice';
 import userInfoReducer from './userInfoSlice';
 import cvReducer from './cvSlice';
 import jobPostingNoReducer from './jobPostingNoSlice';
+import adminReducer from './adminSlice';
 
 const toolkitStore = configureStore({
   reducer: {
@@ -35,7 +36,8 @@ const toolkitStore = configureStore({
     cvfile: cvFileReducer,
     posting: postingReducer,
     cv_no: cvReducer,
-    jobPostingNo: jobPostingNoReducer
+    jobPostingNo: jobPostingNoReducer,
+    admin: adminReducer,
   }
 });
 

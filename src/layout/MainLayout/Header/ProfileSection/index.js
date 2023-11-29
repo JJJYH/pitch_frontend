@@ -26,7 +26,8 @@ import {
   Stack,
   Switch,
   Typography,
-  TextField
+  TextField,
+  Tooltip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
@@ -86,6 +87,7 @@ const ProfileSection = () => {
     // { id: 4, text: '새로운 업데이트 사용 가능', url: '/updates', date: '2023-11-18' },
     // { id: 5, text: '최근에 로그인한 기기가 있습니다', url: '/recent-logins', date: '2023-11-19' },
   ]);
+  const [openTooltip, setOpenTooltip] = useState(false);
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
@@ -126,6 +128,17 @@ const ProfileSection = () => {
 
     return () => clearInterval(interval);
   }, [userInfo]);
+
+  useEffect(() => {
+    console.log(userInfo);
+    if (userInfo.isLogin) {
+      setOpenTooltip(false);
+    } else {
+      //setOpenTooltip(true);
+      const timeout = setTimeout(() => setOpenTooltip(true), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [userInfo.isLogin]);
 
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
@@ -184,54 +197,88 @@ const ProfileSection = () => {
 
   return (
     <>
-      <Chip
-        sx={{
-          marginLeft: '30px',
-          height: '48px',
-          alignItems: 'center',
-          borderRadius: '27px',
-          transition: 'all .2s ease-in-out',
-          borderColor: theme.palette.primary.light,
-          backgroundColor: theme.palette.primary.light,
-          '&[aria-controls="menu-list-grow"], &:hover': {
-            borderColor: theme.palette.secondary.light,
-            background: `${theme.palette.secondary.light}!important`,
-            color: theme.palette.primary.light,
-            '& svg': {
-              fill: theme.palette.primary.light
+      <Tooltip
+        open={openTooltip}
+        arrow
+        placement='auto-start'
+        title={
+          <Box component="span" py={2} sx={{ display: 'flex', width: 240, borderRadius: 10 }}>
+            <IconButton onClick={() => {
+              setOpenTooltip(false);
+            }}>
+              <CloseIcon sx={{ color: '#ffffff', width: 15, height: 15 }} />
+            </IconButton>
+            <Box sx={{ display: 'flex', alignItems: 'center', width: 200 }}>
+              <Typography>
+                채용지원을 하시려면 로그인을 하셔야 합니다.
+              </Typography>
+              {/* <FormControlLabel control={<Checkbox defaultChecked />} label="Don’t show again" /> */}
+            </Box>
+          </Box>
+        }
+        componentsProps={{
+          tooltip: {
+            sx: {
+              borderRadius: 4,
             }
           },
-          '& .MuiChip-label': {
-            lineHeight: 0
+          popper: {
+            sx: {
+              zIndex: 1300
+            }
           }
         }}
-        icon={!userInfo.isLogin ? <></> :
-          <StyledBadge badgeContent={notifications.length} invisible={notifications.length === 0}>
-            <Avatar
-              src={'broken.png'}
-              alt={userInfo.user_nm}
-              sx={{
-                ...theme.typography.mediumAvatar,
-                margin: '8px 0 8px 8px !important',
-                cursor: 'pointer'
-              }}
-              ref={anchorRef}
-              aria-controls={open ? 'menu-list-grow' : undefined}
-              aria-haspopup="true"
-              color="inherit"
-            />
-          </StyledBadge>
-        }
-        label={!userInfo.isLogin ? <PersonOutlineIcon sx={{ color: theme.palette.secondary.main }} /> :
-          <IconSettings stroke={1.5} size="1.5rem" color={theme.palette.secondary.main} />
-        }
-        variant="outlined"
-        ref={anchorRef}
-        aria-controls={open ? 'menu-list-grow' : undefined}
-        aria-haspopup="true"
-        onClick={handleToggle}
-        color="primary"
-      />
+      >
+        <Chip
+          sx={{
+            marginLeft: '30px',
+            height: '48px',
+            alignItems: 'center',
+            borderRadius: '27px',
+            transition: 'all .2s ease-in-out',
+            borderColor: theme.palette.primary.light,
+            backgroundColor: theme.palette.primary.light,
+            '&[aria-controls="menu-list-grow"], &:hover': {
+              borderColor: theme.palette.secondary.light,
+              background: `${theme.palette.secondary.light}!important`,
+              color: theme.palette.primary.light,
+              '& svg': {
+                fill: theme.palette.primary.light
+              }
+            },
+            '& .MuiChip-label': {
+              lineHeight: 0
+            }
+          }}
+          icon={!userInfo.isLogin ? <></> :
+            <StyledBadge badgeContent={notifications.length} invisible={notifications.length === 0}>
+              <Avatar
+                src={'broken.png'}
+                alt={userInfo.user_nm}
+                sx={{
+                  ...theme.typography.mediumAvatar,
+                  margin: '8px 0 8px 8px !important',
+                  cursor: 'pointer'
+                }}
+                ref={anchorRef}
+                aria-controls={open ? 'menu-list-grow' : undefined}
+                aria-haspopup="true"
+                color="inherit"
+              />
+            </StyledBadge>
+          }
+          label={!userInfo.isLogin ? <PersonOutlineIcon sx={{ color: theme.palette.secondary.main }} /> :
+            <IconSettings stroke={1.5} size="1.5rem" color={theme.palette.secondary.main} />
+          }
+          variant="outlined"
+          ref={anchorRef}
+          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+          color="primary"
+        />
+      </Tooltip>
+
 
       <Popper
         placement="bottom-end"
@@ -329,6 +376,7 @@ const ProfileSection = () => {
                                   const updatedNotifications = [...notifications];
                                   updatedNotifications.splice(index, 1);
                                   setNotifications(updatedNotifications);
+                                  handleToggle();
                                 }}
                               >
                                 <Stack>

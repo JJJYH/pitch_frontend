@@ -33,6 +33,8 @@ const AMDataGrid = forwardRef((props, ref) => {
     const [open, setOpen] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState(null);
     const { enqueueSnackbar } = useSnackbar();
+    const { app } = props;
+    console.log(app);
     useImperativeHandle(ref, () => {
         return {
             addHandler: () => {
@@ -50,7 +52,6 @@ const AMDataGrid = forwardRef((props, ref) => {
             ...oldModel,
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'user_id' },
         }));
-        //enqueueSnackbar("업데이트 완료", { variant: "success" });
     };
 
     const handleRowEditStop = (params, event) => {
@@ -131,7 +132,7 @@ const AMDataGrid = forwardRef((props, ref) => {
                 console.log(res);
                 const updatedRows = rows.map((row) => (row.id === newRow.id ? updatedRow : row));
                 setRows([updatedRow, ...updatedRows.filter(row => row.id !== newRow.id)]);
-                enqueueSnackbar("계정 생성 완료.", { variant: "success" });
+                enqueueSnackbar("계정 생성 완료.", { variant: "info" });
                 return updatedRow;
             } catch (err) {
                 //updatedRow = { ...newRow, isNew: true }
@@ -147,7 +148,7 @@ const AMDataGrid = forwardRef((props, ref) => {
             try {
                 const res_1 = await admin.hrModify(updatedRow);
                 console.log(res_1);
-                enqueueSnackbar("업데이트 완료", { variant: "success" });
+                enqueueSnackbar("업데이트 완료", { variant: "info" });
                 return updatedRow;
             } catch (err_1) {
                 isUpdateSuccessful = false;
@@ -273,7 +274,7 @@ const AMDataGrid = forwardRef((props, ref) => {
             })
             setRows(rows);
         })
-    }, [])
+    }, [app]);
 
     const handleCellChange = (params) => {
         console.log(params.rowId, params.columnId, params.oldValue, params.newValue);

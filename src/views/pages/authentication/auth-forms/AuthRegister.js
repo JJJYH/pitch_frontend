@@ -11,6 +11,8 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  Select,
+  MenuItem,
   FormHelperText,
   Grid,
   IconButton,
@@ -21,6 +23,8 @@ import {
   Typography,
   useMediaQuery
 } from '@mui/material';
+import Switch from '@mui/material/Switch';
+import FormGroup from '@mui/material/FormGroup';
 
 // third party
 import * as Yup from 'yup';
@@ -64,9 +68,20 @@ const FirebaseRegister = ({ ...others }) => {
   const [checked, setChecked] = useState(false);
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
+  const [isRole, setRole] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { email } = location.state || {};
+  const initialDepartment = { dept_name: '' };
+  const departments = [
+    { value: '인사', label: '인사' },
+    { value: '연구개발', label: '연구개발' },
+    { value: '영업', label: '영업' },
+    { value: '경영', label: '경영' },
+    { value: '마케팅', label: '마케팅' },
+    { value: '회계', label: '회계' },
+    // ... 다른 부서들 추가
+  ];
   console.log(email);
 
   const googleHandler = async () => {
@@ -87,63 +102,37 @@ const FirebaseRegister = ({ ...others }) => {
     setLevel(strengthColor(temp));
   };
 
+  const changeRole = () => {
+    setRole(!isRole);
+  };
+
   useEffect(() => {
     //changePassword('123456');
   }, []);
 
   return (
     <>
-      <Grid container direction="column" justifyContent="center" spacing={2}>
-        {/* <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={googleHandler}
-              size="large"
-              sx={{
-                color: 'grey.700',
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              <Typography style={{ fontWeight: 'bold' }}>
-                구글 아이디로 회원가입
-              </Typography>
-            </Button>
-          </AnimateButton>
-        </Grid>
-        <Grid item xs={12}>
-          <Box sx={{ alignItems: 'center', display: 'flex' }}>
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-            <Button
-              variant="outlined"
-              sx={{
-                cursor: 'unset',
-                m: 1,
-                py: 0.5,
-                px: 7,
-                borderColor: `${theme.palette.grey[100]} !important`,
-                color: `${theme.palette.grey[900]}!important`,
-                fontWeight: 500,
-                borderRadius: `${customization.borderRadius}px`
-              }}
-              disableRipple
-              disabled
-            >
-              OR
-            </Button>
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-          </Box>
-        </Grid> */}
-        {/* <Grid item xs={12} container alignItems="center" justifyContent="center">
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1">Sign up with Email address</Typography>
-          </Box>
-        </Grid> */}
+      <Grid container direction="column" justifyContent="center" alignItems={"center"} spacing={2}>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                sx={{
+                  width: '50px',
+                  height: '30px',
+                  padding: '6px',
+                  '& .MuiSwitch-thumb': {
+                    width: '26px',
+                    height: '26px',
+                    marginTop: '-8px',
+                    transform: 'translateX(-7px)'
+                  },
+                }}
+                onChange={() => { changeRole() }} />}
+            label={<Typography sx={{ fontWeight: 'bold', fontSize: '16px' }}>기업회원</Typography>}
+            labelPlacement='start'
+          />
+        </FormGroup>
       </Grid>
 
       <Formik
@@ -155,26 +144,42 @@ const FirebaseRegister = ({ ...others }) => {
           passwordRepeat: '',
           user_id: email ? email.split('@')[0] : '',
           user_phone: '',
+          department: isRole ? initialDepartment : null,
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          //user_birth: Yup.date().required('생일 입력은 필수입니다.'),
           user_nm: Yup.string().max(255).required('이름 입력은 필수입니다.'),
           user_email: Yup.string().email('이메일 형식이 올바르지 않습니다.').max(255).required('이메일 아이디 입력은 필수입니다.'),
           user_pw: Yup.string().min(4, '비밀번호는 4자리 이상 입력해주세요.').max(255).required('비밀번호 입력은 필수입니다.'),
           passwordRepeat: Yup.string().max(255).oneOf([Yup.ref('user_pw'), null], '비밀번호가 일치하지 않습니다.').required('비밀번호 확인은 필수입니다.'),
           user_id: Yup.string().max(40).required('ID 입력은 필수입니다.'),
-          user_phone: Yup.string().matches(/^\d{3}-\d{3,4}-\d{4}$/, '유효한 전화번호 형식이 아닙니다. ( - )을 포합한 형식').required('휴대폰번호 입력은 필수입니다.')
+          user_phone: Yup.string().matches(/^\d{3}-\d{3,4}-\d{4}$/, '유효한 전화번호 형식이 아닙니다. ( - )을 포합한 형식').required('휴대폰번호 입력은 필수입니다.'),
+          department: isRole
+            ? Yup.object().shape({
+              dept_name: Yup.string().required('부서 입력은 필수입니다.')
+            })
+            : Yup.object().nullable(),
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
+              console.log(values);
+              if (!isRole) {
+                values.department = null;
+              }
               setStatus({ success: true });
               setSubmitting(false);
               console.log(values);
               principal.register(values).then((res) => {
                 console.log(res);
-                navigate('/main');
+                const noti = {
+                  "userIds": ["admin"],
+                  "message": "권한승인 대기 계정이 있습니다.",
+                  "url": "/manage/admin"
+                }
+                principal.createNoti(noti).then((res) => {
+                  navigate('/main');
+                });
               }).catch((err) => {
                 console.log(err);
                 //중복체크에 관한 내용추가
@@ -193,6 +198,38 @@ const FirebaseRegister = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
+            {isRole && (
+              <>
+                <FormControl fullWidth error={Boolean(touched.department && errors.department)} sx={{ ...theme.typography.customInput }}>
+                  <InputLabel htmlFor="outlined-adornment-department">부서</InputLabel>
+                  <Select
+                    size='Large'
+                    id="outlined-adornment-department"
+                    value={isRole && values.department && values.department.dept_name && (values.department.dept_name || '')}
+                    name="department.dept_name"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    label="부서"
+                    sx={{
+                      '& > div': {
+                        padding: '30.5px 14px 11.5px !important'
+                      },
+                    }}
+                  >
+                    {departments.map((dept) => (
+                      <MenuItem key={dept.value} value={dept.value}>
+                        {dept.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {/* {touched.department && errors.department && (
+                    <FormHelperText error id="standard-weight-helper-text-department">
+                      {errors.department}
+                    </FormHelperText>
+                  )} */}
+                </FormControl>
+              </>
+            )}
 
             <FormControl fullWidth error={Boolean(touched.user_nm && errors.user_nm)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-user_nm-register">이름</InputLabel>
@@ -397,25 +434,6 @@ const FirebaseRegister = ({ ...others }) => {
                 )} */}
               </FormControl>
             </LocalizationProvider>
-            <Grid container alignItems="center" justifyContent="end">
-              <Grid item>
-                <FormControlLabel
-
-                  label={
-                    <Typography variant="subtitle1">
-                      인사담당자 체크
-                    </Typography>
-                  }
-                  labelPlacement='start'
-                  control={
-                    <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
-                  }
-                />
-              </Grid>
-            </Grid>
-
-
-
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
                 <FormHelperText error>{errors.submit}</FormHelperText>
