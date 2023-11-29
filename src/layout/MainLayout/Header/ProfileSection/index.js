@@ -154,7 +154,7 @@ const ProfileSection = () => {
   };
 
   const handleListItemClick = (event, index, route = '') => {
-    setSelectedIndex(index);
+    //setSelectedIndex(index);
     handleClose(event);
 
     if (route && route !== '') {
