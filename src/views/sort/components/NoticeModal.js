@@ -323,7 +323,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1)
   }
 }));
-FormControlLabel;
 
 const MySelect = styled(Select)(({ theme }) => ({
   border: `${theme.palette.grey[300]} 1px solid`,
@@ -337,13 +336,7 @@ const MyInput = styled(OutlinedInput)(({ theme }) => ({
 }));
 
 const MyRadio = styled((props) => <FormControlLabel {...props} />)(({ theme }) => ({
-  // border: `${theme.palette.grey[300]} 1px solid`,
-  // padding: '7px',
   paddingRight: '10px'
-  // '&.Mui-checked': {
-  //   color: 'green'
-  // }
-  // borderRadius: '4px'
 }));
 
 const ITEM_HEIGHT = 48;

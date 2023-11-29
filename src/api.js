@@ -185,13 +185,17 @@ const sort = {
   },
   //이력서 엑셀 저장 api
   cvToExcel: (data) => {
-    return instance.post(`/admin/excel`, data);
+    return instance.post(`/admin/excel`, data, { responseType: 'blob' });
+  },
+  //압축파일로 다운로드 api
+  filesDownload: (data) => {
+    return instance.post(`/admin/files`, data, {
+      responseType: 'arraybuffer'
+    });
   },
   //파일 다운로드 api
   fileDownload: (data) => {
-    return instance.post(`/admin/file`, data, {
-      responseType: 'arraybuffer'
-    });
+    return instance.post(`/admin/file`, data, { responseType: 'blob' });
   },
   //점수 상세 조회 api
   applicantScore: (postingNo, applyNo) => {
@@ -200,8 +204,11 @@ const sort = {
   //평균점수 조회 api
   applicantAvg: (postingNo) => {
     return instance.get(`/admin/${postingNo}/average`);
-  }
+  },
   //열람여부 조회 api
+  readStatus: (applyNo) => {
+    return instance.put(`/admin/${applyNo}/read`);
+  }
 };
 
 const cv = {

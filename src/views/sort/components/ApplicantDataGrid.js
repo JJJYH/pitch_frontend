@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { sort } from '../../../api.js';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /* custom components */
 
 const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnType, setList, setIsSelected, setSelectedRows }) => {
   const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
+  const posting = useSelector((state) => state.posting);
 
   useEffect(() => {
     const list = [];
@@ -52,8 +55,26 @@ const ApplicantDataGrid = ({ columns, rows, isBtnClicked, isExcelClicked, btnTyp
             background: 'rgba(56, 103, 143, 1)'
           }
         }}
+        loading={posting.isLoading}
+        slots={{
+          noRowsOverlay: () => (
+            <Box style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <Box style={{ position: 'absolute', top: '48%', left: '42%', textAlign: 'center' }}>
+                <Typography variant="h5">해당 전형에 지원자가 존재하지 않습니다.</Typography>
+              </Box>
+            </Box>
+          ),
+          loadingOverlay: () => (
+            <Box style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <Box style={{ position: 'absolute', top: '42%', left: '45%', textAlign: 'center' }}>
+                <CircularProgress style={{ color: '#38678f', zIndex: '9999' }} />
+                <Typography variant="h5">데이터를 불러오는 중입니다.</Typography>
+              </Box>
+            </Box>
+          )
+        }}
         rowHeight={70}
-        rows={rows}
+        rows={posting.isLoading ? [] : rows}
         columns={columns}
         hideFooter
         checkboxSelection

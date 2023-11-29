@@ -147,11 +147,11 @@ const ApplicantCV = React.forwardRef(({ applicantInfo }, ref) => {
                       </Grid>
                       <Grid item xs={3} className={classNames.contentGrid} sx={{ borderBottom: '1px solid black' }}>
                         <Typography variant="h4" className={classNames.contentCenter}>
-                          {applicantInfo['cv']?.['advantages'].map((advantage) => {
-                            if (advantage['advantage_type'] == '보훈 대상') {
-                              return '해당';
-                            }
-                          }) || '해당없음'}
+                          {applicantInfo['cv']?.['advantages'].some((advantage) => advantage['advantage_type'] == '보훈 대상')
+                            ? applicantInfo['cv']?.['advantages']
+                                .filter((advantage) => advantage['advantage_type'] === '보훈 대상')
+                                .map((advantage) => '해당')
+                            : '해당없음'}
                         </Typography>
                       </Grid>
                     </Grid>
