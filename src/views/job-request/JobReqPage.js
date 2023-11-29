@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
-import { Paper } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from '@mui/material';
 import ReqDataGrid from './components/ReqDataGrid';
 import ReadReq from './components/ReadReq';
 import axios from 'axios';
@@ -21,6 +21,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
 import { reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
+import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
+import { checkedDeleteSelector, setCheckedDelete } from 'store/checkedDeleteSlice';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const JobReqPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -30,6 +33,8 @@ const JobReqPage = () => {
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const userId = useSelector((state) => state.userInfo.user_id);
+  const [val, setVal] = useState(false);
+  // const [openDelete, setOpenDelete] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -72,8 +77,9 @@ const JobReqPage = () => {
   const handleCreate = async () => {
     const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
     setRows(searchData);
-
+    dispatch(resetUploadedFiles());
     dispatch(resetSelectedRow());
+    updateVal();
   };
 
   const handleReset = () => {
@@ -105,9 +111,22 @@ const JobReqPage = () => {
     setRows(searchData);
   };
 
-  const handleDataGrid = () => {
-    dataGridRef.current.handleCheckedRowsDelete();
+  // const alertDelete = () => {
+  //   setOpenDelete(true);
+  // };
+
+  // const closeDelete = () => {
+  //   setOpenDelete(false);
+  // };
+
+  const handelGridDeleteModal = () => {
+    dataGridRef.current.handleDeleteModal();
   };
+
+  // const handleDataGrid = () => {
+  //   dataGridRef.current.handleCheckedRowsDelete();
+  //   setOpenDelete(false);
+  // };
 
   const handleDataGridUpdate = (reqStatus) => {
     dataGridRef.current.handleCheckedRowsUpdateStatus(reqStatus);
@@ -148,11 +167,15 @@ const JobReqPage = () => {
     setRows(searchData);
   };
 
+  const updateVal = () => {
+    setVal(true);
+  };
+
   return (
     <Paper sx={{ height: 1 }}>
       <Box sx={{ height: '140px' }}>
         <Typography sx={{ color: '#364152', padding: '35px 0px 20px 20px', display: 'flex', alignItems: 'center', gap: 1 }} variant="h2">
-          <TaskOutlinedIcon /> 채용 요청 관리
+          <TaskOutlinedIcon sx={{ mb: 0.5 }} /> 채용 요청 관리
         </Typography>
         <Box sx={{ padding: '0px 20px' }}>
           <Grid container alignItems="center" justifyContent="space-between">
@@ -161,7 +184,12 @@ const JobReqPage = () => {
                 {/* <Typography sx={{ marginTop: '20px', marginLeft: '20px' }}>신청일자</Typography> */}
                 <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={startDate} onChange={handleStartDateChange} />
+                    <DatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                      format="YYYY/MM/DD"
+                    />
                   </LocalizationProvider>
                 </Grid>
                 <Grid item>
@@ -169,7 +197,12 @@ const JobReqPage = () => {
                 </Grid>
                 <Grid item>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker slotProps={{ textField: { size: 'small' } }} value={endDate} onChange={handleEndDateChange} />
+                    <DatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                      format="YYYY/MM/DD"
+                    />
                   </LocalizationProvider>
                 </Grid>
                 <Grid item sx={{ marginLeft: '20px' }}>
@@ -202,7 +235,7 @@ const JobReqPage = () => {
                   <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                     등록
                   </Button>
-                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handleDataGrid}>
+                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handelGridDeleteModal}>
                     삭제
                   </Button>
                 </Stack>
@@ -222,6 +255,29 @@ const JobReqPage = () => {
                 </Stack>
               )}
             </Grid>
+            {/* <Dialog open={openDelete} onClose={closeDelete} aria-labelledby="alert-delete-title" aria-describedby="alert-delete-content">
+              <DialogContent>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
+                >
+                  <InfoOutlinedIcon sx={{ color: '#38678f', fontSize: 70 }} />
+                  <DialogContentText
+                    id="alert-delete-content"
+                    sx={{ fontSize: '17px', marginTop: '24px', width: '300px', color: '#000000', fontWeight: 'bold' }}
+                  >
+                    {`선택 항목을 삭제하시겠습니까?`}
+                  </DialogContentText>
+                </div>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: 'center' }}>
+                <Button onClick={handleDataGrid} sx={{ color: 'red', fontWeight: 'bold', fontSize: '17px' }}>
+                  삭제
+                </Button>
+                <Button onClick={closeDelete} sx={{ color: '#38678f', fontWeight: 'bold', fontSize: '17px' }}>
+                  취소
+                </Button>
+              </DialogActions>
+            </Dialog> */}
           </Grid>
         </Box>
       </Box>
@@ -272,6 +328,7 @@ const JobReqPage = () => {
             endDate={endDate}
             searchKeyword={searchKeyword}
             handleCombinedSearch={handleCombinedSearch}
+            updateVal={updateVal}
           />
         </Grid>
       </Grid>

@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { StatusChip1, StatusChip2, StatusChip3, StatusChip4, StatusChip5, StatusChip6 } from './StatusChips';
@@ -13,7 +13,6 @@ import { setJobPostingNo, jobPostingNoSelector } from 'store/jobPostingNoSlice';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Typography } from '@mui/material';
-import { typography } from '@mui/system';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   border: '1px solid #c0c0c0',
@@ -36,10 +35,16 @@ const StyledDataGrid = styled(DataGrid)(() => ({
 }));
 
 const ReqDataGrid = forwardRef(
-  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword }, ref) => {
+  ({ rows, setRows, postStatusData, handleCombinedSearch, selectedChips, startDate, endDate, searchKeyword, defaultRow }, ref) => {
     const dispatch = useDispatch();
     const selectedRow = useSelector(selectedRowSelector);
     const jobReqNo = useSelector(jobReqNoSelector);
+
+    useEffect(() => {
+      //console.log(defaultRow);
+      dispatch(setSelectedRow(defaultRow.jobReq));
+      dispatch(setJobPostingNo(defaultRow.job_posting_no));
+    }, []);
 
     const getRowClassName = (params) => {
       const isSelected = selectedRow && selectedRow.job_req_no === params.row.jobReq.job_req_no;

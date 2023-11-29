@@ -307,7 +307,23 @@ const reqPosting = {
   },
   updateReq: (jobReqNo, data) => {
     return instance.put(`/admin/hire/update/${jobReqNo}`, data);
+  },
+  // 지원자 성비
+  getGender: (jobPostingNo) => {
+    return instance.get(`admin/hire/appliedGender/${jobPostingNo}`);
+  },
+  // 지원자 연령대
+  getAge: (jobPostingNo) => {
+    return instance.get(`admin/hire/appliedAge/${jobPostingNo}`);
+  },
+  // 지원자 자격증
+  getCert: (jobPostingNo) => {
+    return instance.get(`admin/hire/appliedCert/${jobPostingNo}`);
+  },
+  getByIdPostList: () => {
+    return instance.get('admin/hire/getAllJobPostingListById');
   }
+  // 파일 업로드
 };
 // 사용방법
 // 각 파일에 import api from api.js 작성

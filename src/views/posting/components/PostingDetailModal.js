@@ -25,6 +25,9 @@ import InterviewerListModal from 'views/posting/components/InterviewerListModal'
 import { useNavigate } from 'react-router';
 import procedure from './procedure.png';
 import SharePosting from './SharePosting';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetUploadedFiles, setUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialogContent-root': {
@@ -60,6 +63,8 @@ const PostingDetailModal = ({
   const [interviewers, setInterviewers] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openAnchorEl = Boolean(anchorEl);
+  const dispatch = useDispatch();
+  const uploadedFiles = useSelector(uploadedFilesSelector);
 
   const currentDate = dayjs();
   const postingEndDate = dayjs(formData.posting_end);
@@ -140,26 +145,68 @@ const PostingDetailModal = ({
     setOpenInterviewers(false);
   };
 
-  useEffect(() => {
-    if (formData.posting_period === '15일') {
-      const postingEndDate = dayjs(formData.posting_start).add(15, 'day');
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: postingEndDate.toDate()
-      }));
-    } else if (formData.posting_period === '30일') {
-      const postingEndDate = dayjs(formData.posting_start).add(30, 'day');
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: postingEndDate.toDate()
-      }));
-    } else if (formData.posting_period === '기타') {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        posting_end: prevFormData.posting_end || new Date()
-      }));
+  const downloadFile = async (file) => {
+    const reqFileNo = file.reqfile_no;
+    const downloadUrl = `http://localhost:8888/admin/hire/${reqFileNo}/download`;
+
+    try {
+      const response = await axios.get(downloadUrl, { responseType: 'blob' });
+      console.log(response.data);
+
+      const blobUrl = URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = file.file_name;
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading file:', error);
     }
-  }, [formData.posting_start, formData.posting_period, formData.posting_end]);
+  };
+
+  useEffect(() => {
+    if (open) {
+      const handleFiles = async () => {
+        const fileReqNo = formData.job_req_no;
+        console.log(fileReqNo);
+        const filesResponse = await axios.get(`http://localhost:8888/admin/hire/${fileReqNo}/files`);
+        console.log(filesResponse.data);
+        dispatch(setUploadedFiles(filesResponse.data));
+      };
+      handleFiles();
+    } else {
+      dispatch(resetUploadedFiles());
+    }
+  }, [formData.job_req_no, open]);
+
+  useEffect(() => {
+    if (open) {
+      if (formData.posting_period === '15일') {
+        const postingEndDate = dayjs(formData.posting_start).add(15, 'day');
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+
+          posting_end: postingEndDate.toDate()
+        }));
+      } else if (formData.posting_period === '30일') {
+        const postingEndDate = dayjs(formData.posting_start).add(30, 'day');
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+
+          posting_end: postingEndDate.toDate()
+        }));
+      } else if (formData.posting_period === '기타') {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          posting_end: prevFormData.posting_end || new Date()
+        }));
+      }
+    }
+  }, [open, formData.posting_start, formData.posting_end, formData.posting_period]);
 
   const handleInterviewers = (list) => {
     setInterviewers(list);
@@ -220,23 +267,27 @@ const PostingDetailModal = ({
               >
                 <CloseIcon />
               </IconButton>
-              <Grid container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
+              <Grid container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, pt: 3 }}>
                 <Box display="flex">
                   <Grid item pl={4}>
                     <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>{formData.req_title}</Typography>
                   </Grid>
                   <Grid item pl={3}>
-                    <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f' }}>D-{daysRemaining}</Typography>
+                    <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#38678f' }}>
+                      {formData.posting_type === '상시채용' ? '상시채용' : `D-${daysRemaining}`}
+                    </Typography>
                   </Grid>
                 </Box>
                 <Grid item pr={6}>
                   <Button
                     variant="contained"
                     style={{
+                      //color: '#38678f',
+                      // border: '2px solid #38678f',
                       backgroundColor: '#38678f',
-                      width: '200px',
-                      height: '70px',
-                      fontSize: '22px',
+                      width: '150px',
+                      height: '50px',
+                      fontSize: '20px',
                       fontWeight: 'bold'
                     }}
                     onClick={() => {
@@ -266,6 +317,7 @@ const PostingDetailModal = ({
 
                         setFormData({ ...formData, posting_start: data.$d });
                       }}
+                      format="YYYY/MM/DD"
                       // slotProps={{ textField: { size: 'small' } }}
                     />
                   </LocalizationProvider>
@@ -282,6 +334,7 @@ const PostingDetailModal = ({
                           console.log(data);
                           setFormData({ ...formData, posting_end: data.$d });
                         }}
+                        format="YYYY/MM/DD"
                         // slotProps={{ textField: { size: 'small' } }}
                       />
                     </LocalizationProvider>
@@ -314,7 +367,7 @@ const PostingDetailModal = ({
                     .map(
                       (interviewer) => ` ${interviewer.department.dept_name} ${interviewer.users.user_nm} ${interviewer.users.user_email}`
                     )
-                    .join('\n')}
+                    .join('\n\n')}
                 />
                 <InterviewerListModal open={openInterviewers} close={handleCloseInterviewers} handleInterviewers={handleInterviewers} />
               </Grid>
@@ -405,7 +458,9 @@ const PostingDetailModal = ({
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                       >
-                        <MenuItem onClick={handleCloseMenu}>d</MenuItem>
+                        <MenuItem onClick={handleCloseMenu}>
+                          <InsertLinkIcon />
+                        </MenuItem>
                         <MenuItem onClick={handleCloseMenu}>
                           <SharePosting postingNo={job_posting_no} jobPosting={jobPosting} />
                         </MenuItem>
@@ -609,22 +664,37 @@ const PostingDetailModal = ({
                       width: '1100px',
                       borderBottom: '1px solid #ddd',
                       borderTop: ' 2px solid #364152',
-                      maxHeight: '100px',
+
                       p: 4,
                       mt: 4
                     }}
                   >
-                    <Grid container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Grid item xs={4}>
-                        <Typography>(양식)입사지원서</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>여기에 파일 들어가고</Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Button>다운로드</Button>
-                      </Grid>
-                    </Grid>
+                    {uploadedFiles.map((file, index) => {
+                      // 파일 이름과 확장자 분리
+                      const fileNameParts = file.file_name.split('.');
+                      // 확장자를 제외한 부분만 선택
+                      const fileNameWithoutExtension = fileNameParts.slice(0, -1).join('.');
+
+                      return (
+                        <Grid key={index} container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Grid item xs={4}>
+                            <Typography sx={{ fontWeight: 'bold', fontSize: '16px' }}>{fileNameWithoutExtension}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography sx={{ fontSize: '16px', textDecoration: 'underline' }}>{file.file_name}</Typography>
+                          </Grid>
+                          <Grid item xs={2}>
+                            <Button
+                              onClick={() => {
+                                downloadFile(file);
+                              }}
+                            >
+                              다운로드
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      );
+                    })}
                   </Box>
                 </Box>
               </Grid>

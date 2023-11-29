@@ -186,7 +186,7 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
           <Grid item>
             <Grid container direction="column" alignItems="center">
               <Button
-                sx={{ my: 0.5 }}
+                sx={{ my: 0.5, color: '#38678f', borderColor: '#38678f' }}
                 variant="outlined"
                 size="small"
                 onClick={handleMoveRight}
@@ -197,7 +197,7 @@ const InterviewerListModal = ({ open, close, handleInterviewers }) => {
               </Button>
 
               <Button
-                sx={{ my: 0.5 }}
+                sx={{ my: 0.5, color: '#38678f', borderColor: '#38678f' }}
                 variant="outlined"
                 size="small"
                 disabled={checked.length === 0}

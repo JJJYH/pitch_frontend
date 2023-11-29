@@ -20,8 +20,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedRow, resetSelectedRow, selectedRowSelector } from 'store/selectedRowSlice';
 import PostingDetailModal from 'views/posting/components/PostingDetailModal';
-import { reqPosting } from 'api';
+import { principal, reqPosting } from 'api';
 import { useSnackbar } from 'notistack';
+import FileDropDown from './FileDropDown';
+import { setUploadedFiles, resetUploadedFiles, uploadedFilesSelector } from 'store/uploadedFilesSlice';
 
 const FormTypo = styled(Typography)(({ disabled }) => ({
   margin: '10px',
@@ -55,11 +57,22 @@ const SelectBox = styled(Select)(({ value }) => ({
   }
 }));
 
-const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelectedChips, setRows, startDate, endDate, searchKeyword }) => {
+const ReadReq = ({
+  reqlisthandler,
+  handleCombinedSearch,
+  selectedChips,
+  setSelectedChips,
+  setRows,
+  startDate,
+  endDate,
+  searchKeyword,
+  updateVal
+}) => {
   const dispatch = useDispatch();
   const selectedRow = useSelector(selectedRowSelector);
   const contentRef = useRef(null);
   const userId = useSelector((state) => state.userInfo.user_id);
+  const uploadedFiles = useSelector(uploadedFilesSelector);
 
   const [formData, setFormData] = useState({
     job_req_no: '',
@@ -86,6 +99,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
   const [copiedData, setCopiedData] = useState('');
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [uploadFiles, setUploadFiles] = useState([]);
+  const [validationErrors, setValidationErrors] = useState({
+    job_role: false,
+    location: false,
+    hire_num: false
+  });
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -176,11 +195,6 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     enqueueSnackbar('복사 완료', { variant: 'info' });
   };
 
-  // const handlePaste = () => {
-  //   setFormData(copiedData);
-  //   setCopiedData('');
-  // };
-
   const handlePosting = async () => {
     try {
       const jobPostingData = {
@@ -207,48 +221,85 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
     }
   };
 
+  const handleFiles = (files) => {
+    //dispatch(setUploadedFiles((prevData) => [...prevData, ...files.map((file) => ({ file, size: file.size }))]));
+    setUploadFiles((prevData) => [...prevData, ...files.map((file) => ({ file, size: file.size }))]);
+  };
+
   const scrollToTop = () => {
     contentRef.current.scrollTo(0, 0);
   };
 
   useEffect(() => {
-    scrollToTop();
-    if (selectedRow) {
-      setFormData(selectedRow);
+    const fetchData = async () => {
+      scrollToTop();
+      if (selectedRow) {
+        console.log(selectedRow);
+        setFormData(selectedRow);
 
-      //console.log(selectedRow);
-    } else {
-      if (copiedData) {
-        setFormData(copiedData);
-        setCopiedData('');
+        const fileReqNo = selectedRow.job_req_no;
+        const filesResponse = await axios.get(`http://localhost:8888/admin/hire/${fileReqNo}/files`);
+
+        dispatch(setUploadedFiles(filesResponse.data));
+        //setUploadedFiles(filesResponse.data);
+
+        console.log(filesResponse.data);
       } else {
-        setFormData({
-          job_req_no: '',
-          users: { user_id: userId },
-          req_title: '',
-          job_req_date: new Date(),
-          job_group: '',
-          job_role: '',
-          location: '',
-          hire_num: '',
-          education: '',
-          job_type: '신입',
-          job_year: '',
-          posting_type: '수시채용',
-          posting_period: '',
-          posting_start: '',
-          posting_end: '',
-          qualification: '',
-          preferred: '',
-          job_duties: '',
-          req_status: '작성중'
-        });
+        if (copiedData) {
+          setFormData(copiedData);
+          setCopiedData('');
+        } else {
+          setFormData({
+            job_req_no: '',
+            users: { user_id: userId },
+            req_title: '',
+            job_req_date: new Date(),
+            job_group: '',
+            job_role: '',
+            location: '',
+            hire_num: '',
+            education: '',
+            job_type: '신입',
+            job_year: '',
+            posting_type: '수시채용',
+            posting_period: '',
+            posting_start: '',
+            posting_end: '',
+            qualification: '',
+            preferred: '',
+            job_duties: '',
+            req_status: '작성중'
+          });
+        }
       }
-    }
+    };
+
+    fetchData(); // fetchData 함수를 호출
   }, [selectedRow]);
+
+  useEffect(() => {
+    setValidationErrors('');
+  }, [updateVal]);
 
   const onSubmit = async (e, status) => {
     e.preventDefault();
+
+    if (status === '요청완료') {
+      // Validation
+      const errors = {
+        job_role: formData.job_role.trim() === '',
+        location: formData.location.trim() === ''
+        //hire_num: formData.hire_num.trim() === ''
+      };
+
+      setValidationErrors(errors);
+      scrollToTop();
+
+      if (Object.values(errors).some((error) => error)) {
+        console.log('Validation');
+        return;
+      }
+    }
 
     const submitData = { ...formData, req_status: status };
     console.log(submitData);
@@ -261,6 +312,12 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.log(res);
 
           enqueueSnackbar('승인요청 완료', { variant: 'info' });
+          const noti = {
+            userIds: ['admin'],
+            message: '승인 대기중인 채용요청서가 있습니다.',
+            url: '/manage/req'
+          };
+          principal.createNoti(noti);
           dispatch(setSelectedRow(submitData));
           setSelectedChips([]);
           reqlisthandler();
@@ -299,6 +356,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
 
         try {
           const response = await axios.get(`http://localhost:8888/admin/hire/jobreq/${res.data}`);
+
           dispatch(setSelectedRow(response.data));
           setSelectedChips([]);
           console.log(response.data);
@@ -306,6 +364,33 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           console.error(error);
         }
 
+        console.log(uploadFiles);
+        if (uploadFiles.length > 0) {
+          const fileData = new FormData();
+          uploadFiles.forEach((file) => {
+            //fileData.append('file', file);
+            console.log(file.file);
+            console.log(`Name: ${file.file.name}`);
+            console.log(`Type: ${file.file.type}`);
+            fileData.append('files', file.file);
+          });
+          fileData.append('jobReqNo', res.data);
+          console.log(res.data);
+
+          console.log(fileData);
+
+          try {
+            const fileUploadResponse = await axios.post('http://localhost:8888/admin/hire/upload', fileData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            console.log(fileUploadResponse);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        //dispatch(resetUploadedFiles());
         enqueueSnackbar('임시저장 완료', { variant: 'info' });
         reqlisthandler();
       }
@@ -369,6 +454,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                     console.log(data);
                     setFormData({ ...formData, job_req_date: data.$d });
                   }}
+                  format="YYYY/MM/DD"
                   disabled={formData.req_status !== '작성중'}
                   slotProps={{ textField: { size: 'small' } }}
                 />
@@ -377,7 +463,9 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
           </Grid>
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={6}>
-              <FormTypo>직무</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 직무
+              </FormTypo>
 
               <JobRole
                 onSelect={handleJobRoleSelect}
@@ -386,25 +474,36 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 // selectedRow={selectedRow}
                 //value={formData.job_role}
                 disabled={formData.req_status !== '작성중'}
+                validationErrors={validationErrors}
               />
             </Grid>
             <Grid item xs={6}>
-              <FormTypo>근무지</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 근무지
+              </FormTypo>
 
               <FormControl fullWidth size="small" disabled={formData.req_status !== '작성중'}>
-                <SelectBox value={formData.location || 'defaultLocation'} onChange={handleLocation}>
+                <SelectBox value={formData.location || 'defaultLocation'} onChange={handleLocation} error={validationErrors.location}>
                   <MenuItem value="defaultLocation" disabled>
                     근무지 선택
                   </MenuItem>
-                  <MenuItem value="근무지1">근무지1</MenuItem>
-                  <MenuItem value="근무지2">근무지2</MenuItem>
+                  <MenuItem value="춘천(강촌)">춘천(강촌)</MenuItem>
+                  <MenuItem value="서울(을지로)">서울(을지로)</MenuItem>
+                  <MenuItem value="부산">부산</MenuItem>
                 </SelectBox>
+                {validationErrors.location && (
+                  <Typography style={{ color: '#f44336', marginLeft: '14px', fontSize: '12px', marginTop: '4px' }}>
+                    근무지를 선택해주세요.
+                  </Typography>
+                )}
               </FormControl>
             </Grid>
           </Grid>
           <Grid item xs={12} container direction="row" spacing={2}>
             <Grid item xs={6}>
-              <FormTypo>채용인원</FormTypo>
+              <FormTypo component="span">
+                <span style={{ color: 'red', marginRight: '5px' }}>*</span> 채용인원
+              </FormTypo>
               <TextField
                 fullWidth
                 placeholder="숫자만 입력하세요"
@@ -416,6 +515,8 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 onChange={(e) => {
                   setFormData({ ...formData, hire_num: e.target.value });
                 }}
+                error={validationErrors.hire_num}
+                helperText={validationErrors.hire_num && '채용인원을 선택해주세요.'}
               />
             </Grid>
             <Grid item xs={6}>
@@ -553,6 +654,10 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
               disabled={formData.req_status !== '작성중'}
             />
           </Grid>
+          <Grid item xs={12}>
+            <FormTypo>파일첨부</FormTypo>
+            <FileDropDown handleFiles={handleFiles} />
+          </Grid>
           <Divider sx={{ marginTop: '40px' }} />
           <Grid item container justifyContent="center">
             {formData.req_status === '작성중' && (
@@ -575,7 +680,7 @@ const ReadReq = ({ reqlisthandler, handleCombinedSearch, selectedChips, setSelec
                 <Button variant="contained" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '승인')}>
                   승인
                 </Button>
-                <Button variant="outlined" style={{ backgroundColor: '#38678f' }} onClick={(e) => onSubmit(e, '반려')}>
+                <Button variant="outlined" style={{ color: '#38678f', borderColor: '#38678f' }} onClick={(e) => onSubmit(e, '반려')}>
                   반려
                 </Button>
               </Stack>

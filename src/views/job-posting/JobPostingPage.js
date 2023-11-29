@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetSelectedRow } from 'store/selectedRowSlice';
 import SearchIcon from '@mui/icons-material/Search';
 import ReqPageSearch from './components/ReqPageSearch';
+import { reqPosting } from 'api';
 
 const JobPostingPage = () => {
   const [selectedChips, setSelectedChips] = useState([]);
@@ -26,6 +27,7 @@ const JobPostingPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [defaultRow, setDefaultRow] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -48,9 +50,12 @@ const JobPostingPage = () => {
 
   const reqlisthandler = async () => {
     try {
-      const response = await axios.get('http://localhost:8888/admin/hire/getAllJobPostingList');
+      const response = await reqPosting.getByIdPostList();
+      console.log(response);
       setRows(response.data);
-      console.log(jobPostingNo);
+      const defaultRow = response.data[0];
+      console.log(defaultRow);
+      setDefaultRow(defaultRow);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -184,6 +189,7 @@ const JobPostingPage = () => {
                     endDate={endDate}
                     searchKeyword={searchKeyword}
                     handleCombinedSearch={handleCombinedSearch}
+                    defaultRow={defaultRow}
                   />
                 </Box>
               </Grid>

@@ -18,6 +18,7 @@ import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 const PostingListPage = () => {
   const [open, setOpen] = useState(false);
@@ -249,7 +250,9 @@ const PostingListPage = () => {
                         </MenuItem>
                         <MenuItem value="전체">전체</MenuItem>
                         <MenuItem value="개발">개발</MenuItem>
-                        <MenuItem value="직군2">직군2</MenuItem>
+                        <MenuItem value="영업/마케팅">영업/마케팅</MenuItem>
+                        <MenuItem value="경영">경영</MenuItem>
+                        <MenuItem value="회계">회계</MenuItem>
                       </Select>
                     </Grid>
                     <Grid item>
@@ -258,8 +261,9 @@ const PostingListPage = () => {
                           근무지
                         </MenuItem>
                         <MenuItem value="전체">전체</MenuItem>
-                        <MenuItem value="근무지1">근무지1</MenuItem>
-                        <MenuItem value="근무지2">근무지2</MenuItem>
+                        <MenuItem value="춘천(강촌)">춘천(강촌)</MenuItem>
+                        <MenuItem value="서울(을지로)">서울(을지로)</MenuItem>
+                        <MenuItem value="부산">부산</MenuItem>
                       </Select>
                     </Grid>
                     <Grid item>
@@ -328,10 +332,11 @@ const PostingListPage = () => {
             <Box sx={{ height: '250px', ml: 12, mr: 12, mb: 2, borderRadius: '4px', backgroundColor: '#f2f2f2' }}>
               <Box sx={{ height: '50px', display: 'flex', alignItems: 'flex-end' }}>
                 <Typography sx={{ fontSize: '22px', fontWeight: 'bold', pl: 2 }}>추천 공고</Typography>
+                <ThumbUpIcon sx={{ mb: 0.5, ml: 1 }} />
               </Box>
 
               <Box sx={{ height: '200px' }}>
-                <Carousel autoPlay={true} cycleNavigation={true} navButtonsAlwaysVisible={true} interval={3000}>
+                <Carousel autoPlay={true} cycleNavigation={true} navButtonsAlwaysVisible={true} interval={5000}>
                   {[...Array(Math.ceil(recommendedPostings.length / itemsPerGroup))].map((_, groupIndex) => (
                     <Grid container key={groupIndex} spacing={2} pl={8} pr={8} pt={5}>
                       {recommendedPostings
@@ -401,7 +406,7 @@ const PostingListPage = () => {
                   const postingEndDate = dayjs(jobPosting.jobReq.posting_end);
                   const daysRemaining = postingEndDate.diff(today, 'day') + 1;
 
-                  if (postingStart <= today) {
+                  if (postingStart <= today && jobPosting.jobReq.req_status !== '공고종료') {
                     return (
                       <Grid item xs={4} key={jobPosting.job_posting_no}>
                         <Card
