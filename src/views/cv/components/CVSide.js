@@ -489,13 +489,15 @@ const CVSide = ({
       const requiredUnivFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major', 'score', 'total_score'];
       const requiredHighFields = ['edu_type', 'enter_date', 'graduate_date', 'graduate_type', 'major'];
 
-      if (item.edu_type.includes('고등학교') || !item.edu_type) {
+      // Check if item.edu_type exists and is not null or undefined
+      if ((item.edu_type && item.edu_type.includes('고등학교')) || !item.edu_type) {
         requiredHighFields.forEach((field) => {
           if (!item[field] || item[field].length === 0) {
+            console.log('들어옴');
             missingEduValuesCount++;
           }
         });
-      } else if (item.edu_type.includes('대학교')) {
+      } else if (item.edu_type && item.edu_type.includes('대학교')) {
         requiredUnivFields.forEach((field) => {
           if (!item[field] || item[field].length === 0) {
             missingEduValuesCount++;
