@@ -11,12 +11,13 @@ import { setJobReqNo } from 'store/jobReqNoSlice';
 import { jobReqNoSelector } from 'store/jobReqNoSlice';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
-import { Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Typography } from '@mui/material';
 import { typography } from '@mui/system';
 import { async } from 'q';
 import { principal } from 'api';
 import { useSnackbar } from 'notistack';
 import { setCheckedDelete } from 'store/checkedDeleteSlice';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   border: '1px solid #c0c0c0',
@@ -44,6 +45,7 @@ const ReqDataGrid = forwardRef(
     const selectedRow = useSelector(selectedRowSelector);
     const jobReqNo = useSelector(jobReqNoSelector);
     const userId = useSelector((state) => state.userInfo.user_id);
+    const [openDelete, setOpenDelete] = useState(false);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -71,6 +73,10 @@ const ReqDataGrid = forwardRef(
       }
     };
 
+    const handleDeleteModal = () => {
+      setOpenDelete(true);
+    };
+
     const handleCheckedRowsDelete = async () => {
       try {
         const response = await axios.delete('http://localhost:8888/admin/hire/delete/checked', { data: { jobReqNo } });
@@ -87,6 +93,10 @@ const ReqDataGrid = forwardRef(
       } catch (error) {
         console.error(error);
       }
+    };
+
+    const closeDelete = () => {
+      setOpenDelete(false);
     };
 
     const handleCheckedRowsUpdateStatus = async (reqStatus) => {
@@ -106,13 +116,20 @@ const ReqDataGrid = forwardRef(
         const searchData = await handleCombinedSearch(startDate, endDate, searchKeyword, selectedChips, userId);
         setRows(searchData);
         dispatch(resetSelectedRow());
-        enqueueSnackbar('요청이 처리되었습니다.', { variant: 'info' });
-        const noti = {
-          userIds: ['rnd1'],
-          message: '승인완료된 채용요청서가 있습니다.',
-          url: '/manage/req'
-        };
-        principal.createNoti(noti);
+        if (reqStatus === '승인') {
+          enqueueSnackbar('일괄 승인 처리되었습니다.', { variant: 'info' });
+        } else {
+          enqueueSnackbar('일괄 반려 처리되었습니다.', { variant: 'error' });
+        }
+
+        if (reqStatus === '승인') {
+          const noti = {
+            userIds: ['rnd1'],
+            message: '승인완료된 채용요청서가 있습니다.',
+            url: '/manage/req'
+          };
+          principal.createNoti(noti);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -120,7 +137,8 @@ const ReqDataGrid = forwardRef(
 
     useImperativeHandle(ref, () => ({
       handleCheckedRowsDelete,
-      handleCheckedRowsUpdateStatus
+      handleCheckedRowsUpdateStatus,
+      handleDeleteModal
     }));
 
     const columns = [
@@ -233,6 +251,27 @@ const ReqDataGrid = forwardRef(
             dispatch(setCheckedDelete(rows));
           }}
         />
+        <Dialog open={openDelete} onClose={closeDelete} aria-labelledby="alert-delete-title" aria-describedby="alert-delete-content">
+          <DialogContent>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+              <InfoOutlinedIcon sx={{ color: '#38678f', fontSize: 70 }} />
+              <DialogContentText
+                id="alert-delete-content"
+                sx={{ fontSize: '17px', marginTop: '24px', width: '300px', color: '#000000', fontWeight: 'bold' }}
+              >
+                {`선택 항목을 삭제하시겠습니까?`}
+              </DialogContentText>
+            </div>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'center' }}>
+            <Button onClick={handleCheckedRowsDelete} sx={{ color: 'red', fontWeight: 'bold', fontSize: '17px' }}>
+              삭제
+            </Button>
+            <Button onClick={closeDelete} sx={{ color: '#38678f', fontWeight: 'bold', fontSize: '17px' }}>
+              취소
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

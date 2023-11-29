@@ -34,7 +34,7 @@ const JobReqPage = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const userId = useSelector((state) => state.userInfo.user_id);
   const [val, setVal] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
+  // const [openDelete, setOpenDelete] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -111,17 +111,22 @@ const JobReqPage = () => {
     setRows(searchData);
   };
 
-  const alertDelete = () => {
-    setOpenDelete(true);
+  // const alertDelete = () => {
+  //   setOpenDelete(true);
+  // };
+
+  // const closeDelete = () => {
+  //   setOpenDelete(false);
+  // };
+
+  const handelGridDeleteModal = () => {
+    dataGridRef.current.handleDeleteModal();
   };
 
-  const closeDelete = () => {
-    setOpenDelete(false);
-  };
-  const handleDataGrid = () => {
-    dataGridRef.current.handleCheckedRowsDelete();
-    setOpenDelete(false);
-  };
+  // const handleDataGrid = () => {
+  //   dataGridRef.current.handleCheckedRowsDelete();
+  //   setOpenDelete(false);
+  // };
 
   const handleDataGridUpdate = (reqStatus) => {
     dataGridRef.current.handleCheckedRowsUpdateStatus(reqStatus);
@@ -230,7 +235,7 @@ const JobReqPage = () => {
                   <Button variant="contained" style={{ backgroundColor: '#38678f ' }} onClick={handleCreate}>
                     등록
                   </Button>
-                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={alertDelete}>
+                  <Button variant="outlined" style={{ borderColor: '#38678f', color: '#38678f' }} onClick={handelGridDeleteModal}>
                     삭제
                   </Button>
                 </Stack>
@@ -250,7 +255,7 @@ const JobReqPage = () => {
                 </Stack>
               )}
             </Grid>
-            <Dialog open={openDelete} onClose={closeDelete} aria-labelledby="alert-delete-title" aria-describedby="alert-delete-content">
+            {/* <Dialog open={openDelete} onClose={closeDelete} aria-labelledby="alert-delete-title" aria-describedby="alert-delete-content">
               <DialogContent>
                 <div
                   style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
@@ -272,7 +277,7 @@ const JobReqPage = () => {
                   취소
                 </Button>
               </DialogActions>
-            </Dialog>
+            </Dialog> */}
           </Grid>
         </Box>
       </Box>
