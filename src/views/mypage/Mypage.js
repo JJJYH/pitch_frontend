@@ -306,7 +306,7 @@ const Mypage = () => {
                 </>
               ) : (
                 <>
-                  <Grid item xs={12} sx={{ overflow: 'auto', maxHeight: '500px' }}>
+                  <Grid item xs={12} sx={{ overflow: 'auto', maxHeight: '550px' }}>
                     <Page isMainCV={'MainCV'} />
                   </Grid>
                 </>

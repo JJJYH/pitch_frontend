@@ -24,7 +24,7 @@ const Education = () => {
 
   const eduRemoveFields = (index) => {
     if (education_data.length === 1) {
-      alert('At least one form must remain');
+      alert('최소 항목입니다.');
       return;
     }
     dispatch(removeEducation(index));

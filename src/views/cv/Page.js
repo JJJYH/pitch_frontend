@@ -481,7 +481,7 @@ const CV = ({ isMainCV, sendData }) => {
     if (e.target.name === 'loadCVDial') {
       console.log('불러오기');
       setIsSelectCV(true);
-      enqueueSnackbar('기존이력서 불러오기 성공', { variant: 'success' });
+      enqueueSnackbar('기존이력서 불러오기 성공', { variant: 'info' });
     }
   };
 
@@ -873,7 +873,7 @@ const CV = ({ isMainCV, sendData }) => {
           .then(async (res) => {
             console.log(res);
             await loadMainCV(res.data);
-            enqueueSnackbar('대표이력서 불러오기 성공', { variant: 'success' });
+            enqueueSnackbar('대표이력서 불러오기 성공', { variant: 'info' });
           })
           .then(() => {
             console.log(cv_no.cv_no);
@@ -987,7 +987,13 @@ const CV = ({ isMainCV, sendData }) => {
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <CardHeader title={<Typography sx={{ fontSize: '25px', fontWeight: 'bold' }}>이력서 작성</Typography>} />
             <div style={{ justifyContent: 'center', marginRight: '10px' }}>
-              <Button onClick={sendMainCVData} sx={{ color: 'black', '&:hover': { border: '2px solid #4682b4', color: '#4682b4' } }}>
+              <Button
+                onClick={() => {
+                  sendMainCVData();
+                  enqueueSnackbar('대표이력서 저장 성공', { variant: 'info' });
+                }}
+                sx={{ color: 'black', '&:hover': { border: '2px solid #4682b4', color: '#4682b4' } }}
+              >
                 <SaveIcon />
                 저장하기
               </Button>

@@ -30,6 +30,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router';
 const CVSide = ({
   reverseFuction,
   currentTab,
@@ -51,6 +52,7 @@ const CVSide = ({
   const locationState = [];
   const [location_point, set_location_point] = useState('');
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   for (const key in tabRef.current) {
     locationState.push(tabRef.current[key].getBoundingClientRect().top + window.scrollY - 80);
   }
@@ -558,12 +560,12 @@ const CVSide = ({
       });
     });
 
-    // console.log(`Advantage 누락된 값의 개수: ${missingAdvantageValueCount}`);
-    // console.log(`Activity 누락된 값의 개수: ${missingActivityValueCount}`);
-    // console.log(`Language 누락된 값의 개수: ${missingLangValueCount}`);
-    // console.log(`Certification 누락된 값의 개수: ${missingCertValueCount}`);
-    // console.log(`Edu 누락된 값의 개수: ${missingEduValuesCount}`);
-    // console.log(`Career 누락된 값의 개수: ${missingCareerValueCount}`);
+    console.log(`Advantage 누락된 값의 개수: ${missingAdvantageValueCount}`);
+    console.log(`Activity 누락된 값의 개수: ${missingActivityValueCount}`);
+    console.log(`Language 누락된 값의 개수: ${missingLangValueCount}`);
+    console.log(`Certification 누락된 값의 개수: ${missingCertValueCount}`);
+    console.log(`Edu 누락된 값의 개수: ${missingEduValuesCount}`);
+    console.log(`Career 누락된 값의 개수: ${missingCareerValueCount}`);
   };
 
   // 색상 계산 함수
@@ -730,9 +732,48 @@ const CVSide = ({
         <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
           <Button
             onClick={() => {
-              sendApply();
-              setApplyCheck(true);
-              enqueueSnackbar('지원하기 성공', { variant: 'success' });
+              console.log(missingAdvantageValueCount);
+              console.log(missingActivityValueCount);
+              console.log(missingEduValuesCount);
+              console.log(missingCareerValueCount);
+              console.log(missingCertValueCount);
+              console.log(missingLangValueCount);
+
+              if (
+                missingAdvantageValueCount == 0 &&
+                missingActivityValueCount == 0 &&
+                missingEduValuesCount == 0 &&
+                missingCareerValueCount == 0 &&
+                missingCertValueCount == 0 &&
+                missingLangValueCount == 0
+              ) {
+                console.log('여기 들어옴');
+                //임시 저장 이력이 없고 지원하기를 누른 경우
+                if (cvData.cv.cv_no === -1) {
+                  console.log(cvData.cv.cv_no);
+                  enqueueSnackbar('이력서를 먼저 저장해 주시기 바랍니다.', { variant: 'warning' });
+                } else {
+                  const flow = new Promise((resolve, reject) => {
+                    sendApply();
+
+                    setApplyCheck(true);
+                    // 예시로 enqueueSnackbar와 navigate를 사용
+                    enqueueSnackbar('지원하기 성공', { variant: 'info' });
+                    resolve(); // 성공적으로 실행되었다고 가정하고 resolve 호출
+                  })
+                    .then(() => {
+                      navigate('/main');
+                    })
+                    .catch((error) => {
+                      // 작업이 실패한 경우에 대한 처리
+                      console.error('에러 발생:', error);
+                    });
+
+                  // flow;
+                }
+              } else {
+                enqueueSnackbar('지원하기 실패. 누락값이 존재합니다.', { variant: 'warning' });
+              }
             }}
             sx={{
               width: '100%',
@@ -780,7 +821,7 @@ const CVSide = ({
           <Button
             onClick={(e) => {
               sendCVData(cvData);
-              enqueueSnackbar('임시저장 성공', { variant: 'success' });
+              enqueueSnackbar('임시저장 성공', { variant: 'info' });
             }}
             sx={{
               width: '100%',

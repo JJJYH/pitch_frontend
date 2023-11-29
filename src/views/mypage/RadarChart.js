@@ -59,7 +59,8 @@ const RadarChart = ({ user_nm, chartData }) => {
       r: {
         beginAtZero: true,
         ticks: {
-          min: 0 // 최솟값 설정
+          min: 0, // 최솟값 설정
+          display: false
         }
       }
     }
